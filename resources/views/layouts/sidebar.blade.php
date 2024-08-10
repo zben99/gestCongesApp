@@ -1,13 +1,13 @@
 
-<div id="app-sidepanel" class="app-sidepanel"> 
+<div id="app-sidepanel" class="app-sidepanel">
 	        <div id="sidepanel-drop" class="sidepanel-drop"></div>
 	        <div class="sidepanel-inner d-flex flex-column">
 		        <a href="#" id="sidepanel-close" class="sidepanel-close d-xl-none">&times;</a>
 		        <div class="app-branding">
-		            <a class="app-logo" href="index.html"><img class="logo-icon me-2" src="assets/images/app-logo.svg" alt="logo"><span class="logo-text">ONEA REPOS</span></a>
-	
-		        </div><!--//app-branding-->  
-		        
+		            <a class="app-logo" href="index.html"><img class="logo-icon me-2" src="images/logo-ONEA.jpg" alt="logo"><span class="logo-text">Gest Congés</span></a>
+
+		        </div><!--//app-branding-->
+
 			    <nav id="app-nav-main" class="app-nav app-nav-main flex-grow-1">
 				    <ul class="app-menu list-unstyled accordion" id="menu-accordion">
 					    <li class="nav-item">
@@ -22,8 +22,8 @@
 		                         <span class="nav-link-text">Menu  Principale</span>
 					        </a><!--//nav-link-->
 					    </li><!--//nav-item-->
-					    
-					
+
+
 					    <li class="nav-item has-submenu">
 					        <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
 					        <a class="nav-link submenu-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-1" aria-expanded="false" aria-controls="submenu-1">
@@ -33,7 +33,7 @@
   <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
 </svg>
 						         </span>
-		                         <span class="nav-link-text">Gestionnaire Employer</span>
+		                         <span class="nav-link-text">Configuration</span>
 		                         <span class="submenu-arrow">
 		                             <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-down" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 	  <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
@@ -42,16 +42,15 @@
 					        </a><!--//nav-link-->
 					        <div id="submenu-1" class="collapse submenu submenu-1" data-bs-parent="#menu-accordion">
 						        <ul class="submenu-list list-unstyled">
-							        <li class="submenu-item"><a class="submenu-link" href="{{ route('employes.index') }}">Liste des employées</a></li>
-							        <li class="submenu-item"><a class="submenu-link" href="account.html">Liste de Jouissance</a></li>
+
 							        <li class="submenu-item"><a class="submenu-link" href="{{ route('departements.index') }}">Departement</a></li>
                                     <li class="submenu-item"><a class="submenu-link" href="{{ route('postes.index') }}">Poste</a></li>
-                            
+
 						        </ul>
 					        </div>
 					    </li><!--//nav-item-->
 
-						
+
 					    <li class="nav-item has-submenu">
 					        <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
 					        <a class="nav-link submenu-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-2" aria-expanded="false" aria-controls="submenu-2">
@@ -71,14 +70,12 @@
 					        <div id="submenu-2" class="collapse submenu submenu-2" data-bs-parent="#menu-accordion">
 						        <ul class="submenu-list list-unstyled">
 							        <li class="submenu-item"><a class="submenu-link" href="{{ route('conges.index') }}">Liste des congés</a></li>
-							        <li class="submenu-item"><a class="submenu-link" href="signup.html">Signup</a></li>
-							        <li class="submenu-item"><a class="submenu-link" href="reset-password.html">Reset password</a></li>
-							        <li class="submenu-item"><a class="submenu-link" href="404.html">404 page</a></li>
+
 						        </ul>
 					        </div>
 					    </li><!--//nav-item-->
-						
-						
+
+
 						<li class="nav-item">
 						        <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
 						        <a class="nav-link" href="https://themes.3rdwavemedia.com/bootstrap-templates/admin-dashboard/portal-free-bootstrap-admin-dashboard-template-for-developers/">
@@ -88,33 +85,33 @@
   <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m-.646-4.854.646.647.646-.647a.5.5 0 0 1 .708.708l-.647.646.647.646a.5.5 0 0 1-.708.708l-.646-.647-.646.647a.5.5 0 0 1-.708-.708l.647-.646-.647-.646a.5.5 0 0 1 .708-.708"/>
 </svg>
 							        </span>
-									<i class="bi bi-person-x" href="conge.html">Les Absences</i>
+									<i class="bi bi-person-x" href="">Les Absences</i>
 						        </a><!--//nav-link-->
 						    </li><!--//nav-item-->
 				    </ul><!--//app-menu-->
 			    </nav><!--//app-nav-->
 
-				
+
 			    <div class="app-sidepanel-footer">
 				    <nav class="app-nav app-nav-footer">
 					    <ul class="app-menu footer-menu list-unstyled">
-						   
-						  
+
+
 						    <li class="nav-item">
 						        <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
-						        <a class="nav-link" href="https://themes.3rdwavemedia.com/bootstrap-templates/admin-dashboard/portal-free-bootstrap-admin-dashboard-template-for-developers/">
+						        <a class="nav-link" href="{{route('admins.index')}}">
 							        <span class="nav-icon">
 							            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-file-person" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 	  <path fill-rule="evenodd" d="M12 1H4a1 1 0 0 0-1 1v10.755S4 11 8 11s5 1.755 5 1.755V2a1 1 0 0 0-1-1zM4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4z"/>
 	  <path fill-rule="evenodd" d="M8 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
 	</svg>
 							        </span>
-			                        <span class="nav-link-text">Utilisateurs</span>
+			                        <span class="nav-link-text">Gestion des Utilisateurs</span>
 						        </a><!--//nav-link-->
 						    </li><!--//nav-item-->
 					    </ul><!--//footer-menu-->
 				    </nav>
 			    </div><!--//app-sidepanel-footer-->
-		       
+
 	        </div><!--//sidepanel-inner-->
 	    </div><!--//app-sidepanel-->

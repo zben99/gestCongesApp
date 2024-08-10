@@ -2,14 +2,14 @@
 namespace App\Models;
 
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
 
 
-class Employe extends Authenticatable
+
+class Employe extends Model
 {
-    use Notifiable, HasRoles;
+    use Notifiable;
 
     protected $fillable = [
         'nom', 'prenom', 'matricule', 'email', 'telephone1', 'telephone2', 'dateNaissance',
@@ -43,5 +43,5 @@ class Employe extends Authenticatable
     {
         return $this->hasMany(Absence::class, 'employeId');
     }
-    
+
 }
