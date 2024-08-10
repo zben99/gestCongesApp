@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('conges', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('employeId')->constrained('employes');
+            $table->foreignId('UserId')->constrained('users');
             $table->enum('typeConges', ['annuels', 'maladie', 'maternité', 'paternité']);
             $table->date('dateDebut');
             $table->date('dateFin');

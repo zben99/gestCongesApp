@@ -10,11 +10,24 @@ class Absence extends Model
     use HasFactory;
 
     protected $fillable = [
-        'employeId', 'motif', 'dateDebut', 'dateFin', 'commentaire', 'status', 'approved_by'
+        'UserId',
+        'motif',
+        'dateDebut',
+        'dateFin',
+        'commentaire',
+        'status',
+        'approved_by',
     ];
 
-    public function employe()
+    // Relation avec le modèle User
+    public function user()
     {
-        return $this->belongsTo(Employe::class, 'employeId');
+        return $this->belongsTo(User::class, 'UserId');
+    }
+
+    // Relation pour le manager qui approuve l'absence
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 }

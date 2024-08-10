@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('absences', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('employeId')->constrained('employes');
+            $table->foreignId('UserId')->constrained('users');
             $table->string('motif');
             $table->date('dateDebut');
             $table->date('dateFin');

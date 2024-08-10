@@ -12,6 +12,11 @@ use App\Http\Controllers\EmployeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DepartementController;
 use App\Http\Controllers\FormulaireContactController;
+use App\Http\Controllers\CongesController;
+use App\Http\Controllers\AbsenceControlleur;
+
+
+
 
 
 Route::get('/', function () {
@@ -41,9 +46,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/admins/{user}', [AdminController::class, 'destroy'])->name('admins.destroy');
 
     Route::resource("contacts", FormulaireContactController::class);
+
+   
 });
 
 
+Route::resource('absences', AbsenceControlleur::class);
 
 Route::get('/conges', [CongesController::class, 'index'])->name('conges.index');
 Route::get('/conges/create', [CongesController::class, 'create'])->name('conges.create');
