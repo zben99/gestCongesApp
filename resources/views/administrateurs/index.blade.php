@@ -15,21 +15,26 @@
         <div class="col-12">
           <div class="card">
             <div class="card-header">
-              <h3 class="card-title">{{ __('Liste des administrateurs') }}</h3>
+              <h3 class="card-title">{{ __('Liste des utilisateurs') }}</h3>
             </div>
             <!-- /.card-header -->
             <div class="card-body">
               <div class="card-header">
                 <a href="{{ route('admins.create') }}">
-                  <button type="button" class="btn btn-lg btn-primary">Ajouter un administrateur</button>
+                  <button type="button" class="btn btn-lg btn-primary">Ajouter un utilisateur</button>
                 </a>
               </div>
               <table id="example2" class="table table-bordered table-hover">
                 <thead>
                 <tr>
                   <th>N°</th>
+                  <th>matricule</th>
                   <th>Nom complet</th>
                   <th>Email</th>
+                  <th>profil</th>
+                  <th>Département</th>
+                  <th>Poste</th>
+
                   <th>Actions</th>
                 </tr>
                 </thead>
@@ -37,18 +42,28 @@
                 @foreach ($users as $user)
                 <tr>
                   <td>{{ $loop->index + 1 }}</td>
-                  <td>{{ $user->name }}</td>
+                  <td>{{ $user->matricule }}</td>
+                  <td>{{ $user->nom }} {{ $user->prenom }}</td>
                   <td>{{ $user->email }}</td>
+                  <td>{{ $user->profil }}</td>
+                  <td>{{ $user->departement ? $user->departement->name_departement : '' }}</td>
+                  <td>{{ $user->poste ? $user->poste->name_poste : '' }}</td>
                   <td>
-                    <a href="{{ route('admins.edit', $user) }}" title="Modifier l'article" class="btn btn-primary">
+
+                    <a href="{{ route('admins.edit', $user) }}" title="Afficher les détails" class="btn btn-primary">
+                        <i class="fas fa-eye"></i> Détails
+                      </a>
+                    <a href="{{ route('admins.edit', $user) }}" title="Modification" class="btn btn-primary">
                       <i class="fas fa-edit"></i> Modifier
                     </a>
                     <form id="delete-form-{{ $user->id }}" method="POST" action="{{ route('admins.destroy', $user) }}" style="display: inline;">
-                      @csrf
-                      @method("DELETE")
-                      <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal-{{ $user->id }}">
-                        <i class="fas fa-trash"></i> Supprimer
-                      </button>
+                        @csrf
+                        @method("DELETE")
+
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal-{{ $user->id }}">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </button>
+                    </form>
                     </form>
 
                     <!-- Modal -->
@@ -91,6 +106,7 @@
 @endsection
 
 @section('script')
+
 <!-- SweetAlert2 -->
 <script src="{{ asset('/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
 <!-- Toastr -->

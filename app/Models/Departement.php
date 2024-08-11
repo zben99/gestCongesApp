@@ -10,8 +10,8 @@ class Departement extends Model
 
     protected $fillable = ['name_departement', 'description'];
 
-    public function employes()
+    public function users()
     {
-        return $this->hasMany(Employe::class, 'departementId');
+        return $this->hasMany(User::class, 'departementId');
     }
 }

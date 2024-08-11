@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Poste;
+use App\Models\Departement;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
@@ -26,7 +28,11 @@ class AdminController extends Controller
      */
     public function create()
     {
-        return view("administrateurs.edit");
+
+        $departements = Departement::all();
+        $postes = Poste::all();
+
+        return view('administrateurs.edit', compact('departements', 'postes'));
     }
 
     /**
@@ -36,24 +42,48 @@ class AdminController extends Controller
     {
         // Validation des données
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'nom' => 'required|string|max:255',
+            'prenom' => 'required|string|max:255',
+            'matricule' => 'nullable|string|max:191|unique:users',
+            'email' => 'required|string|email|max:191|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'telephone1' => 'required|string|max:191',
+            'telephone2' => 'nullable|string|max:191',
+            'birthDate' => 'nullable|date',
+            'profil' => 'required|in:employés,manager,responsables RH,administrateurs',
+            'departementId' => 'nullable|exists:departements,id',
+            'posteId' => 'nullable|exists:postes,id',
+            'arrivalDate' => 'nullable|date',
+            'initialization_date' => 'nullable|date',
+            'initial' => 'nullable|integer|min:0',
+
         ]);
 
         // Si la validation échoue
         if ($validator->fails()) {
-            return redirect()->route('admins.create')
-                             ->withErrors($validator)
-                             ->withInput();
+            return redirect()->back()->withErrors($validator)->withInput();
         }
+
+
 
         // Création de l'utilisateur
         $user = new User();
-        $user->name = $request->input('name');
+        $user->nom = $request->input('nom');
+        $user->prenom = $request->input('prenom');
+        $user->matricule = $request->input('matricule');
         $user->email = $request->input('email');
         $user->password = Hash::make($request->input('password'));
+        $user->telephone1 = $request->input('telephone1');
+        $user->telephone2 = $request->input('telephone2');
+        $user->birth_date = $request->input('birthDate');
+        $user->profil = $request->input('profil');
+        $user->departementId = $request->input('departementId');
+        $user->posteId = $request->input('posteId');
+        $user->arrival_date = $request->input('arrivalDate');
+        $user->initialization_date = $request->input('initialization_date');
+        $user->initial = $request->input('initial', 0);
         $user->save();
+
 
         // Redirection après succès
         return redirect()->route('admins.index')->with('success', 'Admin créé avec succès');
@@ -75,7 +105,10 @@ class AdminController extends Controller
     {
         $user = User::findOrFail($admin);
 
-        return view("administrateurs.edit", compact("user"));
+        $departements = Departement::all();
+        $postes = Poste::all();
+
+        return view("administrateurs.edit", compact("user", "departements", "postes"));
     }
 
     /**
@@ -83,31 +116,70 @@ class AdminController extends Controller
      */
     public function update(Request $request, $admin)
     {
+        // Recherche de l'utilisateur à mettre à jour
         $user = User::findOrFail($admin);
+
         // Validation des données
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
-            'password' => 'required|string|min:8|confirmed',
+            'nom' => 'required|string|max:255',
+            'prenom' => 'required|string|max:255',
+            'matricule' => [
+                'nullable',
+                'string',
+                'max:191',
+                Rule::unique('users')->ignore($user->id),
+            ],
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:191',
+                Rule::unique('users')->ignore($user->id),
+            ],
+            'password' => 'nullable|string|min:8|confirmed',
+            'telephone1' => 'required|string|max:191',
+            'telephone2' => 'nullable|string|max:191',
+            'birthdate' => 'nullable|date',
+            'profil' => 'required|in:employés,manager,responsables RH,administrateurs',
+            'departementId' => 'nullable|exists:departements,id',
+            'posteId' => 'nullable|exists:postes,id',
+            'arrivalDate' => 'nullable|date',
+            'initializationDate' => 'nullable|date',
+            'initial' => 'nullable|integer|min:0',
         ]);
 
         // Si la validation échoue
         if ($validator->fails()) {
-            return redirect()->route('admins.edit', $user)
-                             ->withErrors($validator)
-                             ->withInput();
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        // Création de l'utilisateur
 
-        $user->name = $request->input('name');
+        // Mise à jour de l'utilisateur
+        $user->nom = $request->input('nom');
+        $user->prenom = $request->input('prenom');
+        $user->matricule = $request->input('matricule');
         $user->email = $request->input('email');
-        $user->password = Hash::make($request->input('password'));
+
+        // Mise à jour du mot de passe uniquement si un nouveau est fourni
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->input('password'));
+        }
+
+        $user->telephone1 = $request->input('telephone1');
+        $user->telephone2 = $request->input('telephone2');
+        $user->birth_date = $request->input('birthDate');
+        $user->profil = $request->input('profil');
+        $user->departementId = $request->input('departementId');
+        $user->posteId = $request->input('posteId');
+        $user->arrival_date = $request->input('arrivalDate');
+        $user->initialization_date = $request->input('initializationDate');
+        $user->initial = $request->input('initial', 0);
         $user->save();
 
         // Redirection après succès
-        return redirect()->route('admins.index')->with('success', 'Admin modifié avec succès');
+        return redirect()->route('admins.index')->with('success', 'Admin mis à jour avec succès');
     }
+
 
     /**
      * Remove the specified resource from storage.

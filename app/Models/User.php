@@ -17,8 +17,8 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'nom', 'prenom', 'matricule', 'email', 'telephone1', 'telephone2', 'dateNaissance',
-        'password', 'profil', 'departementId', 'posteId', 'dateArrive', 'dateInitialisation', 'initial', 'pris', 'reste'
+        'nom', 'prenom', 'matricule', 'email', 'telephone1', 'telephone2', 'birthDate',
+        'password', 'profil', 'departementId', 'posteId', 'arrivalDate', 'initializationDate', 'initial', 'pris', 'reste'
     ];
 
     /**
@@ -42,5 +42,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function departement()
+    {
+        return $this->belongsTo(Departement::class, 'departementId');
+    }
+
+    public function poste()
+    {
+        return $this->belongsTo(Poste::class, 'posteId');
     }
 }
