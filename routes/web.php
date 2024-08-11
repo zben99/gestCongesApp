@@ -14,6 +14,7 @@ use App\Http\Controllers\DepartementController;
 use App\Http\Controllers\FormulaireContactController;
 use App\Http\Controllers\CongesController;
 use App\Http\Controllers\AbsenceControlleur;
+use App\Http\Controllers\UserManagerController;
 
 
 
@@ -47,11 +48,35 @@ Route::middleware('auth')->group(function () {
 
     Route::resource("contacts", FormulaireContactController::class);
 
-   
+    Route::put('/absences/{id}/reject', [AbsenceControlleur::class, 'rejectRequest'])->name('absences.rejectRequest');
+    Route::put('/absences/{id}/validate', [AbsenceControlleur::class, 'validateRequest'])->name('absences.validateRequest');
+    // Afficher la liste des absences
+    Route::get('/absences', [AbsenceControlleur::class, 'index'])->name('absences.index');
+    // Afficher le formulaire de création d'une absence
+    Route::get('/absences/create', [AbsenceControlleur::class, 'create'])->name('absences.create');
+    // Enregistrer une nouvelle absence
+    Route::post('/absences', [AbsenceControlleur::class, 'store'])->name('absences.store');
+    // Afficher les détails d'une absence spécifique
+    Route::get('/absences/{absence}', [AbsenceControlleur::class, 'show'])->name('absences.show');
+    // Afficher le formulaire d'édition d'une absence
+    Route::get('/absences/{absence}/edit', [AbsenceControlleur::class, 'edit'])->name('absences.edit');
+    // Mettre à jour une absence existante
+    Route::put('/absences/{absence}', [AbsenceControlleur::class, 'update'])->name('absences.update');
+    // Supprimer une absence
+    Route::delete('/absences/{absence}', [AbsenceControlleur::class, 'destroy'])->name('absences.destroy');
+
+    Route::get('/user-manager', [UserManagerController::class, 'index'])->name('user-manager.index');
+    Route::post('/user-manager/assign', [UserManagerController::class, 'assign'])->name('user-manager.assign');
+    Route::post('/user-manager/remove', [UserManagerController::class, 'remove'])->name('user-manager.remove');
+
 });
 
 
-Route::resource('absences', AbsenceControlleur::class);
+    
+
+
+
+
 
 Route::get('/conges', [CongesController::class, 'index'])->name('conges.index');
 Route::get('/conges/create', [CongesController::class, 'create'])->name('conges.create');

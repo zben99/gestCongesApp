@@ -17,10 +17,7 @@
     <img class="animation__shake" src="{{asset('images/logo.png')}}" alt="AdminLTELogo" height="60" width="60">
   </div>
 
-
   @include("layouts.admin.header")
-
-
   @include("layouts.admin.sidebar")
 
   <!-- Content Wrapper. Contains page content -->
@@ -31,7 +28,6 @@
 
 
   </div>
-
 
 
 </div>

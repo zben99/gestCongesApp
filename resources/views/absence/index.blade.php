@@ -6,23 +6,6 @@
   <!-- Toastr -->
   <link rel="stylesheet" href="{{ asset('/plugins/toastr/toastr.min.css') }}">
   <!-- Custom CSS for status badges -->
-  <style>
-    .badge-status {
-      font-size: 0.75rem;
-      padding: 0.5em 0.75em;
-      border-radius: 0.25rem;
-      color: #fff;
-    }
-    .status-pending {
-      background-color: #ffc107; /* Amber */
-    }
-    .status-approved {
-      background-color: #28a745; /* Success */
-    }
-    .status-rejected {
-      background-color: #dc3545; /* Danger */
-    }
-  </style>
 @endsection
 
 @section('content')
@@ -44,67 +27,92 @@
               </div>
               <table id="example2" class="table table-bordered table-hover">
                 <thead>
-                <tr>
-                  <th>N°</th>
-                  <th>Nom complet</th>
-                  <th>Motif</th>
-                  <th>Date de début</th>
-                  <th>Date de fin</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
+                  <tr>
+                    <th>N°</th>
+                    <th>Matricule</th>
+                    <th>Nom complet</th>
+                    <th>Motif</th>
+                    <th>Date de début</th>
+                    <th>Date de fin</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
                 </thead>
-                <tbody>
-                @foreach ($absences as $absence)
-                <tr>
-                  <td>{{ $loop->index + 1 }}</td>
-                  <td>{{ $absence->user->name }}</td>
-                  <td>{{ $absence->motif }}</td>
-                  <td>{{ $absence->dateDebut->format('d/m/Y') }}</td>
-                  <td>{{ $absence->dateFin->format('d/m/Y') }}</td>
-                  <td>
-                    <span class="badge badge-status 
-                      @if ($absence->status === 'en attente') status-pending 
-                      @elseif ($absence->status === 'approuvé') status-approved 
-                      @elseif ($absence->status === 'rejeté') status-rejected 
-                      @endif">
-                      {{ ucfirst($absence->status) }}
-                    </span>
-                  </td>
-                  <td>
-                    <a href="{{ route('absences.edit', $absence->id) }}" title="Modifier l'absence" class="btn btn-warning">
-                      <i class="fas fa-edit"></i> Modifier
-                    </a>
-                    <form id="delete-form-{{ $absence->id }}" method="POST" action="{{ route('absences.destroy', $absence->id) }}" style="display: inline;">
-                      @csrf
-                      @method("DELETE")
-                      <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal-{{ $absence->id }}">
-                        <i class="fas fa-trash"></i> Supprimer
-                      </button>
-                    </form>
 
-                    <!-- Modal -->
-                    <div class="modal fade" id="deleteModal-{{ $absence->id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                      <div class="modal-dialog" role="document">
-                        <div class="modal-content bg-danger">
-                          <div class="modal-header">
-                            <h5 class="modal-title" id="deleteModalLabel">Confirmation de suppression</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">&times;</span>
-                            </button>
-                          </div>
-                          <div class="modal-body">
-                            Êtes-vous sûr de vouloir supprimer cette absence ?
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-light" data-dismiss="modal">Annuler</button>
-                            <button type="button" class="btn btn-outline-light" onclick="document.getElementById('delete-form-{{ $absence->id }}').submit();">Confirmer</button>
+                <tbody>
+                  @foreach ($absences as $absence)
+                  <tr>
+                    <td>{{ $loop->index + 1 }}</td>
+                    <td>{{ $absence->user ? $absence->user->matricule : '' }}</td>
+                    <td>{{ $absence->user ? $absence->user->prenom . ' ' . $absence->user->nom : '' }}</td>
+                    <td>{{ $absence->motif }}</td>
+                    <td>{{ $absence->dateDebut}}</td>
+                    <td>{{ $absence->dateFin }}</td>
+                    <td>
+                      <span class= 
+                        @if ($absence->status === 'en attente') status-pending 
+                        @elseif ($absence->status === 'approuvé') status-approved 
+                        @elseif ($absence->status === 'refusé') status-rejected 
+                        @endif>
+                        {{ ucfirst($absence->status) }}
+                      </span>
+                    </td>
+                    <td>
+                    @if(auth()->user()->profil !== 'manager' || $absence->status !== 'en attente')
+                        <a href="{{ route('absences.edit', $absence->id) }}" title="Modifier l'absence" class="btn btn-warning">
+                          <i class="fas fa-edit"></i> Modifier
+                        </a>
+                        
+                        <form id="delete-form-{{ $absence->id }}" method="POST" action="{{ route('absences.destroy', $absence->id) }}" style="display: inline;">
+                          @csrf
+                          @method("DELETE")
+                          <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal-{{ $absence->id }}">
+                            <i class="fas fa-trash"></i> Supprimer
+                          </button>
+                        </form>
+                     @endif
+
+
+                      <!-- Modal -->
+                      <div class="modal fade" id="deleteModal-{{ $absence->id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content bg-danger">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="deleteModalLabel">Confirmation de suppression</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                              Êtes-vous sûr de vouloir supprimer cette absence ?
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-outline-light" data-dismiss="modal">Annuler</button>
+                              <button type="button" class="btn btn-outline-light" onclick="document.getElementById('delete-form-{{ $absence->id }}').submit();">Confirmer</button>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </td>
-                </tr>
+
+                      <!-- Validation and Rejection Buttons for Managers -->
+                      @if(auth()->user()->profil === 'manager' && $absence->status === 'en attente')
+                      <form method="POST" action="{{ route('absences.validateRequest', $absence->id) }}" style="display: inline;">
+                        @csrf
+                        @method('PUT')
+                        <button type="submit" class="btn btn-success" title="Valider la demande">
+                          <i class="fas fa-check"></i> Valider
+                        </button>
+                      </form>
+                      <form method="POST" action="{{ route('absences.rejectRequest', $absence->id) }}" style="display: inline;">
+                        @csrf
+                        @method('PUT')
+                        <button type="submit" class="btn btn-danger" title="Rejeter la demande">
+                          <i class="fas fa-times"></i> Rejeter
+                        </button>
+                      </form>
+                      @endif
+                    </td>
+                  </tr>
                 @endforeach
                 </tbody>
               </table>

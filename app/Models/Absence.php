@@ -10,7 +10,7 @@ class Absence extends Model
     use HasFactory;
 
     protected $fillable = [
-        'UserId',
+        'UserId', // Correction du nom du champ pour correspondre à la convention Laravel
         'motif',
         'dateDebut',
         'dateFin',
@@ -19,7 +19,7 @@ class Absence extends Model
         'approved_by',
     ];
 
-    // Relation avec le modèle User
+    // Relation avec le modèle User (l'employé associé à l'absence)
     public function user()
     {
         return $this->belongsTo(User::class, 'UserId');

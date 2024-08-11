@@ -6,10 +6,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles; 
+
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;    
 
     /**
      * The attributes that are mass assignable.
@@ -53,4 +55,16 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Poste::class, 'posteId');
     }
+// Relation pour obtenir les managers de l'utilisateur
+    public function managers()
+    {
+        return $this->belongsToMany(User::class, 'user_manager', 'user_id', 'manager_id');
+    }
+
+    // Relation pour obtenir les employés sous ce manager
+    public function employees()
+    {
+        return $this->belongsToMany(User::class, 'user_manager', 'manager_id', 'user_id');
+    }
+
 }

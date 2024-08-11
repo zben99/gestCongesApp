@@ -25,7 +25,9 @@
                   <label for="user_id">{{ __('Employé') }}</label>
                   <select class="form-control" name="user_id" id="user_id">
                     @foreach($users as $user)
-                      <option value="{{ $user->id }}" {{ $user->id == $absence->user_id ? 'selected' : '' }}>{{ $user->name }}</option>
+                      <option value="{{ $user->id }}" {{ old('UserId') == $user->id ? 'selected' : '' }}>
+                        {{ $user->nom }} {{ $user->prenom }}
+                      </option>
                     @endforeach
                   </select>
                 </div>

@@ -1,9 +1,10 @@
-
 @extends('layouts.template')
 
 @section('css')
   <!-- SweetAlert2 -->
   <link rel="stylesheet" href="{{ asset('/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
+  <!-- Select2 CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 @endsection
 
 @section('content')
@@ -21,24 +22,48 @@
               @csrf
               <div class="card-body">
                 <div class="form-group">
-                  <label for="user_id">{{ __('Employé') }}</label>
-                  <select class="form-control" name="user_id" id="user_id">
+                  <label for="UserId">{{ __('Sélectionner un employé') }}</label>
+                  <select class="form-control select2 @error('UserId') is-invalid @enderror" name="UserId" id="UserId" required>
+                    <option value="" disabled selected>{{ __('-- Choisissez un employé --') }}</option>
                     @foreach($users as $user)
-                      <option value="{{ $user->id }}">{{ $user->name }}</option>
+                        <option value="{{ $user->id }}" {{ old('UserId') == $user->id ? 'selected' : '' }}>
+                            {{ $user->nom }} {{ $user->prenom }}
+                        </option>
                     @endforeach
                   </select>
+                  @error('UserId')
+                    <div class="invalid-feedback">
+                      {{ $message }}
+                    </div>
+                  @enderror
                 </div>
+
                 <div class="form-group">
                   <label for="motif">{{ __('Motif') }}</label>
-                  <input type="text" class="form-control" name="motif" id="motif" placeholder="Entrez le motif de l'absence" required>
+                  <input type="text" class="form-control @error('motif') is-invalid @enderror" name="motif" id="motif" placeholder="Entrez le motif de l'absence" required>
+                  @error('motif')
+                    <div class="invalid-feedback">
+                      {{ $message }}
+                    </div>
+                  @enderror
                 </div>
                 <div class="form-group">
                   <label for="dateDebut">{{ __('Date de début') }}</label>
-                  <input type="date" class="form-control" name="dateDebut" id="dateDebut" required>
+                  <input type="date" class="form-control @error('dateDebut') is-invalid @enderror" name="dateDebut" id="dateDebut" required>
+                  @error('dateDebut')
+                    <div class="invalid-feedback">
+                      {{ $message }}
+                    </div>
+                  @enderror
                 </div>
                 <div class="form-group">
                   <label for="dateFin">{{ __('Date de fin') }}</label>
-                  <input type="date" class="form-control" name="dateFin" id="dateFin" required>
+                  <input type="date" class="form-control @error('dateFin') is-invalid @enderror" name="dateFin" id="dateFin" required>
+                  @error('dateFin')
+                    <div class="invalid-feedback">
+                      {{ $message }}
+                    </div>
+                  @enderror
                 </div>
                 <div class="form-group">
                   <label for="commentaire">{{ __('Commentaire') }}</label>
@@ -48,9 +73,14 @@
               <!-- /.card-body -->
 
               <div class="card-footer">
-                <button type="submit" class="btn btn-primary">{{ __('Enregistrer') }}</button>
-                <a href="{{ route('absences.index') }}" class="btn btn-secondary">{{ __('Annuler') }}</a>
-              </div>
+
+              <input type="submit" class="btn btn-primary" name="valider" value="Enregistrer" >
+
+              <a href="{{ route('admins.index') }}" class="btn btn-danger">
+                      Retour
+              </a>
+
+            </div>
             </form>
           </div>
           <!-- /.card -->
@@ -62,4 +92,19 @@
     <!-- /.container-fluid -->
   </section>
   <!-- /.content -->
+@endsection
+
+@section('scripts')
+  <!-- Select2 JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+        $('#user_id').select2({
+            placeholder: '-- Choisissez un employé --',
+            allowClear: true,
+            width: '100%'
+        });
+    });
+  </script>
 @endsection
