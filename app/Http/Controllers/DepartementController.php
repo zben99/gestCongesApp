@@ -15,7 +15,7 @@ class DepartementController extends Controller
 
     public function create()
     {
-        return view('departements.create');
+        return view('departements.edit');
     }
 
     public function store(Request $request)

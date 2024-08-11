@@ -1,11 +1,6 @@
 @extends('layouts.template')
 
-@section('css')
-  <!-- SweetAlert2 -->
-  <link rel="stylesheet" href="{{ asset('/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
-  <!-- Toastr -->
-  <link rel="stylesheet" href="{{ asset('/plugins/toastr/toastr.min.css') }}">
-@endsection
+
 
 @section('content')
 
@@ -37,20 +32,43 @@
                                     <a href="{{ route('departements.edit', $departement->id) }}" class="btn btn-warning">
                                         <i class="fas fa-edit"></i> Modifier
                                     </a>
-                                    <form action="{{ route('departements.destroy', $departement->id) }}" method="POST" style="display:inline;">
+                                    <form id="delete-form-{{$departement->id}}" method="POST" action="{{ route('departements.destroy', $departement->id) }}" style="display: inline;">
                                         @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce département ?');">
+                                        @method("DELETE")
+
+                                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal-{{ $departement->id }}">
                                             <i class="fas fa-trash"></i> Supprimer
                                         </button>
                                     </form>
+
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="deleteModal-{{ $departement->id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                        <div class="modal-content bg-danger">
+                                            <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteModalLabel">Confirmation de suppression</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Êtes-vous sûr de vouloir supprimer ce département ?
+                                            </div>
+                                            <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline-light" data-dismiss="modal">Annuler</button>
+                                            <button type="button" class="btn btn-outline-light" onclick="document.getElementById('delete-form-{{ $departement->id }}').submit();">Confirmer</button>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
                 </div>                 <!-- /.card-body -->
-            </div>         <!-- /.card -->        
+            </div>         <!-- /.card -->
         </div>        <!-- /.col -->
     </div>     <!-- /.row -->
 </div>
@@ -58,45 +76,3 @@
     <!-- /.container-fluid -->
 @endsection
 
-@section('script')
-<!-- SweetAlert2 -->
-<script src="{{ asset('/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
-<!-- Toastr -->
-<script src="{{ asset('/plugins/toastr/toastr.min.js') }}"></script>
-
-@if (session('success'))
-    <script>
-        $(function() {
-            var Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000
-            });
-
-            Toast.fire({
-                icon: 'success',
-                title: '{{ session('success') }}'
-            });
-        });
-    </script>
-@endif
-
-@if (session('error'))
-    <script>
-        $(function() {
-            var Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000
-            });
-
-            Toast.fire({
-                icon: 'error',
-                title: '{{ session('error') }}'
-            });
-        });
-    </script>
-@endif
-@endsection

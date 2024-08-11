@@ -15,7 +15,7 @@ class PosteController extends Controller
 
     public function create()
     {
-        return view('postes.create');
+        return view('postes.edit');
     }
 
     public function store(Request $request)

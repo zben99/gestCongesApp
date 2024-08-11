@@ -1,50 +1,78 @@
 @extends('layouts.template')
 
-@section('css')
-  <!-- Custom CSS for styling -->
-  <style>
-    .form-container {
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    .form-header {
-      margin-bottom: 1.5rem;
-    }
-  </style>
-@endsection
+
 
 @section('content')
+
+
+
   <section class="content">
-              <div class="container-fluid">
-              <div class="row">
-                  <div class="col-12">
-                  <div class="card">
-                  <div class="card-header">
+            <div class="container-fluid">
+            <div class="row">
+                <div class="col-1">
+                </div>
+                <div class="col-10">
+
+
+                <div class="card">
+                    <div class="card-header">
+                    <!-- /.card-header -->
+                    @if (isset($departement))
                     <h3 class="card-title">{{ __('Modifier Département') }}</h3>
-                  </div>
-                <form action="{{ route('departements.update', $departement->id) }}" method="POST">
+                    </div>
+                    <!-- Le formulaire est géré par la route "posts.update" -->
+                    <form method="POST" action="{{ route('departements.update', $departement) }}" enctype="multipart/form-data" >
+                        <!-- <input type="hidden" name="_method" value="PUT"> -->
+                        @method('PUT')
+
+                    @else
+                        <h3 class="card-title">{{ __('Ajouter un Département') }} </h3>
+                    </div>
+                    <!-- Le formulaire est géré par la route "posts.store" -->
+                    <form method="POST" action="{{ route('departements.store') }}" enctype="multipart/form-data" >
+
+                    @endif
+                    <!-- form start -->
+                    <!-- Le token CSRF -->
                     @csrf
-                    @method('PUT')
-                    <div class="form-group">
-                        <label for="name_departement">Nom:</label>
-                        <input type="text" id="name_departement" name="name_departement" class="form-control" value="{{ $departement->name_departement }}" required>
+
+
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="name_departement">Nom</label>
+                                <input type="text" id="name_departement" name="name_departement" value="{{ isset($departement->name_departement) ? $departement->name_departement : '' }}" class="form-control" required>
+                                @error("name_departement")
+                                    <div>{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea id="description" name="description" class="form-control" rows="4">{{ isset($departement->description) ? $departement->description : '' }}</textarea>
+                                @error("description")
+                                    <div>{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <button type="submit" class="btn btn-primary mt-3">Enregistrer</button>
+                            <a href="{{ route('departements.index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="description">Description:</label>
-                        <textarea id="description" name="description" class="form-control">{{ $departement->description }}</textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary mt-3">Mettre à jour</button>
-                    <a href="{{ route('departements.index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
                 </form>
                 </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
+            <!-- /.card-body -->
           </div>
-          <!-- /.col -->
+          <!-- /.card -->
         </div>
-        <!-- /.row -->
+        <!-- /.col -->
+        <div class="col-1">
+        </div>
       </div>
-      <!-- /.container-fluid -->
-    </section>
+      <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+  </section>
+  <!-- /.content -->
+
 @endsection
+
