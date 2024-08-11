@@ -50,7 +50,7 @@
                   <td>{{ $user->poste ? $user->poste->name_poste : '' }}</td>
                   <td>
 
-                    <a href="{{ route('admins.edit', $user) }}" title="Afficher les détails" class="btn btn-primary">
+                    <a href="{{ route('admins.show', $user) }}" title="Afficher les détails" class="btn btn-primary">
                         <i class="fas fa-eye"></i> Détails
                       </a>
                     <a href="{{ route('admins.edit', $user) }}" title="Modification" class="btn btn-primary">

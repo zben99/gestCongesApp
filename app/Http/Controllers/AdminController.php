@@ -93,9 +93,14 @@ class AdminController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show($admin)
     {
-        //
+        $user = User::findOrFail($admin);
+
+        $departements = Departement::all();
+        $postes = Poste::all();
+
+        return view("administrateurs.show", compact("user", "departements", "postes"));
     }
 
     /**
