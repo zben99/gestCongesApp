@@ -46,7 +46,7 @@
 			            <div class="app-utility-item app-user-dropdown dropdown">
 				            <a class="dropdown-toggle" id="user-dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><img src="assets/images/user.png" alt="user profile"></a>
 				            <ul class="dropdown-menu" aria-labelledby="user-dropdown-toggle">
-								<li><a href="{{ route('profile.edit') }}" class="d-block"><i class="fas fa-edit"></i> {{ Auth::user()->nom }} {{ Auth::user()->prenom }} </a></li>
+								<li><a href="{{ route('profile.edit') }}" class="d-block"><i class="fas fa-edit"></i> Mon profil </a></li>
 
 								<li><hr class="dropdown-divider"></li>
 								<li>

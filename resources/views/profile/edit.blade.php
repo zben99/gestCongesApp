@@ -23,7 +23,7 @@
 
                         <form method="post" action="{{ route('profile.update') }}" class="form-horizontal">
                             @csrf
-                            @method('patch')
+
 
                             <div class="form-group row">
                                 <div class="col">
@@ -31,7 +31,9 @@
                                     <input type="text" class="form-control" id="inputName" name="nom"
                                             value="{{ isset($user->nom) ? $user->nom : old('nom') }}" placeholder="Nom">
 
-                                    <x-input-error class="mt-2 text-red" :messages="$errors->get('nom')" />
+                                            @error("nom")
+                                                <div>{{ $message }}</div>
+                                            @enderror
                                 </div>
                                 <div class="col">
                                     <label for="inputPrenom" class=" col-form-label">Prénom(s)</label>
@@ -39,7 +41,9 @@
                                     <input type="text" class="form-control" id="inputPrenom" name="prenom"
                                         value="{{ isset($user->prenom) ? $user->prenom : old('prenom') }}" placeholder="Prénom(s)">
 
-                                <x-input-error class="mt-2 text-red" :messages="$errors->get('prenom')" />
+                                        @error("prenom")
+                                            <div>{{ $message }}</div>
+                                        @enderror
                                 </div>
 
                             </div>
@@ -53,7 +57,9 @@
                                     <input type="email" class="form-control" id="inputEmail" name="email"
                                         value="{{ isset($user->email) ? $user->email : old('email') }}" placeholder="Email">
 
-                                   <x-input-error class="mt-2 text-red" :messages="$errors->get('email')" />
+                                        @error("email")
+                                            <div>{{ $message }}</div>
+                                        @enderror
                                 </div>
                                 <div class="col">
                                     <label for="inputBirthDate" class=" col-form-label">Date de Naissance</label>
@@ -61,7 +67,9 @@
                                     <input type="date" class="form-control" id="inputBirthDate" name="birth_date"
                                         value="{{ isset($user->birth_date) ? \Illuminate\Support\Carbon::parse($user->birth_date)->format('Y-m-d') : old('birth_date') }}">
 
-                                     <x-input-error class="mt-2 text-red" :messages="$errors->get('birth_date')" />
+                                        @error("birth_date")
+                                            <div>{{ $message }}</div>
+                                        @enderror
                                 </div>
 
                             </div>
@@ -74,7 +82,9 @@
                                         value="{{ isset($user->telephone1) ? $user->telephone1 : old('telephone1') }}"
                                         placeholder="Téléphone 1">
 
-                                     <x-input-error class="mt-2 text-red" :messages="$errors->get('telephone1')" />
+                                        @error("telephone1")
+                                            <div>{{ $message }}</div>
+                                        @enderror
                                 </div>
 
                                 <div class="col">
@@ -85,7 +95,10 @@
                                         value="{{ isset($user->telephone2) ? $user->telephone2 : old('telephone2') }}"
                                         placeholder="Téléphone 2">
 
-                                <x-input-error class="mt-2 text-red" :messages="$errors->get('telephone2')" />
+                                        @error("telephone2")
+                                            <div>{{ $message }}</div>
+                                        @enderror
+
                                 </div>
                             </div>
 
@@ -133,7 +146,7 @@
 
                         <form method="post" action="{{ route('password.update') }}" class="form-horizontal">
                             @csrf
-                            @method('put')
+
 
                             <div class="form-group ">
                                 <label for="current_password" class=" col-form-label">Mot de passe actuel</label>

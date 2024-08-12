@@ -21,66 +21,77 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
-    {
+  /**
+ * Met à jour les informations de profil de l'utilisateur.
+ */
+public function update(ProfileUpdateRequest $request)
+{
+     dd($request->all());
+    // Recherche de l'utilisateur à mettre à jour
+    $user = auth()->user();
 
-   // Recherche de l'utilisateur à mettre à jour
-   $user = User::findOrFail($admin);
+    // Validation des données
+    $validator = Validator::make($request->all(), [
+        'nom' => 'required|string|max:255',
+        'prenom' => 'required|string|max:255',
+        'email' => [
+            'required',
+            'string',
+            'email',
+            'max:191',
+            Rule::unique('users')->ignore($user->id),
+        ],
+        'telephone1' => 'required|string|max:191',
+        'telephone2' => 'nullable|string|max:191',
+        'birth_date' => 'nullable|date',
+    ]);
 
-   // Validation des données
-   $validator = Validator::make($request->all(), [
-       'nom' => 'required|string|max:255',
-       'prenom' => 'required|string|max:255',
-       'matricule' => [
-           'nullable',
-           'string',
-           'max:191',
-           Rule::unique('users')->ignore($user->id),
-       ],
-       'email' => [
-           'required',
-           'string',
-           'email',
-           'max:191',
-           Rule::unique('users')->ignore($user->id),
-       ],
-       'password' => 'nullable|string|min:8|confirmed',
-       'telephone1' => 'required|string|max:191',
-       'telephone2' => 'nullable|string|max:191',
-       'birthdate' => 'nullable|date',
-   ]);
-
-   // Si la validation échoue
-   if ($validator->fails()) {
-       return redirect()->back()->withErrors($validator)->withInput();
-   }
-
-
-   // Mise à jour de l'utilisateur
-   $user->nom = $request->input('nom');
-   $user->prenom = $request->input('prenom');
-   $user->matricule = $request->input('matricule');
-   $user->email = $request->input('email');
-
-   // Mise à jour du mot de passe uniquement si un nouveau est fourni
-   if ($request->filled('password')) {
-       $user->password = Hash::make($request->input('password'));
-   }
-
-   $user->telephone1 = $request->input('telephone1');
-   $user->telephone2 = $request->input('telephone2');
-   $user->birth_date = $request->input('birthDate');
-
-   $user->save();
-
-   // Redirection après succès
-   return redirect()->route('profile.edit')->with('success', 'Profil mis à jour avec succès');
-
-
+    // Si la validation échoue
+    if ($validator->fails()) {
+        return redirect()->back()->withErrors($validator)->withInput();
     }
+
+    // Mise à jour de l'utilisateur
+    $user->nom = $request->input('nom');
+    $user->prenom = $request->input('prenom');
+    $user->email = $request->input('email');
+    $user->telephone1 = $request->input('telephone1');
+    $user->telephone2 = $request->input('telephone2');
+    $user->birth_date = $request->input('birth_date');
+
+    // Sauvegarde des modifications
+    $user->save();
+
+    // Redirection après succès
+    return redirect()->route('profile.edit')->with('status', 'profile-updated');
+
+}
+
+/**
+ * Met à jour le mot de passe de l'utilisateur.
+ */
+public function updatePassword(Request $request): RedirectResponse
+{
+    $user = auth()->user();
+
+    // Validation des données
+    $request->validate([
+        'current_password' => 'required',
+        'password' => 'required|string|min:8|confirmed',
+    ]);
+
+    // Vérification du mot de passe actuel
+    if (!Hash::check($request->current_password, $user->password)) {
+        return back()->withErrors(['current_password' => 'Le mot de passe actuel est incorrect.']);
+    }
+
+    // Mise à jour du mot de passe
+    $user->password = Hash::make($request->password);
+    $user->save();
+
+    // Redirection après succès
+    return redirect()->route('profile.edit')->with('status', 'password-updated');
+}
 
     /**
      * Delete the user's account.
