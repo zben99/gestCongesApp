@@ -1,17 +1,17 @@
 <?php
 
-use App\Models\Post;
+
 use App\Models\User;
-use App\Models\FormulaireContact;
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
-use App\Http\Controllers\PostController;
+
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PosteController;
 use App\Http\Controllers\EmployeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DepartementController;
-use App\Http\Controllers\FormulaireContactController;
+
 use App\Http\Controllers\CongesController;
 use App\Http\Controllers\AbsenceControlleur;
 use App\Http\Controllers\UserManagerController;
@@ -47,13 +47,12 @@ Route::middleware('auth')->group(function () {
 
 
     // La route-ressource => Les routes "post.*"
-    Route::resource("posts", PostController::class);
 
     Route::resource("admins", AdminController::class);
 
     Route::delete('/admins/{user}', [AdminController::class, 'destroy'])->name('admins.destroy');
 
-    Route::resource("contacts", FormulaireContactController::class);
+
 
     Route::put('/absences/{id}/reject', [AbsenceControlleur::class, 'rejectRequest'])->name('absences.rejectRequest');
     Route::put('/absences/{id}/validate', [AbsenceControlleur::class, 'validateRequest'])->name('absences.validateRequest');
