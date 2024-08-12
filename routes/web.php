@@ -15,6 +15,7 @@ use App\Http\Controllers\FormulaireContactController;
 use App\Http\Controllers\CongesController;
 use App\Http\Controllers\AbsenceControlleur;
 use App\Http\Controllers\UserManagerController;
+use App\Http\Controllers\DashboardController;
 
 
 
@@ -72,17 +73,16 @@ Route::middleware('auth')->group(function () {
     Route::delete('/absences/{absence}', [AbsenceControlleur::class, 'destroy'])->name('absences.destroy');
 
     Route::get('/user-manager', [UserManagerController::class, 'index'])->name('user-manager.index');
+    Route::get('/user-manager/assign/{employee}', [UserManagerController::class, 'showAssignForm'])->name('user-manager.assign-form');
     Route::post('/user-manager/assign', [UserManagerController::class, 'assign'])->name('user-manager.assign');
-    Route::post('/user-manager/remove', [UserManagerController::class, 'remove'])->name('user-manager.remove');
+    Route::get('/user-manager/change/{employee}', [UserManagerController::class, 'showChangeForm'])->name('user-manager.change-form');
+    Route::post('/user-manager/change', [UserManagerController::class, 'change'])->name('user-manager.change');
+
+
 
 });
 
-
-
-
-
-
-
+Route::get('/dashboard', [DashboardController::class, 'index']);
 
 Route::get('/conges', [CongesController::class, 'index'])->name('conges.index');
 Route::get('/conges/create', [CongesController::class, 'create'])->name('conges.create');
