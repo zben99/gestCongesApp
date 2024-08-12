@@ -1,57 +1,52 @@
-
 @extends('layouts.template')
 
 @section('content')
 <div class="container">
-    <h1>Gérer les relations Manager-Employé</h1>
-
-    <form action="{{ route('user-manager.assign') }}" method="POST">
-        @csrf
-        <div class="form-group">
-            <label for="employee_id">Employé :</label>
-            <select name="employee_id" id="employee_id" class="form-control">
-                @foreach($employees as $employee)
-                    <option value="{{ $employee->id }}">{{ $employee->nom }} {{ $employee->prenom }}</option>
-                @endforeach
-            </select>
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Administration | Workflow</h2>
         </div>
+        <div class="card-body">
+            <!-- Formulaire de recherche -->
+            <form action="{{ route('user-manager.index') }}" method="GET" class="mb-3">
+                <div class="form-group">
+                    <input type="text" name="search" class="form-control" placeholder="Rechercher par matricule, nom, prénom..." value="{{ request()->get('search') }}">
+                </div>
+                <button type="submit" class="btn btn-primary">Rechercher</button>
+            </form>
 
-        <div class="form-group">
-            <label for="manager_id">Manager :</label>
-            <select name="manager_id" id="manager_id" class="form-control">
-                @foreach($managers as $manager)
-                    <option value="{{ $manager->id }}">{{ $manager->nom }} {{ $manager->prenom }}</option>
-                @endforeach
-            </select>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Matricule</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Profil</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($employees as $employee)
+                        <tr>
+                            <td>{{ $employee->matricule }}</td>
+                            <td>{{ $employee->nom }}</td>
+                            <td>{{ $employee->prenom }}</td>
+                            <td>{{ $employee->profil }}</td>
+                            <td>
+                                <!-- Bouton pour assigner un manager -->
+                                <a href="{{ route('user-manager.assign-form', $employee->id) }}" class="btn btn-primary">Assigner Manager</a>
+                                <!-- Bouton pour changer le manager -->
+                                <a href="{{ route('user-manager.change-form', $employee->id) }}" class="btn btn-warning">Changer Manager</a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5">Aucun employé trouvé</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
-
-        <button type="submit" class="btn btn-primary">Assigner Manager</button>
-    </form>
-
-    <hr>
-
-    <h2>Retirer un manager</h2>
-    <form action="{{ route('user-manager.remove') }}" method="POST">
-        @csrf
-        <div class="form-group">
-            <label for="employee_id">Employé :</label>
-            <select name="employee_id" id="employee_id" class="form-control">
-                @foreach($employees as $employee)
-                    <option value="{{ $employee->id }}">{{ $employee->nom }} {{ $employee->prenom }}</option>
-                @endforeach
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="manager_id">Manager :</label>
-            <select name="manager_id" id="manager_id" class="form-control">
-                @foreach($managers as $manager)
-                    <option value="{{ $manager->id }}">{{ $manager->nom }} {{ $manager->prenom }}</option>
-                @endforeach
-            </select>
-        </div>
-
-        <button type="submit" class="btn btn-danger">Retirer Manager</button>
-    </form>
+    </div>
 </div>
 @endsection

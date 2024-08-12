@@ -23,7 +23,6 @@
 					        </a><!--//nav-link-->
 					    </li><!--//nav-item-->
 
-
 					    <li class="nav-item has-submenu">
 					        <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
 					        <a class="nav-link submenu-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-1" aria-expanded="false" aria-controls="submenu-1">
@@ -45,8 +44,7 @@
 
 							        <li class="submenu-item"><a class="submenu-link" href="{{ route('departements.index') }}">Departement</a></li>
                                     <li class="submenu-item"><a class="submenu-link" href="{{ route('postes.index') }}">Poste</a></li>
-									<li class="submenu-item"><a class="submenu-link" href="{{ route('user-manager.index') }}">Choix Approbateur</a></li>
-
+									<li class="submenu-item"><a class="submenu-link" href="{{ route('user-manager.index') }}">Workflow Absences</a></li>
 						        </ul>
 					        </div>
 					    </li><!--//nav-item-->

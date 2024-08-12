@@ -12,21 +12,44 @@ use Carbon\Carbon;
 class AbsenceControlleur extends Controller
 {
     // Afficher la liste des absences
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
-
-        // Si l'utilisateur est un manager, montrer les absences qu'il doit approuver
-        if ($user->profil == 'manager') {
-            $absences = Absence::where('approved_by', $user->id)->with('user')->get();
-        } else {
-            // Sinon, montrer seulement ses propres absences
-            $absences = Absence::where('UserId', $user->id)->with('user')->get();
+    
+        // Récupérer le terme de recherche
+        $search = $request->input('search');
+    
+        // Condition pour les administrateurs et responsables RH
+        if ($user->profil == 'administrateurs' || $user->profil == 'responsables RH') {
+            $query = Absence::with('user');
+        } 
+        // Condition pour les managers
+        else if ($user->profil == 'manager') {
+            $query = Absence::where('approved_by', $user->id)->with('user');
+        } 
+        // Sinon, montrer seulement ses propres absences
+        else {
+            $query = Absence::where('UserId', $user->id)->with('user');
         }
-
+    
+        // Ajouter la condition de recherche si un terme est fourni
+        if ($search) {
+            $query->whereHas('user', function($q) use ($search) {
+                $q->where('matricule', 'LIKE', "%$search%")
+                  ->orWhereRaw("CONCAT(prenom, ' ', nom) LIKE ?", ["%$search%"]);
+            })
+            ->orWhere('motif', 'LIKE', "%$search%");
+        }
+    
+        $absences = $query->get();
+    
         return view('absence.index', compact('absences'));
     }
-
+    
+    
+       
+    
+    
     // Afficher le formulaire de création
     public function create()
     {
@@ -37,38 +60,38 @@ class AbsenceControlleur extends Controller
     // Stocker une nouvelle absence
     public function store(Request $request)
     {
-        // Validation des données
-        $validator = Validator::make($request->all(), [
-            'motif' => 'required|string|max:255',
-            'dateDebut' => 'required|date',
-            'dateFin' => 'required|date|after_or_equal:dateDebut',
-        ]);
+    // Validation des données
+    $validator = Validator::make($request->all(), [
+        'motif' => 'required|string|max:255',
+        'dateDebut' => 'required|date',
+        'dateFin' => 'required|date|after_or_equal:dateDebut',
+    ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
-        // Récupérer l'utilisateur connecté
-        $user = auth()->user();
-
-        // Création de l'absence
-        $absence = new Absence();
-        $absence->UserId = $user->id; // Associer l'absence à l'utilisateur connecté
-        $absence->motif = $request->input('motif');
-        $absence->dateDebut = Carbon::parse($request->input('dateDebut'));
-        $absence->dateFin = Carbon::parse($request->input('dateFin'));
-        $absence->status = 'en attente'; // Définir le statut par défaut
-        $absence->commentaire = $request->input('commentaire');
-
-        // Associer l'absence au manager de l'utilisateur connecté
-        if ($user->managers->isNotEmpty()) {
-            $absence->approved_by = $user->managers->first()->id;
-        }
-
-        $absence->save();
-
-        return redirect()->route('absences.index')->with('success', 'Absence créée avec succès');
+    if ($validator->fails()) {
+        return redirect()->back()->withErrors($validator)->withInput();
     }
+
+    // Récupérer l'utilisateur connecté
+    $user = auth()->user();
+
+    // Création de l'absence
+    $absence = new Absence();
+    $absence->UserId = $user->id; // Associer l'absence à l'utilisateur connecté
+    $absence->motif = $request->input('motif');
+    $absence->dateDebut = Carbon::parse($request->input('dateDebut'));
+    $absence->dateFin = Carbon::parse($request->input('dateFin'));
+    $absence->status = 'en attente'; // Définir le statut par défaut
+    $absence->commentaire = $request->input('commentaire');
+
+    // Associer l'absence au premier manager de l'utilisateur connecté
+    if ($user->managers->isNotEmpty()) {
+        $absence->approved_by = $user->managers->first()->id;
+    }
+
+    $absence->save();
+
+    return redirect()->route('absences.index')->with('success', 'Absence créée avec succès');
+}
 
     // Afficher une absence spécifique
     public function show(Absence $absence)

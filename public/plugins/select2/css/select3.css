@@ -1,0 +1,38 @@
+
+.container {
+    margin-top: 20px;
+}
+.card {
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+.card-header {
+    background-color: #007bff;
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: bold;
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+}
+.card-body {
+    padding: 20px;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+.btn-primary, .btn-danger {
+    margin-top: 10px;
+}
+.form-control {
+    border-radius: 0.25rem;
+}
+.card-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+.divider {
+    margin: 20px 0;
+    border-top: 1px solid #ddd;
+}
