@@ -80,17 +80,20 @@
                                 <th>Date de fin</th>
                                 <th>Type de congé</th>
                                 <th>Commentaire</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
+                            @foreach ($user->conges as $conge)
+                            <tr class="{{ $conge->status == 'approuvé' ? 'bg-success' : ($conge->status == 'refusé' ? 'bg-danger' : '') }}">
 
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td>{{ $conge->dateDebut }}</td>
+                                <td>{{ $conge->dateFin }} </td>
+                                <td>{{ $conge->typeConges }}</td>
+                                <td>{{ $conge->commentaire }}</td>
+                                <td>{{ ucfirst($conge->status) }}</td>
                             </tr>
-
+                            @endforeach
                         </tbody>
                     </table>
 
@@ -103,17 +106,31 @@
                                 <th>Date de début</th>
                                 <th>Date de fin</th>
                                 <th>Raison</th>
+                                <th>statut</th>
                                 <th>Commentaire</th>
                             </tr>
                         </thead>
                         <tbody>
 
+                            @foreach ($user->absences as $absence)
                             <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+
+                              <td>{{ $absence->dateDebut }}</td>
+                              <td>{{ $absence->dateFin }}</td>
+                              <td>{{ $absence->motif }}</td>
+                              <td>
+                                <span class="
+                                  @if ($absence->status === 'en attente') status-pending
+                                  @elseif ($absence->status === 'approuvé') status-approved
+                                  @elseif ($absence->status === 'refusé') status-rejected
+                                  @endif
+                                ">
+                                  {{ ucfirst($absence->status) }}
+                                </span>
+                              </td>
+                              <td>{{ $absence->commentaire }}</td>
                             </tr>
+                            @endforeach
                         </tbody>
                     </table>
 

@@ -67,4 +67,21 @@ class User extends Authenticatable
         return $this->belongsToMany(User::class, 'user_manager', 'manager_id', 'user_id');
     }
 
+
+   /**
+     * Relation avec le modèle `Conges`.
+     */
+    public function conges()
+    {
+        return $this->hasMany(Conges::class, 'userId');
+    }
+
+    /**
+     * Relation avec le modèle `Absence`.
+     */
+    public function absences()
+    {
+        return $this->hasMany(Absence::class, 'userId');
+    }
+
 }

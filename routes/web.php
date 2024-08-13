@@ -86,26 +86,18 @@ Route::get('/dashboard', [DashboardController::class, 'index']);
 Route::get('/conges', [CongesController::class, 'index'])->name('conges.index');
 Route::get('/conges/create', [CongesController::class, 'create'])->name('conges.create');
 Route::post('/conges', [CongesController::class, 'store'])->name('conges.store');
-Route::get('/conges/{id}', [CongesController::class, 'show'])->name('conges.show');
-Route::put('/conges/{id}/approve', [CongesController::class, 'approve'])->name('conges.approve');
-Route::put('/conges/{id}/approve-manager', [CongesController::class, 'approveByManager'])->name('conges.approveByManager');
-Route::put('/conges/{id}/approve-rh', [CongesController::class, 'approveByRh'])->name('conges.approveByRh');
-Route::put('/conges/{id}/reject', [CongesController::class, 'reject'])->name('conges.reject');
+Route::get('/conges/{conge}/edit', [CongesController::class, 'edit'])->name('conges.edit');
+Route::put('/conges/{conge}', [CongesController::class, 'update'])->name('conges.update');
+
+Route::get('/conges/{conge}', [CongesController::class, 'show'])->name('conges.show');
+Route::get('/conges/{conge}/approve', [CongesController::class, 'approve'])->name('conges.approve');
+Route::get('/conges/{conge}/approve-manager', [CongesController::class, 'approveByManager'])->name('conges.approveByManager');
+Route::get('/conges/{conge}/approve-rh', [CongesController::class, 'approveByRh'])->name('conges.approveByRh');
+Route::get('/conges/{conge}/reject', [CongesController::class, 'reject'])->name('conges.reject');
+
+Route::delete('/conges/{conge}', [CongesController::class, 'destroy'])->name('conges.destroy');
 
 
-
-// Route pour afficher la liste des employés
-Route::get('/employes', [EmployeController::class, 'index'])->name('employes.index');
-// Route pour afficher le formulaire de création d'un nouvel employé
-Route::get('/employes/create', [EmployeController::class, 'create'])->name('employes.create');
-// Route pour enregistrer un nouvel employé
-Route::post('/employes', [EmployeController::class, 'store'])->name('employes.store');
-// Route pour afficher le formulaire d'édition d'un employé
-Route::get('/employes/{id}/edit', [EmployeController::class, 'edit'])->name('employes.edit');
-// Route pour mettre à jour un employé
-Route::put('/employes/{employe}', [EmployeController::class, 'update'])->name('employes.update');
-// Route pour supprimer un employé
-Route::delete('/employes/{employe}', [EmployeController::class, 'destroy'])->name('employes.destroy');
 
 
 // Route pour afficher la liste des départements

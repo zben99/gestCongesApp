@@ -32,8 +32,7 @@
                   <th>Nom complet</th>
                   <th>Email</th>
                   <th>profil</th>
-                  <th>Département</th>
-                  <th>Poste</th>
+
 
                   <th>Actions</th>
                 </tr>
@@ -46,8 +45,7 @@
                   <td>{{ $user->nom }} {{ $user->prenom }}</td>
                   <td>{{ $user->email }}</td>
                   <td>{{ $user->profil }}</td>
-                  <td>{{ $user->departement ? $user->departement->name_departement : '' }}</td>
-                  <td>{{ $user->poste ? $user->poste->name_poste : '' }}</td>
+
                   <td>
 
                     <a href="{{ route('admins.show', $user) }}" title="Afficher les détails" class="btn btn-primary">

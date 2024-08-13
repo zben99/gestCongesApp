@@ -18,9 +18,9 @@ return new class extends Migration
             $table->date('dateDebut');
             $table->date('dateFin');
             $table->text('commentaire')->nullable();
-            $table->enum('status', ['en attente', 'approuvé', 'refusé']);
-            $table->unsignedBigInteger('approved_by1')->nullable();
-            $table->unsignedBigInteger('approved_by2')->nullable();
+            $table->string('status', 191)->unique()->nullable();
+            $table->unsignedBigInteger('approved_by_manager')->nullable();
+            $table->unsignedBigInteger('approved_by_rh')->nullable();
             $table->timestamps();
         });
     }

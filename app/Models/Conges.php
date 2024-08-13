@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Conges extends Model
 {
     protected $fillable = [
-        'employeId',
+        'userId',
         'typeConges',
         'dateDebut',
         'dateFin',
@@ -19,6 +19,17 @@ class Conges extends Model
 
     public function employe()
     {
-        return $this->belongsTo(Employe::class, 'employeId');
+        return $this->belongsTo(User::class, 'UserId');
+    }
+
+    public function managers()
+    {
+        return $this->belongsTo(User::class, 'approved_by_manager');
+    }
+
+    // Relation pour obtenir les employés sous ce manager
+    public function rh()
+    {
+        return $this->belongsToMany(User::class, 'approved_by_rh');
     }
 }
