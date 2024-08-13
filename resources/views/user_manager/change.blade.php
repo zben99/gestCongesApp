@@ -1,4 +1,3 @@
-
 @extends('layouts.template')
 
 @section('css')
@@ -32,7 +31,10 @@
                     </select>
                 </div>
 
-                <button type="submit" class="btn btn-warning">Changer Manager</button>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-warning">Changer Manager</button>
+                    <a href="{{ route('user-manager.index') }}" class="btn btn-secondary">Retour à la liste</a>
+                </div>
             </form>
         </div>
     </div>

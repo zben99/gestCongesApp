@@ -101,35 +101,49 @@ class AbsenceControlleur extends Controller
 
     // Afficher le formulaire d'édition
     public function edit(Absence $absence)
-    {
-        $users = User::where('profil', 'employé')->get(); // Récupérer uniquement les employés pour le formulaire
-        return view('absence.edit', compact('absence', 'users'));
+    { 
+        $users = User::all(); // Récupère tous les utilisateurs
+        $connectedUser = auth()->user(); // Récupère l'utilisateur connecté
+        return view('absence.edit', compact('absence', 'users', 'connectedUser'));
     }
+    
 
     // Mettre à jour une absence
     public function update(Request $request, Absence $absence)
     {
+        // Validation des données
         $validator = Validator::make($request->all(), [
             'UserId' => 'required|exists:users,id',
             'motif' => 'required|string|max:255',
             'dateDebut' => 'required|date',
             'dateFin' => 'required|date|after_or_equal:dateDebut',
-            'status' => ['required', Rule::in(['en attente', 'approuvé', 'refusé'])],
+            'commentaire' => 'nullable|string|max:500', // Validation pour le commentaire
         ]);
-
+    
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-
+    
+        // Vérifier si l'utilisateur a le droit de modifier cette absence
+        $user = auth()->user();
+        if ($user->profil !== 'administrateur' && $user->id !== $absence->UserId) {
+            return redirect()->route('absences.index')->with('error', 'Vous n\'avez pas l\'autorisation de modifier cette absence');
+        }
+    
+        // Mise à jour de l'absence
         $absence->UserId = $request->input('UserId');
         $absence->motif = $request->input('motif');
         $absence->dateDebut = Carbon::parse($request->input('dateDebut'));
         $absence->dateFin = Carbon::parse($request->input('dateFin'));
         $absence->commentaire = $request->input('commentaire');
-        $absence->status = $request->input('status'); // Statut correctement défini
-
+    
+        // Ne pas modifier le statut
+        // $absence->status = $request->input('status'); // Cette ligne est supprimée
+    
+        // Sauvegarder les modifications
         $absence->save();
-
+    
+        // Redirection avec message de succès
         return redirect()->route('absences.index')->with('success', 'Absence mise à jour avec succès');
     }
 

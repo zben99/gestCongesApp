@@ -1,11 +1,10 @@
-
 @extends('layouts.template')
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
-  <!-- Toastr -->
-  <link rel="stylesheet" href="{{ asset('/plugins/toastr/toastr.min.css') }}">
-  <!-- Custom CSS for status badges -->
+<!-- Toastr -->
+<link rel="stylesheet" href="{{ asset('/plugins/toastr/toastr.min.css') }}">
+<!-- Custom CSS for status badges -->
 @endsection
 
 @section('content')
@@ -26,7 +25,10 @@
                         @endforeach
                     </select>
                 </div>
-                <button type="submit" class="btn btn-danger">Retirer Manager</button>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-danger">Retirer Manager</button>
+                    <a href="{{ route('user-manager.index') }}" class="btn btn-secondary">Retour à la liste</a>
+                </div>
             </form>
         </div>
     </div>
