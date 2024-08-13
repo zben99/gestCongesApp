@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\ProfileUpdateRequest;
 
 class ProfileController extends Controller
 {
@@ -24,9 +26,9 @@ class ProfileController extends Controller
   /**
  * Met à jour les informations de profil de l'utilisateur.
  */
-public function update(ProfileUpdateRequest $request)
+public function update(Request $request)
 {
-     dd($request->all());
+    // dd($request->all());
     // Recherche de l'utilisateur à mettre à jour
     $user = auth()->user();
 

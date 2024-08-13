@@ -147,6 +147,7 @@
                         <form method="post" action="{{ route('password.update') }}" class="form-horizontal">
                             @csrf
 
+                            @method('PUT')
 
                             <div class="form-group ">
                                 <label for="current_password" class=" col-form-label">Mot de passe actuel</label>
