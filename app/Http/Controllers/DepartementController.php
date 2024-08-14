@@ -9,7 +9,9 @@ class DepartementController extends Controller
 {
     public function index()
     {
+        $query = Departement::query();
         $departements = Departement::all();
+        $departements = $query->paginate(5); // Pagination avec 5 absences par page
         return view('departements.index', compact('departements'));
     }
 

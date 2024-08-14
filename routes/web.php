@@ -2,6 +2,8 @@
 
 
 use App\Models\User;
+use App\Models\Absence;
+use App\Notifications\AbsenceStatusNotification;
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
@@ -96,6 +98,16 @@ Route::get('/conges/{conge}/approve-rh', [CongesController::class, 'approveByRh'
 Route::get('/conges/{conge}/reject', [CongesController::class, 'reject'])->name('conges.reject');
 
 Route::delete('/conges/{conge}', [CongesController::class, 'destroy'])->name('conges.destroy');
+
+Route::get('/test-email', function () {
+    $user = User::find(1); // Remplacez par l'ID de l'utilisateur à tester
+    $absence = Absence::find(1); // Remplacez par l'ID d'une absence existante
+
+    // Envoyer une notification d'approbation
+    $user->notify(new AbsenceStatusNotification($absence, 'approuvé'));
+
+    return 'Email de test envoyé !';
+});
 
 
 

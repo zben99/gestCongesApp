@@ -8,17 +8,20 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+use App\Notifications\AbsenceStatusNotification;
 
 class AbsenceControlleur extends Controller
 {
     // Afficher la liste des absences
+   // Afficher la liste des absences
     public function index(Request $request)
     {
+        $query = Absence::query();
         $user = auth()->user();
-    
+        
         // Récupérer le terme de recherche
         $search = $request->input('search');
-    
+        
         // Condition pour les administrateurs et responsables RH
         if ($user->profil == 'administrateurs' || $user->profil == 'responsables RH') {
             $query = Absence::with('user');
@@ -31,24 +34,22 @@ class AbsenceControlleur extends Controller
         else {
             $query = Absence::where('UserId', $user->id)->with('user');
         }
-    
+        
         // Ajouter la condition de recherche si un terme est fourni
         if ($search) {
             $query->whereHas('user', function($q) use ($search) {
                 $q->where('matricule', 'LIKE', "%$search%")
-                  ->orWhereRaw("CONCAT(prenom, ' ', nom) LIKE ?", ["%$search%"]);
+                ->orWhereRaw("CONCAT(prenom, ' ', nom) LIKE ?", ["%$search%"]);
             })
             ->orWhere('motif', 'LIKE', "%$search%");
         }
-    
-        $absences = $query->get();
-    
+        
+        $absences = $query->paginate(3); // Pagination avec 5 absences par page
+        
         return view('absence.index', compact('absences'));
     }
-    
-    
-       
-    
+        
+        
     
     // Afficher le formulaire de création
     public function create()
@@ -91,7 +92,7 @@ class AbsenceControlleur extends Controller
     $absence->save();
 
     return redirect()->route('absences.index')->with('success', 'Absence créée avec succès');
-}
+    }   
 
     // Afficher une absence spécifique
     public function show(Absence $absence)
@@ -165,17 +166,23 @@ class AbsenceControlleur extends Controller
         $absence->status = 'approuvé';
         $absence->approved_by = auth()->user()->id; // Ajouter l'ID de l'utilisateur qui approuve
         $absence->save();
-
+    
+        // Envoyer une notification par email à l'utilisateur
+        $absence->user->notify(new AbsenceStatusNotification($absence, 'approuvé'));
+    
         return redirect()->route('absences.index')->with('success', 'La demande d\'absence a été validée.');
     }
-
+    
     public function rejectRequest($id)
     {
         $absence = Absence::findOrFail($id);
         $absence->status = 'refusé'; // Assurez-vous que 'refusé' est bien dans les valeurs acceptées
         $absence->approved_by = auth()->user()->id; // Ajouter l'ID de l'utilisateur qui rejette
         $absence->save();
-
+    
+        // Envoyer une notification par email à l'utilisateur
+        $absence->user->notify(new AbsenceStatusNotification($absence, 'refusé'));
+    
         return redirect()->route('absences.index')->with('success', 'La demande d\'absence a été rejetée.');
     }
 }

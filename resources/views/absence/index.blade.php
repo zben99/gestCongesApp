@@ -173,6 +173,11 @@
                   @endforeach
                 </tbody>
               </table>
+              
+              <!-- Pagination -->
+              <div class="mt-3">
+              {{ $absences->links('vendor.pagination.custom') }}
+              </div>
             </div>
             <!-- /.card-body -->
           </div>

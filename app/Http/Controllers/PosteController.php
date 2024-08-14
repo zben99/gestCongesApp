@@ -9,7 +9,10 @@ class PosteController extends Controller
 {
     public function index()
     {
+        $query = Poste::query();
         $postes = Poste::all();
+        $postes = $query->paginate(2); // Pagination avec 5 absences par page
+      
         return view('postes.index', compact('postes'));
     }
 

@@ -19,6 +19,10 @@ class Absence extends Model
         'status',
         'approved_by',
     ];
+    protected $casts = [
+        'dateDebut' => 'datetime',
+        'dateFin' => 'datetime',
+    ];
 
     // Relation avec le modèle User (l'employé associé à l'absence)
     public function user()
