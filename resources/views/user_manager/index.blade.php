@@ -22,6 +22,7 @@
                         <th>Nom</th>
                         <th>Prénom</th>
                         <th>Profil</th>
+                        <th>Manager Actuel</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -33,6 +34,13 @@
                             <td>{{ $employee->prenom }}</td>
                             <td>{{ $employee->profil }}</td>
                             <td>
+                                @if($employee->managers->isNotEmpty())
+                                    {{ $employee->managers->first()->nom }} {{ $employee->managers->first()->prenom }}
+                                @else
+                                    Aucun manager assigné
+                                @endif
+                            </td>
+                            <td>
                                 <!-- Bouton pour assigner un manager -->
                                 <a href="{{ route('user-manager.assign-form', $employee->id) }}" class="btn btn-primary">Assigner Manager</a>
                                 <!-- Bouton pour changer le manager -->
@@ -41,7 +49,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5">Aucun employé trouvé</td>
+                            <td colspan="6">Aucun employé trouvé</td>
                         </tr>
                     @endforelse
                 </tbody>

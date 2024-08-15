@@ -10,6 +10,8 @@ class UserManagerController extends Controller
     // Afficher la liste des employés
     public function index(Request $request)
     {
+        $query = User::query();
+
         $search = $request->input('search');
         
         // Commencez par la requête de base pour obtenir les employés
@@ -60,9 +62,9 @@ class UserManagerController extends Controller
     // Afficher le formulaire pour changer le manager
     public function showChangeForm(User $employee)
     {
+        $currentManager = $employee->managers()->first(); // Récupère le manager actuel de l'employé
         $managers = User::where('profil', 'manager')->get();
-
-        return view('user_manager.change', compact('employee', 'managers'));
+        return view('user_manager.change', compact('employee', 'managers', 'currentManager'));
     }
 
     // Changer le manager de l'employé
@@ -72,10 +74,10 @@ class UserManagerController extends Controller
             'employee_id' => 'required|exists:users,id',
             'manager_id' => 'required|exists:users,id',
         ]);
-
+        
         $employee = User::find($request->input('employee_id'));
         $newManager = User::find($request->input('manager_id'));
-
+        
         // Détacher tous les managers existants
         $employee->managers()->detach();
 

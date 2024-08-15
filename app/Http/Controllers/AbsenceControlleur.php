@@ -12,7 +12,7 @@ use App\Notifications\AbsenceStatusNotification;
 
 class AbsenceControlleur extends Controller
 {
-    // Afficher la liste des absences
+   
    // Afficher la liste des absences
     public function index(Request $request)
     {

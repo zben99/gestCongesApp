@@ -22,14 +22,24 @@
                 @csrf
                 <input type="hidden" name="employee_id" value="{{ $employee->id }}">
 
-                <div class="form-group">
-                    <label for="manager_id">Nouveau Manager :</label>
-                    <select name="manager_id" id="manager_id" class="form-control select2">
-                        @foreach($managers as $manager)
-                            <option value="{{ $manager->id }}">{{ $manager->nom }} {{ $manager->prenom }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                <select name="manager_id" id="manager_id" class="form-control select2">
+                <!-- Affiche le manager actuel comme option par défaut -->
+                @if ($currentManager)
+                    <option value="{{ $currentManager->id }}" selected>
+                        {{ $currentManager->nom }} {{ $currentManager->prenom }} (Actuel)
+                    </option>
+                @endif
+
+                <!-- Liste des autres managers -->
+                @foreach($managers as $manager)
+                    <!-- Evitez de réafficher le manager actuel dans la liste -->
+                    @if (!$currentManager || $manager->id !== $currentManager->id)
+                        <option value="{{ $manager->id }}">
+                            {{ $manager->nom }} {{ $manager->prenom }}
+                        </option>
+                    @endif
+                @endforeach
+            </select>
 
                 <div class="card-footer">
                     <button type="submit" class="btn btn-warning">Changer Manager</button>
