@@ -24,20 +24,21 @@
               @csrf
               <div class="card-body">
                 <div class="form-group">
-                  <label for="userId">Employé</label>
-                  <select id="userId" name="userId" class="form-control" required>
-                    @foreach ($users as $user)
-                      <option value="{{ $user->id }}" {{ isset($conge->userId) && $conge->userId == $user->id ? 'selected' : '' }}>
-                        {{ $user->nom }} {{ $user->prenom }}
-                      </option>
-                    @endforeach
-                  </select>
-                  @error('userId')
-                    <div class="invalid-feedback">
-                      {{ $message }}
-                    </div>
-                  @enderror
+                    <label for="userId">Employé</label>
+                    <select id="userId" name="userId" class="form-control" required {{ auth()->user()->profil !== 'responsables RH' ? 'disabled' : '' }}>
+                        @foreach ($users as $user)
+                            <option value="{{ $user->id }}" {{ isset($conge->userId) && $conge->userId == $user->id ? 'selected' : '' }}>
+                                {{ $user->nom }} {{ $user->prenom }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('userId')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
                 </div>
+
 
                 <div class="form-group mt-3">
                   <label for="typeConges">Type de Congé</label>

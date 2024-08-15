@@ -48,7 +48,7 @@
                             <a href="{{ route('conges.approveByRh', $conge->id) }}" class="btn btn-success btn-sm">Approuver</a>
                         @endif
 
-                        @if((auth()->user()->profil === 'manager' && $conge->status === 'en attente RH') || auth()->user()->profil === 'responsables RH')
+                        @if((auth()->user()->profil === 'manager' && $conge->status === 'en attente') || auth()->user()->profil === 'responsables RH')
                             <a href="{{ route('conges.reject', $conge->id) }}" class="btn btn-danger btn-sm">Refuser</a>
                         @endif
 

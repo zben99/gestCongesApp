@@ -11,8 +11,32 @@ class CongesController extends Controller
 {
     public function index()
     {
-        $conges = Conges::all();
+        $user = auth()->user();
+
+
+
+        if ($user->profil == 'manager') {
+
+            $conges = Conges::whereIn('UserId', $user->employees->pluck('id')->push($user->id))->get();
+
+            return view('conges.index', compact('conges'));
+
+        }
+
+
+        if ($user->profil !== 'responsables RH') {
+
+            $conges = Conges::all();
+
+            return view('conges.index', compact('conges'));
+
+        }
+
+
+
+        $conges = Conges::where('UserId', $user->id)->get();
         return view('conges.index', compact('conges'));
+
     }
 
     public function create()
