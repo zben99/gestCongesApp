@@ -84,7 +84,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/admins/{user}', [AdminController::class, 'destroy'])->name('admins.destroy');
 
 
-
+    Route::get('/absences/attente', [AbsenceControlleur::class, 'absencesEnAttente'])->name('absences.attente');
     Route::put('/absences/{id}/reject', [AbsenceControlleur::class, 'rejectRequest'])->name('absences.rejectRequest');
     Route::put('/absences/{id}/validate', [AbsenceControlleur::class, 'validateRequest'])->name('absences.validateRequest');
     // Afficher la liste des absences

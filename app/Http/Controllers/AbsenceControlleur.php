@@ -185,4 +185,16 @@ class AbsenceControlleur extends Controller
     
         return redirect()->route('absences.index')->with('success', 'La demande d\'absence a été rejetée.');
     }
+
+    public function absencesEnAttente()
+{
+    // Récupérer les absences en attente de validation depuis plus de 72 heures
+    $absences = Absence::where('status', 'en attente')
+                        ->where('created_at', '<', Carbon::now()->subHours(72))
+                        ->with('user')
+                        ->paginate(10);
+    
+    return view('absence.attente', compact('absences'));
+}
+
 }
