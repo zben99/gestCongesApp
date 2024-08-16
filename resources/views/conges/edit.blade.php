@@ -25,12 +25,22 @@
               <div class="card-body">
                 <div class="form-group">
                     <label for="userId">Employé</label>
-                    <select id="userId" name="userId" class="form-control" required {{ auth()->user()->profil !== 'responsables RH' ? 'disabled' : '' }}>
+                    <select id="userId" name="userId" class="form-control" required >
+                        @if (auth()->user()->profil !== 'responsables RH')
+                        <option value="{{ auth()->user()->id }}" {{ isset($conge->userId) && $conge->userId == auth()->user()->id ? 'selected' : '' }}>
+                            {{ auth()->user()->nom }} {{ auth()->user()->prenom }}
+                        </option>
+                        @else
+
                         @foreach ($users as $user)
                             <option value="{{ $user->id }}" {{ isset($conge->userId) && $conge->userId == $user->id ? 'selected' : '' }}>
                                 {{ $user->nom }} {{ $user->prenom }}
                             </option>
                         @endforeach
+
+                        @endif
+
+
                     </select>
                     @error('userId')
                         <div class="invalid-feedback">

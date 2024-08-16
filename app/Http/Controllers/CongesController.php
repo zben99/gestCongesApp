@@ -24,7 +24,7 @@ class CongesController extends Controller
         }
 
 
-        if ($user->profil !== 'responsables RH') {
+        if ($user->profil == 'responsables RH') {
 
             $conges = Conges::all();
 
@@ -33,7 +33,7 @@ class CongesController extends Controller
         }
 
 
-
+        //dd($user->id);
         $conges = Conges::where('UserId', $user->id)->get();
         return view('conges.index', compact('conges'));
 
@@ -47,6 +47,7 @@ class CongesController extends Controller
 
     public function store(Request $request)
     {
+
         $request->validate([
             'userId' => 'required|exists:users,id',
             'typeConges' => 'required',
@@ -55,7 +56,7 @@ class CongesController extends Controller
             'commentaire' => 'nullable',
         ]);
 
-       // dd($request->all());
+
         $conge = new Conges($request->all());
         $conge->status = 'en attente'; // Le congé est en attente de validation
         $conge->save();
