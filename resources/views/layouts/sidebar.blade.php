@@ -42,7 +42,7 @@
 					        </a><!--//nav-link-->
 					        <div id="submenu-1" class="collapse submenu submenu-1" data-bs-parent="#menu-accordion">
 						        <ul class="submenu-list list-unstyled">
-									
+
 							        <li class="submenu-item"><a class="submenu-link" href="{{ route('departements.index') }}">Departement</a></li>
                                     <li class="submenu-item"><a class="submenu-link" href="{{ route('postes.index') }}">Poste</a></li>
 									@if(auth()->user()->profil == 'responsables RH')
@@ -67,6 +67,20 @@
 									</a>
 								</li>
 
+
+								@if(auth()->user()->profil == 'administrateurs' || auth()->user()->profil == 'responsables RH')
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{{ route('conges.liste_conges') }}">
+                                                <span class="nav-icon">
+                                                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-columns-gap" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd" d="M6 1H1v3h5V1zM1 0a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1H1zm14 12h-5v3h5v-3zm-5-1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-5zM6 8H1v7h5V8zM1 7a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H1zm14-6h-5v7h5V1zm-5-1a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1h-5z"/>
+                                                    </svg>
+                                                </span>
+                                                <span class="nav-link-text">Liste autorisés pour les congés</span>
+                                            </a>
+                                        </li>
+                                @endif
+
 								<li class="nav-item">
 									<a class="nav-link" href="{{ route('absences.index') }}">
 										<span class="nav-icon">
@@ -80,20 +94,21 @@
 								</li>
 							@endif
 
-								<li class="nav-item">
+
 								@if(auth()->user()->profil == 'administrateurs' || auth()->user()->profil == 'responsables RH')
-								
-									<a class="nav-link" href="{{ route('absences.attente') }}">
-										<span class="nav-icon">
-											<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-x" viewBox="0 0 16 16">
-												<path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m.256 7a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z"/>
-												<path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m-.646-4.854.646.647.646-.647a.5.5 0 0 1 .708.708l-.647.646.647.646a.5.5 0 0 1-.708.708l-.646-.647-.646.647a.5.5 0 0 1-.708-.708l.647-.646-.647-.646a.5.5 0 0 1 .708-.708"/>
-											</svg>
-										</span>
-										<span class="nav-link-text">Absences plus 3 jours</span>
-									</a>
-								</li>
-						@endif
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{{ route('absences.attente') }}">
+                                                <span class="nav-icon">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-x" viewBox="0 0 16 16">
+                                                        <path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m.256 7a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z"/>
+                                                        <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m-.646-4.854.646.647.646-.647a.5.5 0 0 1 .708.708l-.647.646.647.646a.5.5 0 0 1-.708.708l-.646-.647-.646.647a.5.5 0 0 1-.708-.708l.647-.646-.647-.646a.5.5 0 0 1 .708-.708"/>
+                                                    </svg>
+                                                </span>
+                                                <span class="nav-link-text">Absences plus 3 jours</span>
+                                            </a>
+                                        </li>
+                                @endif
+
 				</ul>
 
 			    <div class="app-sidepanel-footer">
@@ -116,8 +131,28 @@
 								@endif
 						    </li><!--//nav-item-->
 					    </ul><!--//footer-menu-->
+
+                        <br>
+                        <br>
+
+                        @php
+                    $days = (new \DateTime(now()))->diff(new \DateTime(auth()->user()->initialization_date))->days + 1;
+                        $nbreConge=($days*2.5)/30;
+                        $congeRestant= floor($nbreConge+auth()->user()->initial - auth()->user()->pris);
+
+                    @endphp
+
+<center>
+    <span class="nav-link-text "> <h5>Mes congés restants </h5>
+        <br> <h2> {{$congeRestant}} </h2>
+        </span>
+</center>
+
 				    </nav>
 			    </div><!--//app-sidepanel-footer-->
 
 	        </div><!--//sidepanel-inner-->
 	    </div><!--//app-sidepanel-->
+
+
+

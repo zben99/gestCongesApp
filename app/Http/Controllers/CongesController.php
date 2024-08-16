@@ -120,6 +120,9 @@ public function approveByManager($conge)
 public function approveByRh($id)
 {
     $conge = Conges::findOrFail($id);
+
+
+
     $user = auth()->user();
 
     if ($user->profil !== 'responsables RH') {
@@ -129,6 +132,13 @@ public function approveByRh($id)
     if ($conge->status === 'en attente RH') {
         $conge->status = 'approuvé';
         $conge->approved_by_rh = $user->id;
+
+      $days = (new \DateTime($conge->dateFin))->diff(new \DateTime($conge->dateDebut))->days + 1;
+      //dd( $days);
+      $user->pris += $days;
+
+      $user->save();
+
         $conge->save();
     } elseif ($conge->status === 'en attente') {
         $conge->status = 'refusé';
@@ -137,6 +147,8 @@ public function approveByRh($id)
 
     return redirect()->route('conges.index')->with('success', 'Demande traitée par le responsable RH.');
 }
+
+
 
 public function reject($id)
 {

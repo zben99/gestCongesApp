@@ -43,18 +43,18 @@ Route::get('/', function () {
                                              ->where('created_at', '<=', now()->subDays(3))
                                              ->count();
 
-    
+
     return view('dashboard', compact(
             'nombreUsers',
             'totalDemandesAbsence',
             'totalAbsencesValides',
             'totalAbsencesEnAttente',
             'totalAbsencesEnAttenteDepuis3Jours',
-            'totalAbsencesrejete', 
+            'totalAbsencesrejete',
             'totalConges',
             'congerejete',
-            'congesApprouves', 
-            'congesEnAttente', 
+            'congesApprouves',
+            'congesEnAttente',
             'congesEnAttenteDepuisTroisJours'
         ));
 
@@ -64,7 +64,7 @@ Route::get('/', function () {
 
 
 Route::middleware('auth')->group(function () {
-    
+
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 
@@ -109,6 +109,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/user-manager/change', [UserManagerController::class, 'change'])->name('user-manager.change');
 
     Route::get('/conges', [CongesController::class, 'index'])->name('conges.index');
+
+    Route::get('/conges/liste_conges', [AdminController::class, 'liste_conges'])->name('conges.liste_conges');
+
+
     Route::get('/conges/create', [CongesController::class, 'create'])->name('conges.create');
     Route::post('/conges', [CongesController::class, 'store'])->name('conges.store');
     Route::get('/conges/{conge}/edit', [CongesController::class, 'edit'])->name('conges.edit');

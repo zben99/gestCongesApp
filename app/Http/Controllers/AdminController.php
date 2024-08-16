@@ -32,8 +32,18 @@ class AdminController extends Controller
         $departements = Departement::all();
         $postes = Poste::all();
 
+
         return view('administrateurs.edit', compact('departements', 'postes'));
     }
+
+    public function liste_conges()
+    {
+        $users = User::all();
+
+        return view('conges.liste_users_conge', compact('users'));
+    }
+
+
 
     /**
      * Store a newly created resource in storage.
@@ -100,7 +110,16 @@ class AdminController extends Controller
         $departements = Departement::all();
         $postes = Poste::all();
 
-        return view("administrateurs.show", compact("user", "departements", "postes"));
+
+        $days = (new \DateTime(now()))->diff(new \DateTime($user->initialization_date))->days + 1;
+        $nbreConge=($days*2.5)/30;
+
+
+        $congeRestant= floor($nbreConge+$user->initial - $user->pris);
+
+
+
+        return view("administrateurs.show", compact("user", "departements", "postes", 'congeRestant'));
     }
 
     /**

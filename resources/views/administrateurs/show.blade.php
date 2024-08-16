@@ -65,8 +65,8 @@
                             <td>{{ \Illuminate\Support\Carbon::parse($user->initialization_date)->format('d-m-Y') }}</td>
                         </tr>
                         <tr>
-                            <th>Initialisation congés</th>
-                            <td>{{ $user->initial }}</td>
+                            <th>Congés restant</th>
+                            <td>{{ $congeRestant }}</td>
                         </tr>
                     </table>
 
