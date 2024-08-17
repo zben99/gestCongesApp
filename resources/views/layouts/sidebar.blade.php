@@ -138,7 +138,7 @@
                         @php
                     $days = (new \DateTime(now()))->diff(new \DateTime(auth()->user()->initialization_date))->days + 1;
                         $nbreConge=($days*2.5)/30;
-                        $congeRestant= floor($nbreConge+auth()->user()->initial - auth()->user()->pris);
+                        $congeRestant= floor(($nbreConge+auth()->user()->initial) - auth()->user()->pris);
 
                     @endphp
 

@@ -34,13 +34,14 @@
                   <tbody>
                     @foreach ($users as $user)
                     @php
+                    $days1 = (new \DateTime(now()))->diff(new \DateTime($user->arrival_date))->days + 1;
                     $days = (new \DateTime(now()))->diff(new \DateTime($user->initialization_date))->days + 1;
                         $nbreConge=($days*2.5)/30;
-                        $congeRestant= floor($nbreConge+$user->initial - $user->pris);
+                        $congeRestant= floor(($nbreConge+$user->initial) - $user->pris);
 
                     @endphp
 
-                    @if ($congeRestant>29)
+                    @if ($days1>=360)
                         <tr>
                             <td>{{ $loop->index + 1 }}</td>
                             <td>{{ $user->matricule }}</td>

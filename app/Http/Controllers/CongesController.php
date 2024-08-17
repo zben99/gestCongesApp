@@ -99,11 +99,12 @@ class CongesController extends Controller
 
         $user = User::findOrFail($conge->userId);
 
-        $days = (new \DateTime(now()))->diff(new \DateTime($user->initialization_date))->days + 1;
+        $days = $this->calculateDays( $user->initialization_date, now());
         $nbreConge = ($days * 2.5) / 30;
         $congeRestant = floor($nbreConge + $user->initial - $user->pris);
 
-        $days1 = (new \DateTime($request->dateFin))->diff(new \DateTime($request->dateDebut))->days + 1;
+
+        $days1 = $this->calculateDays($request->dateDebut, $request->dateFin);
 
         if ($days1 > $congeRestant) {
             return redirect()->route('conges.index')->with('error', 'Impossible de créer une demande avec ce nombre de jours.');
@@ -143,13 +144,9 @@ public function approveByManager($conge)
 
     return redirect()->route('conges.index')->with('success', 'Demande approuvée par le manager.');
 }
-
 public function approveByRh($id)
 {
     $conge = Conges::findOrFail($id);
-
-
-
     $user = auth()->user();
 
     if ($user->profil !== 'responsables RH') {
@@ -160,20 +157,26 @@ public function approveByRh($id)
         $conge->status = 'approuvé';
         $conge->approved_by_rh = $user->id;
 
-      $days = (new \DateTime($conge->dateFin))->diff(new \DateTime($conge->dateDebut))->days + 1;
-      //dd( $days);
-      $user->pris += $days;
-
-      $user->save();
-
+        $days = $this->calculateDays($conge->dateDebut, $conge->dateFin);
+        $conge->employe->pris += $days;
+        $conge->employe->save();
         $conge->save();
+
     } elseif ($conge->status === 'en attente') {
         $conge->status = 'refusé';
         $conge->save();
+    } else {
+        return redirect()->back()->with('error', 'Le statut de la demande est invalide.');
     }
 
     return redirect()->route('conges.index')->with('success', 'Demande traitée par le responsable RH.');
 }
+
+private function calculateDays($dateDebut, $dateFin)
+{
+    return (new \DateTime($dateFin))->diff(new \DateTime($dateDebut))->days + 1;
+}
+
 
 
 

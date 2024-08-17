@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date('dateDebut');
             $table->date('dateFin');
             $table->text('commentaire')->nullable();
-            $table->string('status', 191)->unique()->nullable();
+            $table->string('status', 191)->nullable();
             $table->unsignedBigInteger('approved_by_manager')->nullable();
             $table->unsignedBigInteger('approved_by_rh')->nullable();
             $table->timestamps();
