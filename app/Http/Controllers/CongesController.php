@@ -47,7 +47,6 @@ class CongesController extends Controller
 
     public function store(Request $request)
     {
-
         $request->validate([
             'userId' => 'required|exists:users,id',
             'typeConges' => 'required',
@@ -56,14 +55,29 @@ class CongesController extends Controller
             'commentaire' => 'nullable',
         ]);
 
+        $user = User::findOrFail($request->userId);
 
-        $conge = new Conges($request->all());
-        $conge->status = 'en attente'; // Le congé est en attente de validation
-        $conge->save();
+        $days = (new \DateTime(now()))->diff(new \DateTime($user->initialization_date))->days + 1;
+        $nbreConge = ($days * 2.5) / 30;
+        $congeRestant = floor($nbreConge + $user->initial - $user->pris);
 
+        $days1 = (new \DateTime($request->dateFin))->diff(new \DateTime($request->dateDebut))->days + 1;
 
-        return redirect()->route('conges.index')->with('success', 'Demande de congé soumise avec succès.');
+        if ($days1 > $congeRestant) {
+            return redirect()->route('conges.index')->with('error', 'Impossible de créer une demande avec ce nombre de jours.');
+        }
+
+        try {
+            $conge = new Conges($request->all());
+            $conge->status = 'en attente';
+            $conge->save();
+
+            return redirect()->route('conges.index')->with('success', 'Demande de congé soumise avec succès.');
+        } catch (\Exception $e) {
+            return redirect()->route('conges.index')->with('error', 'Une erreur est survenue lors de la soumission de la demande.');
+        }
     }
+
 
 
 
@@ -81,6 +95,19 @@ class CongesController extends Controller
             'dateFin' => 'required|date|after_or_equal:dateDebut',
             'commentaire' => 'nullable',
         ]);
+
+
+        $user = User::findOrFail($conge->userId);
+
+        $days = (new \DateTime(now()))->diff(new \DateTime($user->initialization_date))->days + 1;
+        $nbreConge = ($days * 2.5) / 30;
+        $congeRestant = floor($nbreConge + $user->initial - $user->pris);
+
+        $days1 = (new \DateTime($request->dateFin))->diff(new \DateTime($request->dateDebut))->days + 1;
+
+        if ($days1 > $congeRestant) {
+            return redirect()->route('conges.index')->with('error', 'Impossible de créer une demande avec ce nombre de jours.');
+        }
 
         $conge->typeConges = $request->typeConges;
         $conge->dateDebut = $request->dateDebut;

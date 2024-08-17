@@ -142,11 +142,11 @@
 
                     @endphp
 
-<center>
-    <span class="nav-link-text "> <h5>Mes congés restants </h5>
-        <br> <h2> {{$congeRestant}} </h2>
-        </span>
-</center>
+					<center>
+						<span class="nav-link-text "> <h5>Mes congés restants </h5>
+							<br> <h2> {{$congeRestant}} </h2>
+							</span>
+					</center>
 
 				    </nav>
 			    </div><!--//app-sidepanel-footer-->

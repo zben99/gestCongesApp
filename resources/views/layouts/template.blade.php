@@ -10,6 +10,7 @@
     <script defer src="{{ asset('assets/plugins/fontawesome/js/all.min.js') }}"></script>
     <link id="theme-style" rel="stylesheet" href="{{ asset('assets/css/portal.css') }}">
 
+    @yield('css')
 
 </head>
 <body class="app">
@@ -31,7 +32,7 @@
             </div>
         </footer>
     </div>
-    @yield('script')
+
 
     <!-- jQuery -->
     <script src="{{asset('/plugins/jquery/jquery.min.js')}}"></script>
@@ -41,6 +42,8 @@
     <script>
     $.widget.bridge('uibutton', $.ui.button)
     </script>
+
+@yield('script')
 
 <!-- jQuery -->
 <script src="{{asset('/plugins/jquery/jquery.min.js')}}"></script>
