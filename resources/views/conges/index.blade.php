@@ -1,4 +1,3 @@
-<!-- resources/views/conges/index.blade.php -->
 @extends('layouts.template')
 
 @section('css')
@@ -6,8 +5,10 @@
   <link rel="stylesheet" href="{{ asset('/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
   <!-- Toastr -->
   <link rel="stylesheet" href="{{ asset('/plugins/toastr/toastr.min.css') }}">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ asset('/plugins/toastr/persostyle.css') }}">
 @endsection
-
 
 @section('content')
   <!-- Main content -->
@@ -16,15 +17,15 @@
       <div class="row">
         <div class="col-12">
           <div class="card">
-            <div class="card-header">
+            <div class="btn btn-custom-blue btn-block">
               <h3 class="card-title">{{ __('Liste des Congés') }}</h3>
             </div>
             <!-- /.card-header -->
             <div class="card-body">
-
-
               <div class="card-header mb-3">
-                <a href="{{ route('conges.create') }}" class="btn btn-primary">Ajouter une Demande de Congé</a>
+                <a href="{{ route('conges.create') }}" class="btn btn-custom-blue btn-icon">
+                    <i class="fas fa-plus"></i> <span>Demande Congé</span>
+                </a>
               </div>
 
               <table id="example2" class="table table-bordered table-hover">
@@ -41,35 +42,51 @@
 
                 <tbody>
                     @foreach ($conges as $conge)
-                    <tr class="{{ $conge->status == 'approuvé' ? 'bg-success' : ($conge->status == 'refusé' ? 'bg-danger' : '') }}">
+                    <tr>
                         <td>{{ $conge->employe->nom }} {{ $conge->employe->prenom }}</td>
                         <td>{{ $conge->typeConges }}</td>
                         <td>{{ $conge->dateDebut }}</td>
                         <td>{{ $conge->dateFin }} </td>
-                        <td>{{ ucfirst($conge->status) }}</td>
+                        <td>
+                        <span class="
+                          @if ($conge->status === 'en attente') status-pending 
+                          @elseif ($conge->status === 'approuvé') status-approved 
+                          @elseif ($conge->status === 'refusé') status-rejected 
+                          @endif
+                        ">
+                          {{ ucfirst($conge->status) }}
+                        </span>
+                      </td>
                         <td>
                             @if(auth()->user()->profil === 'manager' && $conge->status === 'en attente')
-                            <a href="{{ route('conges.approveByManager', $conge) }}" class="btn btn-success btn-sm">Approuver</a>
+                            <a href="{{ route('conges.approveByManager', $conge) }}" class="btn btn-custom-blue btn-icon">
+                                <i class="fas fa-check"></i> <span>Approuver</span>
+                            </a>
                         @elseif(auth()->user()->profil === 'responsables RH' && $conge->status === 'en attente RH')
-                            <a href="{{ route('conges.approveByRh', $conge->id) }}" class="btn btn-success btn-sm">Approuver</a>
+                            <a href="{{ route('conges.approveByRh', $conge->id) }}" class="btn btn-custom-blue btn-icon">
+                                <i class="fas fa-check"></i> <span>Approuver</span>
+                            </a>
                         @endif
 
                         @if((auth()->user()->profil === 'manager' && $conge->status === 'en attente') || auth()->user()->profil === 'responsables RH')
-                            <a href="{{ route('conges.reject', $conge->id) }}" class="btn btn-danger btn-sm">Refuser</a>
+                            <a href="{{ route('conges.reject', $conge->id) }}" class="btn btn-custom-blue btn-icon">
+                                <i class="fas fa-times"></i> <span>Refuser</span>
+                            </a>
                         @endif
 
+                            <a href="{{ route('conges.show', $conge->id) }}" class="btn btn-custom-blue btn-icon">
+                                <i class="fas fa-eye"></i>
+                            </a>
 
-                            <a href="{{ route('conges.show', $conge->id) }}" class="btn btn-info btn-sm">Voir</a>
-
-                            <a href="{{ route('conges.edit', $conge->id) }}" class="btn btn-warning">
-                                <i class="fas fa-edit"></i> Modifier
+                            <a href="{{ route('conges.edit', $conge->id) }}" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i> 
                             </a>
                             <form id="delete-form-{{$conge->id}}" method="POST" action="{{ route('conges.destroy', $conge->id) }}" style="display: inline;">
                                 @csrf
                                 @method("DELETE")
 
-                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal-{{ $conge->id }}">
-                                    <i class="fas fa-trash"></i> Supprimer
+                                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal-{{ $conge->id }}">
+                                    <i class="fas fa-trash"></i> 
                                 </button>
                             </form>
 
@@ -109,18 +126,11 @@
   <!-- /.content -->
 @endsection
 
-
-
-
 @section('script')
-
 <!-- SweetAlert2 -->
 <script src="{{ asset('/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
 <!-- Toastr -->
 <script src="{{ asset('/plugins/toastr/toastr.min.js') }}"></script>
-
-
-
 
 @if (session('success'))
     <script>

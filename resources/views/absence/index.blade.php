@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="{{ asset('/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
   <!-- Toastr -->
   <link rel="stylesheet" href="{{ asset('/plugins/toastr/toastr.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/plugins/toastr/persostyle.css') }}">
   <!-- Custom CSS for status badges -->
 @endsection
 
@@ -15,7 +16,7 @@
       <div class="row">
         <div class="col-12">
           <div class="card">
-            <div class="card-header">
+            <div class="btn btn-custom-blue btn-block">
               <h3 class="card-title">{{ __('Liste des absences') }}</h3>
             </div>
             <!-- /.card-header -->
@@ -29,14 +30,14 @@
                     </div>
                   </div>
                   <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary btn-block">Rechercher</button>
+                    <button type="submit" class="btn btn-custom-blue btn-block"  >Rechercher</button>
                   </div>
                 </div>
               </form>
               
               <div class="card-header mb-3">
                 <a href="{{ route('absences.create') }}">
-                  <button type="button" class="btn btn-lg btn-primary">Ajouter une absence</button>
+                  <button type="button" class="btn btn-custom-blue btn-block">Ajouter une absence</button>
                 </a>
               </div>
               
@@ -53,7 +54,6 @@
                     <th>Actions</th>
                   </tr>
                 </thead>
-
                 <tbody>
                   @foreach ($absences as $absence)
                     <tr>
@@ -75,15 +75,15 @@
                       </td>
                       <td>
                         @if(auth()->user()->profil !== 'manager' || $absence->status !== 'en attente')
-                          <a href="{{ route('absences.edit', $absence->id) }}" title="Modifier l'absence" class="btn btn-warning">
-                            <i class="fas fa-edit"></i> Modifier
+                          <a href="{{ route('absences.edit', $absence->id) }}" title="Modifier l'absence" class="btn btn-warning btn-sm">
+                            <i class="fas fa-edit"></i>
                           </a>
                           
                           <form id="delete-form-{{ $absence->id }}" method="POST" action="{{ route('absences.destroy', $absence->id) }}" style="display: inline;">
                             @csrf
                             @method("DELETE")
-                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal-{{ $absence->id }}">
-                              <i class="fas fa-trash"></i> Supprimer
+                            <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal-{{ $absence->id }}" title="Supprimer l'absence">
+                              <i class="fas fa-trash"></i>
                             </button>
                           </form>
                         @endif
@@ -156,15 +156,15 @@
                         <form id="validate-form-{{ $absence->id }}" method="POST" action="{{ route('absences.validateRequest', $absence->id) }}" style="display: inline;">
                           @csrf
                           @method('PUT')
-                          <button type="button" class="btn btn-success" title="Valider la demande" data-toggle="modal" data-target="#validateModal-{{ $absence->id }}">
-                            <i class="fas fa-check"></i> Valider
+                          <button type="button" class="btn btn-success btn-sm" title="Valider la demande" data-toggle="modal" data-target="#validateModal-{{ $absence->id }}">
+                            <i class="fas fa-check"></i>
                           </button>
                         </form>
                         <form id="reject-form-{{ $absence->id }}" method="POST" action="{{ route('absences.rejectRequest', $absence->id) }}" style="display: inline;">
                           @csrf
                           @method('PUT')
-                          <button type="button" class="btn btn-danger" title="Rejeter la demande" data-toggle="modal" data-target="#rejectModal-{{ $absence->id }}">
-                            <i class="fas fa-times"></i> Rejeter
+                          <button type="button" class="btn btn-danger btn-sm" title="Rejeter la demande" data-toggle="modal" data-target="#rejectModal-{{ $absence->id }}">
+                            <i class="fas fa-times"></i>
                           </button>
                         </form>
                         @endif
@@ -173,9 +173,7 @@
                   @endforeach
                 </tbody>
               </table>
-              
-              <!-- Pagination -->
-              <div class="mt-3">
+              <div class="d-flex justify-content-center mt-3">
               {{ $absences->links('vendor.pagination.custom') }}
               </div>
             </div>
@@ -194,19 +192,13 @@
   <script src="{{ asset('/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
   <!-- Toastr -->
   <script src="{{ asset('/plugins/toastr/toastr.min.js') }}"></script>
-  <!-- DataTables -->
-  <script src="{{ asset('/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-  <script src="{{ asset('/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
-  <!-- Custom JS -->
   <script>
-    $(function () {
-      $("#example2").DataTable();
-    });
+    @if(Session::has('message'))
+      toastr.success("{{ Session::get('message') }}");
+    @endif
 
-    @if (session('success'))
-      toastr.success("{{ session('success') }}");
-    @elseif (session('error'))
-      toastr.error("{{ session('error') }}");
+    @if(Session::has('error'))
+      toastr.error("{{ Session::get('error') }}");
     @endif
   </script>
 @endsection

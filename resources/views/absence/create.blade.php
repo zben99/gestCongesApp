@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="{{ asset('/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
   <!-- Select2 CSS -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ asset('/plugins/toastr/persostyle.css') }}">
 @endsection
 
 @section('content')
@@ -14,7 +15,7 @@
       <div class="row">
         <div class="col-md-12">
           <div class="card card-primary">
-            <div class="card-header">
+            <div class="btn btn-custom-blue btn-block">
               <h3 class="card-title">{{ __('Ajouter une absence') }}</h3>
             </div>
             <!-- form start -->
@@ -56,8 +57,8 @@
               <!-- /.card-body -->
 
               <div class="card-footer">
-                <input type="submit" class="btn btn-primary" name="valider" value="Enregistrer">
-                <a href="{{ route('admins.index') }}" class="btn btn-danger">Retour</a>
+                <button type="submit" class="btn btn-custom-blue btn-block">Enregistrer</button>
+                <a href="{{ route('absences.index') }}" class="btn btn-danger">Retour</a>
               </div>
             </form>
           </div>

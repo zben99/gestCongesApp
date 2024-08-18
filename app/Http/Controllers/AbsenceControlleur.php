@@ -44,7 +44,7 @@ class AbsenceControlleur extends Controller
             ->orWhere('motif', 'LIKE', "%$search%");
         }
         
-        $absences = $query->paginate(3); // Pagination avec 5 absences par page
+        $absences = $query->paginate(1); // Pagination avec 5 absences par page
         
         return view('absence.index', compact('absences'));
     }

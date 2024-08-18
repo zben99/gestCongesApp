@@ -1,17 +1,20 @@
 @extends('layouts.template')
 
-@section('content')
+@section('css')
+    <link rel="stylesheet" href="{{ asset('/plugins/toastr/persostyle.css') }}">
+@endsection
 
+@section('content')
 <section class="content">
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
+                    <div class="btn btn-custom-blue btn-block">
                         <h3 class="card-title">{{ __('Liste des Postes') }}</h3>
                     </div>
                     <div class="card-header">
-                        <a href="{{ route('postes.create') }}" class="btn btn-primary">Ajouter un Poste</a>
+                        <a href="{{ route('postes.create') }}" class="btn btn-custom-blue btn-block">Ajouter un Poste</a>
                     </div>
                     <table class="table table-bordered table-hover">
                         <thead>
@@ -28,13 +31,13 @@
                                     <td>{{ $poste->description }}</td>
                                     <td>
                                         <a href="{{ route('postes.edit', $poste->id) }}" class="btn btn-warning">
-                                            <i class="fas fa-edit"></i> Modifier
+                                            <i class="fas fa-edit"></i>
                                         </a>
                                         <form id="delete-form-{{$poste->id}}" method="POST" action="{{ route('postes.destroy', $poste->id) }}" style="display: inline;">
                                             @csrf
                                             @method("DELETE")
                                             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal-{{ $poste->id }}">
-                                                <i class="fas fa-trash"></i> Supprimer
+                                                <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
 

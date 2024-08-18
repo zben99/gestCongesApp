@@ -1,10 +1,16 @@
 
 @extends('layouts.template')
 
+@section('css')
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="{{ asset('/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
+  <!-- Toastr -->
+  <link rel="stylesheet" href="{{ asset('/plugins/toastr/toastr.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/plugins/toastr/persostyle.css') }}">
+  <!-- Custom CSS for status badges -->
+@endsection
+
 @section('content')
-
-
-
 
     <section class="content">
         <div class="container-fluid">
@@ -15,7 +21,7 @@
 
 
             <div class="card">
-                <div class="card-header">
+                <div class="btn btn-custom-blue btn-block">
                 <!-- /.card-header -->
                 @if (isset($poste))
                 <h3 class="card-title">{{ __('Modifier Poste') }}</h3>
@@ -54,8 +60,8 @@
                             @enderror
                         </div>
 
-                        <button type="submit" class="btn btn-primary mt-3">Enregistrer</button>
-                        <a href="{{ route('postes.index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+                        <button type="submit" class="btn btn-custom-blue btn-block">Enregistrer</button>
+                        <a href="{{ route('postes.index') }}" class="btn btn-danger">Retour</a>
                     </div>
                 </div>
             </form>

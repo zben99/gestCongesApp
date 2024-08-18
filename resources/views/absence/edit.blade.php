@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="{{ asset('/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
   <!-- Select2 CSS -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ asset('/plugins/toastr/persostyle.css') }}">
 @endsection
 
 @section('content')
@@ -14,7 +15,7 @@
       <div class="row">
         <div class="col-md-12">
           <div class="card card-primary">
-            <div class="card-header">
+            <div class="btn btn-custom-blue btn-block">
               <h3 class="card-title">{{ __('Modifier l\'absence') }}</h3>
             </div>
             <!-- form start -->
@@ -61,8 +62,8 @@
               <!-- /.card-body -->
 
               <div class="card-footer">
-                <button type="submit" class="btn btn-primary">{{ __('Mettre à jour') }}</button>
-                <a href="{{ route('absences.index') }}" class="btn btn-secondary">{{ __('Annuler') }}</a>
+                <button type="submit" class="btn btn-custom-blue btn-block">{{ __('Mettre à jour') }}</button>
+                <a href="{{ route('absences.index') }}" class="btn btn-danger">{{ __('Annuler') }}</a>
               </div>
             </form>
           </div>

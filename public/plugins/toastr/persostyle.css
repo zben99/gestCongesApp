@@ -1,0 +1,42 @@
+
+.status-pending { color: #ffc107; }
+.status-approved { color: #28a745; }
+.status-rejected { color: #dc3545; }
+.status-pending::before { content: '⏳'; margin-right: 5px; }
+.status-approved::before { content: '✔️'; margin-right: 5px; }
+.status-rejected::before { content: '❌'; margin-right: 5px; }
+
+.btn-custom-blue {
+background-color: #007bff; /* Bleu primaire */
+color: #ffffff; /* Texte blanc */
+border: 1px solid #007bff; /* Bordure bleue */
+}
+
+.btn-custom-blue:hover {
+background-color: #0056b3; /* Bleu plus foncé au survol */
+border-color: #0056b3; /* Bordure plus foncée au survol */
+}
+
+.btn-custom-blue:focus, .btn-custom-blue:active {
+    background-color: #003d7a; /* Bleu très foncé au focus ou au clic */
+    border-color: #003d7a; /* Bordure très foncée au focus ou au clic */
+  }
+
+  #app-sidepanel .nav-link:hover {
+    color: #007bff; /* Couleur bleue */
+}
+
+/* Modifier la couleur de survol pour les icônes dans le panneau latéral */
+#app-sidepanel .nav-icon:hover {
+    color: #007bff; /* Couleur bleue */
+}
+
+/* Modifier la couleur de survol pour les sous-menus dans le panneau latéral */
+#app-sidepanel .submenu-link:hover {
+    color: #007bff; /* Couleur bleue */
+}
+
+/* Pour changer la couleur de la flèche du sous-menu lors du survol */
+#app-sidepanel .submenu-arrow:hover i {
+    color: #007bff; /* Couleur bleue */
+}

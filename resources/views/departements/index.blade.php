@@ -1,5 +1,8 @@
 @extends('layouts.template')
 
+@section('css')
+    <link rel="stylesheet" href="{{ asset('/plugins/toastr/persostyle.css') }}">
+@endsection
 @section('content')
 
 <section class="content">
@@ -7,11 +10,11 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
+                    <div class="btn btn-custom-blue btn-block">
                         <h3 class="card-title">{{ __('Liste des Départements') }}</h3>
                     </div>
                     <div class="card-header">
-                        <a href="{{ route('departements.create') }}" class="btn btn-lg btn-primary">Ajouter un Département</a>
+                        <a href="{{ route('departements.create') }}" class="btn btn-custom-blue btn-block">Ajouter un Département</a>
                     </div>
                     <table class="table table-bordered table-hover">
                         <thead>
@@ -27,14 +30,14 @@
                                     <td>{{ $departement->name_departement }}</td>
                                     <td>{{ $departement->description }}</td>
                                     <td>
-                                        <a href="{{ route('departements.edit', $departement->id) }}" class="btn btn-warning">
-                                            <i class="fas fa-edit"></i> Modifier
+                                        <a href="{{ route('departements.edit', $departement->id) }}" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-edit"></i>
                                         </a>
                                         <form id="delete-form-{{$departement->id}}" method="POST" action="{{ route('departements.destroy', $departement->id) }}" style="display: inline;">
                                             @csrf
                                             @method("DELETE")
                                             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal-{{ $departement->id }}">
-                                                <i class="fas fa-trash"></i> Supprimer
+                                                <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
 

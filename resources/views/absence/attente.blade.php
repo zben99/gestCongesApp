@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="{{ asset('/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
   <!-- Toastr -->
   <link rel="stylesheet" href="{{ asset('/plugins/toastr/toastr.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/plugins/toastr/persostyle.css') }}">
 @endsection
 
 @section('content')
@@ -14,7 +15,7 @@
       <div class="row">
         <div class="col-12">
           <div class="card">
-            <div class="card-header">
+            <div class="btn btn-custom-blue btn-block">
               <h3 class="card-title">Absences en attente de validation depuis plus de 72 heures</h3>
             </div>
             <!-- /.card-header -->

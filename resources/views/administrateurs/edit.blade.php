@@ -5,6 +5,13 @@
 
 @extends('layouts.template')
 
+@section('css')
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="{{ asset('/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
+  <!-- Toastr -->
+  <link rel="stylesheet" href="{{ asset('/plugins/toastr/toastr.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/plugins/toastr/persostyle.css') }}">
+@endsection
 
 @section('content')
 <br>
@@ -15,7 +22,7 @@
     </div>
     <div class="col-md-10">
         <div class="card card-primary">
-            <div class="card-header">
+            <div class="btn btn-custom-blue btn-block">
 
             <!-- /.card-header -->
             @if (isset($user))
@@ -235,7 +242,7 @@
 
             <div class="card-footer">
 
-                <input type="submit" class="btn btn-primary" name="valider" value="Enregistrer" >
+                <input type="submit" class="btn btn-custom-blue btn-block" name="valider" value="Enregistrer" >
 
                 <a href="{{ route('admins.index') }}" class="btn btn-danger">
                         Retour

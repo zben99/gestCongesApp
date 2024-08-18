@@ -15,14 +15,33 @@ class AdminController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $users = User::all();
+    public function index(Request $request)
+{
+    // Par défaut, 10 utilisateurs par page
+    $perPage = $request->input('per_page', 4);
 
+    // Recherche
+    $search = $request->input('search');
 
-        return view("administrateurs.index", compact("users"));
+    // Construire la requête de base pour récupérer les utilisateurs
+    $query = User::query();
+
+    // Appliquer le filtre de recherche si nécessaire
+    if ($search) {
+        $query->where('nom', 'like', "%{$search}%")
+              ->orWhere('prenom', 'like', "%{$search}%")
+              ->orWhere('email', 'like', "%{$search}%")
+              ->orWhere('matricule', 'like', "%{$search}%");
     }
 
+    // Récupérer les utilisateurs avec pagination
+    $users = $query->paginate($perPage);
+
+    // Passer les variables à la vue
+    return view("administrateurs.index", compact("users", "perPage", "search"));
+}
+
+    
     /**
      * Show the form for creating a new resource.
      */

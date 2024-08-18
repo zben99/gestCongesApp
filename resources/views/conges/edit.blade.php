@@ -1,5 +1,13 @@
 @extends('layouts.template')
 
+@section('css')
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="{{ asset('/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
+  <!-- Toastr -->
+  <link rel="stylesheet" href="{{ asset('/plugins/toastr/toastr.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/plugins/toastr/persostyle.css') }}">
+  <!-- Custom CSS for status badges -->
+@endsection
 
 
 @section('content')
@@ -10,7 +18,7 @@
         <div class="col-1"></div>
         <div class="col-10">
           <div class="card">
-            <div class="card-header">
+            <div class="btn btn-custom-blue btn-block">
               @if(isset($conge))
                 <h3 class="card-title">{{ __('Modifier la Demande de Congé') }}</h3>
               </div>
@@ -99,8 +107,8 @@
               <!-- /.card-body -->
 
               <div class="card-footer">
-                <button type="submit" class="btn btn-primary">Enregistrer</button>
-                <a href="{{ route('conges.index') }}" class="btn btn-secondary">Retour à la liste</a>
+                <button type="submit" class="btn btn-custom-blue btn-block">Enregistrer</button>
+                <a href="{{ route('conges.index') }}" class="btn btn-danger">Retour à la liste</a>
               </div>
             </form>
           </div>

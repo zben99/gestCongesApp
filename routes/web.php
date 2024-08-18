@@ -150,7 +150,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/departements/{departement}', [DepartementController::class, 'destroy'])->name('departements.destroy');
 
 
-
     // Route pour afficher la liste des postes
     Route::get('/postes', [PosteController::class, 'index'])->name('postes.index');
     // Route pour afficher le formulaire de création d'un nouveau poste
