@@ -49,9 +49,9 @@
                         <td>{{ $conge->dateFin }} </td>
                         <td>
                         <span class="
-                          @if ($conge->status === 'en attente') status-pending 
-                          @elseif ($conge->status === 'approuvé') status-approved 
-                          @elseif ($conge->status === 'refusé') status-rejected 
+                          @if ($conge->status === 'en attente') status-pending
+                          @elseif ($conge->status === 'approuvé') status-approved
+                          @elseif ($conge->status === 'refusé') status-rejected
                           @endif
                         ">
                           {{ ucfirst($conge->status) }}
@@ -78,18 +78,19 @@
                                 <i class="fas fa-eye"></i>
                             </a>
 
-                            <a href="{{ route('conges.edit', $conge->id) }}" class="btn btn-warning btn-sm">
-                                <i class="fas fa-edit"></i> 
-                            </a>
-                            <form id="delete-form-{{$conge->id}}" method="POST" action="{{ route('conges.destroy', $conge->id) }}" style="display: inline;">
-                                @csrf
-                                @method("DELETE")
+                            @if($conge->status === 'en attente')
+                                <a href="{{ route('conges.edit', $conge->id) }}" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form id="delete-form-{{$conge->id}}" method="POST" action="{{ route('conges.destroy', $conge->id) }}" style="display: inline;">
+                                    @csrf
+                                    @method("DELETE")
 
-                                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal-{{ $conge->id }}">
-                                    <i class="fas fa-trash"></i> 
-                                </button>
-                            </form>
-
+                                    <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal-{{ $conge->id }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            @endif
                             <!-- Modal -->
                             <div class="modal fade" id="deleteModal-{{ $conge->id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
                                 <div class="modal-dialog" role="document">
