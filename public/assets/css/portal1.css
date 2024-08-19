@@ -1,0 +1,55 @@
+
+    body {
+        background-color: #f8f9fa;
+    }
+    .auth-main-col {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .app-auth-body {
+        padding: 2rem;
+    }
+    .app-logo img {
+        max-width: 150px;
+    }
+    .auth-heading {
+        font-size: 2rem;
+        color: #007bff;
+        margin-bottom: 2rem;
+    }
+    .auth-form-container {
+        border-top: 1px solid #e9ecef;
+        padding-top: 1.5rem;
+    }
+    .form-control {
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.075);
+    }
+    .btn {
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+    }
+    .btn-app-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: #fff;
+    }
+    .btn-app-primary:hover {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+    .text-danger {
+        color: #dc3545;
+    }
+    .auth-background-col {
+        background: url('images/auth-background.jpg') no-repeat center center;
+        background-size: cover;
+    }
+    .auth-background-mask {
+        background: rgba(0, 0, 0, 0.3);
+    }
+    .app-auth-footer {
+        font-size: 0.875rem;
+    }

@@ -14,40 +14,45 @@ class AbsenceControlleur extends Controller
 {
    
    // Afficher la liste des absences
-    public function index(Request $request)
-    {
-        $query = Absence::query();
-        $user = auth()->user();
-        
-        // Récupérer le terme de recherche
-        $search = $request->input('search');
-        
-        // Condition pour les administrateurs et responsables RH
-        if ($user->profil == 'administrateurs' || $user->profil == 'responsables RH') {
-            $query = Absence::with('user');
-        } 
-        // Condition pour les managers
-        else if ($user->profil == 'manager') {
-            $query = Absence::where('approved_by', $user->id)->with('user');
-        } 
-        // Sinon, montrer seulement ses propres absences
-        else {
-            $query = Absence::where('UserId', $user->id)->with('user');
-        }
-        
-        // Ajouter la condition de recherche si un terme est fourni
-        if ($search) {
-            $query->whereHas('user', function($q) use ($search) {
-                $q->where('matricule', 'LIKE', "%$search%")
-                ->orWhereRaw("CONCAT(prenom, ' ', nom) LIKE ?", ["%$search%"]);
-            })
-            ->orWhere('motif', 'LIKE', "%$search%");
-        }
-        
-        $absences = $query->paginate(1); // Pagination avec 5 absences par page
-        
-        return view('absence.index', compact('absences'));
-    }
+   public function index(Request $request)
+   {
+       $query = Absence::query();
+       $user = auth()->user();
+       
+       // Récupérer le terme de recherche
+       $search = $request->input('search');
+       
+       // Condition pour les administrateurs et responsables RH
+       if ($user->profil == 'administrateurs' || $user->profil == 'responsables RH') {
+           $query = Absence::with('user');
+       } 
+       // Condition pour les managers
+       else if ($user->profil == 'manager') {
+           // Récupérer les absences des employés supervisés ainsi que celles du manager
+           $query = Absence::where(function($q) use ($user) {
+               $q->where('approved_by', $user->id) // Absences à approuver par le manager
+                 ->orWhere('UserId', $user->id);   // Absences du manager lui-même
+           })->with('user');
+       } 
+       // Sinon, montrer seulement ses propres absences
+       else {
+           $query = Absence::where('UserId', $user->id)->with('user');
+       }
+       
+       // Ajouter la condition de recherche si un terme est fourni
+       if ($search) {
+           $query->whereHas('user', function($q) use ($search) {
+               $q->where('matricule', 'LIKE', "%$search%")
+                 ->orWhereRaw("CONCAT(prenom, ' ', nom) LIKE ?", ["%$search%"]);
+           })
+           ->orWhere('motif', 'LIKE', "%$search%");
+       }
+       
+       $absences = $query->paginate(2); // Pagination avec 2 absences par page
+       
+       return view('absence.index', compact('absences'));
+   }
+   
         
         
     

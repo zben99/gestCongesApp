@@ -9,7 +9,7 @@
         <nav id="app-nav-main" class="app-nav app-nav-main flex-grow-1">
             <ul class="app-menu list-unstyled accordion" id="menu-accordion">
                 <li class="nav-item">
-                    <a class="nav-link active" >  <!--href="/" pour changer couleur sidebar-->
+                    <a class="nav-link active" href="/" >  <!--href="/" pour changer couleur sidebar-->
                         <span class="nav-icon">
                             <i class="fas fa-home"></i>
                         </span>

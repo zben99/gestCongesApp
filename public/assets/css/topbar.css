@@ -1,0 +1,57 @@
+
+
+.app-header-inner {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e9ecef;
+}
+.app-header-content {
+    padding: 1rem 2rem;
+}
+.app-utilities .app-utility-item {
+    margin-left: 1rem;
+}
+.app-utility-item a {
+    color: #333;
+    display: flex;
+    align-items: center;
+}
+.app-utility-item .icon {
+    font-size: 1.25rem;
+    transition: color 0.3s;
+}
+.app-utility-item .icon:hover {
+    color: #007bff;
+}
+.dropdown-menu {
+    border-radius: 0.5rem;
+}
+.dropdown-menu-header {
+    font-weight: bold;
+}
+.dropdown-menu-footer a {
+    color: #007bff;
+}
+.dropdown-menu-footer a:hover {
+    text-decoration: underline;
+}
+.password-container {
+    position: relative;
+}
+.password-container .fa-eye, 
+.password-container .fa-eye-slash {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+.app-user-dropdown .dropdown-menu {
+    min-width: 150px;
+}
+.app-user-dropdown a {
+    color: #333;
+    padding: 0.5rem 1rem;
+}
+.app-user-dropdown a:hover {
+    background-color: #f8f9fa;
+}

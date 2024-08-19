@@ -1,0 +1,12 @@
+
+
+      .app-page-title {
+          font-size: 2.5rem; /* Taille de police plus grande */
+          font-weight: bold; /* Texte en gras */
+          color: #007bff; /* Couleur primaire de Bootstrap */
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* Ombre légère */
+          border-bottom: 3px solid #007bff; /* Bordure en dessous du titre */
+          padding-bottom: 10px; /* Espacement en bas du titre */
+          margin-bottom: 20px; /* Espacement en bas */
+      }
+  

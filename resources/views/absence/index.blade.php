@@ -23,6 +23,7 @@
             <div class="card-body">
               <!-- Formulaire de recherche -->
               <form method="GET" action="{{ route('absences.index') }}" class="mb-3">
+              @csrf
                 <div class="row">
                   <div class="col-md-3">
                     <div class="form-group">

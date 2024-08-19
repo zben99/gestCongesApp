@@ -1,5 +1,14 @@
 @extends('layouts.template')
 
+@section('css')
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="{{ asset('/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
+  <!-- Toastr -->
+  <link rel="stylesheet" href="{{ asset('/plugins/toastr/toastr.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/plugins/toastr/persostyle.css') }}">
+  <!-- Custom CSS for status badges -->
+@endsection
+
 @section('content')
 
 <br>
@@ -10,7 +19,7 @@
 
             <div class="col-md-9">
                 <div class="card">
-                    <div class="card-header">
+                    <div class="btn btn-custom-blue btn-block">
                         <h3 class="card-title">Informations de Profil</h3>
                     </div>
                     <div class="card-body">
@@ -109,7 +118,7 @@
 
                             <div class="form-group ">
 
-                                    <button type="submit" class="btn btn-primary mt-3">Enregistrer</button>
+                                    <button type="submit" class="btn btn-custom-blue btn-block">Enregistrer</button>
 
                             </div>
 
@@ -132,7 +141,7 @@
             <div class="col-md-9">
                 <div class="card">
 
-                    <div class="card-header">
+                    <div class="btn btn-custom-blue btn-block">
                         <h3 class="card-title">Mettre à jour le Mot de Passe</h3>
                     </div>
 
@@ -184,7 +193,7 @@
 
                             <div class="form-group ">
 
-                                    <button type="submit" class="btn btn-primary mt-3">Enregistrer</button>
+                                    <button type="submit" class="btn btn-custom-blue btn-block">Enregistrer</button>
 
                             </div>
 
