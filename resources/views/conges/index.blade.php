@@ -44,7 +44,7 @@
                     @foreach ($conges as $conge)
                     <tr>
                         <td>{{ $conge->employe->nom }} {{ $conge->employe->prenom }}</td>
-                        <td>{{ $conge->typeConges }}</td>
+                        <td>{{ $conge->typeConge->nom }}</td> <!-- Remplace 'typeConges' par 'typeConge->nom' -->
                         <td>{{ $conge->dateDebut }}</td>
                         <td>{{ $conge->dateFin }} </td>
                         <td>

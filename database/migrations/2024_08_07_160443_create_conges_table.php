@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('conges', function (Blueprint $table) {
             $table->id();
             $table->foreignId('UserId')->constrained('users');
-            $table->enum('typeConges', ['annuels', 'maladie', 'maternité', 'paternité']);
+            $table->foreignId('type_conge_id')->constrained('types_conges');
             $table->date('dateDebut');
             $table->date('dateFin');
             $table->text('commentaire')->nullable();
@@ -23,6 +23,7 @@ return new class extends Migration
             $table->unsignedBigInteger('approved_by_rh')->nullable();
             $table->timestamps();
         });
+
     }
 
     /**

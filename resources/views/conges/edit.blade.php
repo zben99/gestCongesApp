@@ -9,7 +9,6 @@
   <!-- Custom CSS for status badges -->
 @endsection
 
-
 @section('content')
 <!-- Main content -->
 <section class="content">
@@ -41,14 +40,12 @@
                         @else
 
                         @foreach ($users as $user)
-                            <option value="{{ $user->id }}" {{ isset($conge->userId) && $conge->userId == $user->id ? 'selected' : '' }}>
+                            <option value="{{ $user->id }}" {{ isset($conge->UserId) && $conge->UserId == $user->id ? 'selected' : '' }}>
                                 {{ $user->nom }} {{ $user->prenom }}
                             </option>
                         @endforeach
 
                         @endif
-
-
                     </select>
                     @error('userId')
                         <div class="invalid-feedback">
@@ -57,16 +54,16 @@
                     @enderror
                 </div>
 
-
                 <div class="form-group mt-3">
-                  <label for="typeConges">Type de Congé</label>
-                  <select id="typeConges" name="typeConges" class="form-control" required>
-                    <option value="annuels" {{ isset($conge->typeConges) && $conge->typeConges == 'annuels' ? 'selected' : '' }}>Annuel</option>
-                    <option value="maladie" {{ isset($conge->typeConges) && $conge->typeConges == 'maladie' ? 'selected' : '' }}>Maladie</option>
-                    <option value="maternité" {{ isset($conge->typeConges) && $conge->typeConges == 'maternité' ? 'selected' : '' }}>Maternité</option>
-                    <option value="paternité" {{ isset($conge->typeConges) && $conge->typeConges == 'paternité' ? 'selected' : '' }}>Paternité</option>
+                  <label for="type_conge_id">Type de Congé</label>
+                  <select id="type_conge_id" name="type_conge_id" class="form-control" required>
+                    @foreach ($typeConges as $typeConge)
+                      <option value="{{ $typeConge->id }}" {{ isset($conge->type_conge_id) && $conge->type_conge_id == $typeConge->id ? 'selected' : '' }}>
+                        {{ $typeConge->nom }}
+                      </option>
+                    @endforeach
                   </select>
-                  @error('typeConges')
+                  @error('type_conge_id')
                     <div class="invalid-feedback">
                       {{ $message }}
                     </div>
@@ -121,9 +118,4 @@
     <!-- /.container-fluid -->
   </section>
   <!-- /.content -->
-
 @endsection
-
-
-
-

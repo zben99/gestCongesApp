@@ -8,7 +8,7 @@ class Conges extends Model
 {
     protected $fillable = [
         'userId',
-        'typeConges',
+        'type_conge_id',
         'dateDebut',
         'dateFin',
         'commentaire',
@@ -20,6 +20,11 @@ class Conges extends Model
     public function employe()
     {
         return $this->belongsTo(User::class, 'UserId');
+    }
+
+    public function typeConge()
+    {
+        return $this->belongsTo(TypeConges::class, 'type_conge_id');
     }
 
     public function managers()

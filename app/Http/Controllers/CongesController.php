@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Conges;
+use App\Models\TypeConges;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -42,32 +43,43 @@ class CongesController extends Controller
     public function create()
     {
         $users = User::all();
-        return view('conges.edit', compact('users'));
+        $typeConges = TypeConges::all();
+        return view('conges.edit', compact('users', 'typeConges'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'userId' => 'required|exists:users,id',
-            'typeConges' => 'required',
+            'type_conge_id' => 'required|exists:type_conges,id',
             'dateDebut' => 'required|date',
             'dateFin' => 'required|date|after_or_equal:dateDebut',
             'commentaire' => 'nullable',
         ]);
 
         $user = User::findOrFail($request->userId);
+        $typeConge = TypeConges::findOrFail($request->type_conge_id);
 
+        // Calcul du nombre de jours demandés
+        $days1 = (new \DateTime($request->dateFin))->diff(new \DateTime($request->dateDebut))->days + 1;
+
+        // Vérification de la durée maximale pour le type de congé
+        if ($days1 > $typeConge->duree_max) {
+            return redirect()->route('conges.index')->with('error', 'La durée demandée dépasse la durée maximale autorisée pour ce type de congé.');
+        }
+
+        // Calcul des jours de congé disponibles
         $days = (new \DateTime(now()))->diff(new \DateTime($user->initialization_date))->days + 1;
         $nbreConge = ($days * 2.5) / 30;
         $congeRestant = floor($nbreConge + $user->initial - $user->pris);
 
-        $days1 = (new \DateTime($request->dateFin))->diff(new \DateTime($request->dateDebut))->days + 1;
-
+        // Vérification si le nombre de jours demandés dépasse les congés restants
         if ($days1 > $congeRestant) {
             return redirect()->route('conges.index')->with('error', 'Impossible de créer une demande avec ce nombre de jours.');
         }
 
         try {
+            // Création de la demande de congé
             $conge = new Conges($request->all());
             $conge->status = 'en attente';
             $conge->save();
@@ -81,44 +93,56 @@ class CongesController extends Controller
 
 
 
+
+
     public function edit(Conges $conge)
     {
         $users = User::all();
-        return view('conges.edit', compact('conge','users'));
+        $typeConges = TypeConges::all();
+        return view('conges.edit', compact('conge','users','typeConges'));
     }
 
     public function update(Request $request, Conges $conge)
     {
         $request->validate([
-            'typeConges' => 'required',
+            'type_conge_id' => 'required|exists:type_conges,id',
             'dateDebut' => 'required|date',
             'dateFin' => 'required|date|after_or_equal:dateDebut',
             'commentaire' => 'nullable',
         ]);
 
+        $user = User::findOrFail($conge->UserId);
+        $typeConge = TypeConges::findOrFail($request->type_conge_id);
 
-        $user = User::findOrFail($conge->userId);
+        // Calcul du nombre de jours demandés
+        $days1 = $this->calculateDays($request->dateDebut, $request->dateFin);
 
-        $days = $this->calculateDays( $user->initialization_date, now());
+        // Vérification de la durée maximale pour le type de congé
+        if ($days1 > $typeConge->duree_max) {
+            return redirect()->route('conges.index')->with('error', 'La durée demandée dépasse la durée maximale autorisée pour ce type de congé.');
+        }
+
+        // Calcul des jours de congé disponibles
+        $days = $this->calculateDays($user->initialization_date, now());
         $nbreConge = ($days * 2.5) / 30;
         $congeRestant = floor($nbreConge + $user->initial - $user->pris);
 
-
-        $days1 = $this->calculateDays($request->dateDebut, $request->dateFin);
-
+        // Vérification si le nombre de jours demandés dépasse les congés restants
         if ($days1 > $congeRestant) {
-            return redirect()->route('conges.index')->with('error', 'Impossible de créer une demande avec ce nombre de jours.');
+            return redirect()->route('conges.index')->with('error', 'Impossible de modifier la demande avec ce nombre de jours.');
         }
 
-        $conge->typeConges = $request->typeConges;
+        // Mise à jour des informations du congé
+        $conge->type_conge_id = $request->type_conge_id;
         $conge->dateDebut = $request->dateDebut;
         $conge->dateFin = $request->dateFin;
         $conge->commentaire = $request->commentaire;
         $conge->save();
 
-
-        return redirect()->route('conges.index')->with('success', 'Demande de congé modifier avec succès.');
+        return redirect()->route('conges.index')->with('success', 'Demande de congé modifiée avec succès.');
     }
+
+
 
 
     public function show($conge)
