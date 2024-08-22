@@ -32,7 +32,10 @@
                         <ul class="submenu-list list-unstyled">
                             <li class="submenu-item"><a class="submenu-link" href="{{ route('departements.index') }}">Departement</a></li>
                             <li class="submenu-item"><a class="submenu-link" href="{{ route('postes.index') }}">Poste</a></li>
+
                             @if(auth()->user()->profil == 'responsables RH')
+                                <li class="submenu-item"><a class="submenu-link" href="{{ route('typeConges.index') }}">Type de congés</a></li>
+                                <li class="submenu-item"><a class="submenu-link" href="{{ route('typeAbsences.index') }}">Type d'absences</a></li>
                                 <li class="submenu-item"><a class="submenu-link" href="{{ route('user-manager.index') }}">Workflow</a></li>
                             @endif
                         </ul>

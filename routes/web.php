@@ -2,23 +2,25 @@
 
 
 use App\Models\User;
-use App\Models\Absence;
 use App\Models\Conges;
-use App\Notifications\AbsenceStatusNotification;
-
+use App\Models\Absence;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\MainController;
 
+use App\Http\Controllers\MainController;
 use App\Http\Controllers\AdminController;
+
 use App\Http\Controllers\PosteController;
+use App\Http\Controllers\CongesController;
 use App\Http\Controllers\EmployeController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\DepartementController;
-
-use App\Http\Controllers\CongesController;
 use App\Http\Controllers\AbsenceControlleur;
-use App\Http\Controllers\UserManagerController;
+
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\TypeCongesController;
+use App\Http\Controllers\DepartementController;
+use App\Http\Controllers\UserManagerController;
+use App\Http\Controllers\TypeAbsencesController;
+use App\Notifications\AbsenceStatusNotification;
 
 
 
@@ -135,6 +137,30 @@ Route::middleware('auth')->group(function () {
 
         return 'Email de test envoyé !';
     });
+
+
+    Route::resource('type/conges', TypeCongesController::class)->names([
+        'index' => 'typeConges.index',
+        'create' => 'typeConges.create',
+        'store' => 'typeConges.store',
+        'show' => 'typeConges.show',
+        'edit' => 'typeConges.edit',
+        'update' => 'typeConges.update',
+        'destroy' => 'typeConges.destroy',
+    ]);
+
+
+
+    Route::resource('type/absences', TypeAbsencesController::class)->names([
+        'index' => 'typeAbsences.index',
+        'create' => 'typeAbsences.create',
+        'store' => 'typeAbsences.store',
+        'show' => 'typeAbsences.show',
+        'edit' => 'typeAbsences.edit',
+        'update' => 'typeAbsences.update',
+        'destroy' => 'typeAbsences.destroy',
+    ]);
+
 
     // Route pour afficher la liste des départements
     Route::get('/departements', [DepartementController::class, 'index'])->name('departements.index');
