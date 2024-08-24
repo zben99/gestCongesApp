@@ -180,10 +180,13 @@ public function approveByRh($id)
     if ($conge->status === 'en attente RH') {
         $conge->status = 'approuvé';
         $conge->approved_by_rh = $user->id;
+        if ($conge->typeConge->nom=='Congé annuel') {
+            $days = $this->calculateDays($conge->dateDebut, $conge->dateFin);
+            $conge->employe->pris += $days;
+            $conge->employe->save();
+        }
 
-        $days = $this->calculateDays($conge->dateDebut, $conge->dateFin);
-        $conge->employe->pris += $days;
-        $conge->employe->save();
+
         $conge->save();
 
     } elseif ($conge->status === 'en attente') {

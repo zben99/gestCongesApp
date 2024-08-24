@@ -13,7 +13,6 @@ use App\Notifications\AbsenceStatusNotification;
 
 class AbsenceControlleur extends Controller
 {
-
    // Afficher la liste des absences
    public function index(Request $request)
    {
@@ -54,154 +53,173 @@ class AbsenceControlleur extends Controller
        return view('absence.index', compact('absences'));
    }
 
+   // Afficher le formulaire de création
+   public function create()
+   {
+       $users = User::where('profil', 'employés')->get(); // Récupérer uniquement les employés pour le formulaire
+       $typeAbsences = TypeAbsences::all();
 
+       return view('absence.edit', compact('users', 'typeAbsences'));
+   }
 
+   // Stocker une nouvelle absence
+   public function store(Request $request)
+   {
+       // Validation des données
+       $validator = Validator::make($request->all(), [
+           'type_absence_id' => 'required|exists:type_absences,id', // Validation pour le type d'absence
+           'motif' => 'required|string|max:255',
+           'dateDebut' => 'required|date',
+           'dateFin' => 'required|date|after_or_equal:dateDebut',
+       ]);
 
-    // Afficher le formulaire de création
-    public function create()
-    {
-        $users = User::where('profil', 'employés')->get(); // Récupérer uniquement les employés pour le formulaire
-        $typeAbsences = TypeAbsences::all();
-        return view('absence.edit', compact('users', 'typeAbsences'));
-    }
-
-    // Stocker une nouvelle absence
-    public function store(Request $request)
-    {
-    // Validation des données
-    $validator = Validator::make($request->all(), [
-        'motif' => 'required|string|max:255',
-        'dateDebut' => 'required|date',
-        'dateFin' => 'required|date|after_or_equal:dateDebut',
-    ]);
-
-    if ($validator->fails()) {
-        return redirect()->back()->withErrors($validator)->withInput();
-    }
-
-    // Récupérer l'utilisateur connecté
-    $user = auth()->user();
-
-    // Création de l'absence
-    $absence = new Absence();
-    $absence->UserId = $user->id; // Associer l'absence à l'utilisateur connecté
-    $absence->motif = $request->input('motif');
-    $absence->dateDebut = Carbon::parse($request->input('dateDebut'));
-    $absence->dateFin = Carbon::parse($request->input('dateFin'));
-    $absence->status = 'en attente'; // Définir le statut par défaut
-    $absence->commentaire = $request->input('commentaire');
-
-    // Associer l'absence au premier manager de l'utilisateur connecté
-    if ($user->managers->isNotEmpty()) {
-        $absence->approved_by = $user->managers->first()->id;
-    }
-
-    $absence->save();
-
-    return redirect()->route('absences.index')->with('success', 'Absence créée avec succès');
-    }
-
-    // Afficher une absence spécifique
-    public function show(Absence $absence)
-    {
-        return view('absence.show', compact('absence'));
-    }
-
-    // Afficher le formulaire d'édition
-    public function edit(Absence $absence)
-    {
-        $users = User::all(); // Récupère tous les utilisateurs
-        $connectedUser = auth()->user(); // Récupère l'utilisateur connecté
-        return view('absence.edit', compact('absence', 'users', 'connectedUser'));
-    }
-
-
-    // Mettre à jour une absence
-    public function update(Request $request, Absence $absence)
-    {
-        // Validation des données
-        $validator = Validator::make($request->all(), [
-            'UserId' => 'required|exists:users,id',
-            'motif' => 'required|string|max:255',
-            'dateDebut' => 'required|date',
-            'dateFin' => 'required|date|after_or_equal:dateDebut',
-            'commentaire' => 'nullable|string|max:500', // Validation pour le commentaire
-        ]);
-
-        if ($validator->fails()) {
+         // Si la validation échoue
+         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        // Vérifier si l'utilisateur a le droit de modifier cette absence
-        $user = auth()->user();
-        if ($user->profil !== 'administrateur' && $user->id !== $absence->UserId) {
-            return redirect()->route('absences.index')->with('error', 'Vous n\'avez pas l\'autorisation de modifier cette absence');
-        }
 
-        // Mise à jour de l'absence
-        $absence->UserId = $request->input('UserId');
-        $absence->motif = $request->input('motif');
-        $absence->dateDebut = Carbon::parse($request->input('dateDebut'));
-        $absence->dateFin = Carbon::parse($request->input('dateFin'));
-        $absence->commentaire = $request->input('commentaire');
 
-        // Ne pas modifier le statut
-        // $absence->status = $request->input('status'); // Cette ligne est supprimée
+       // Récupérer l'utilisateur connecté
+       $user = auth()->user();
 
-        // Sauvegarder les modifications
-        $absence->save();
+       // Récupérer le type d'absence
+       $typeAbsence = TypeAbsences::find($request->input('type_absence_id'));
 
-        // Redirection avec message de succès
-        return redirect()->route('absences.index')->with('success', 'Absence mise à jour avec succès');
-    }
+       // Validation spécifique selon le type d'absence
+       $dureeAbsence = $this->calculateDays( $request->input('dateDebut'), $request->input('dateFin'));
 
-    // Supprimer une absence
-    public function destroy(Absence $absence)
-    {
-        if (!$absence) {
-            return redirect(route('absences.index'))->with('error', 'Absence non trouvée');
-        }
+       if ($typeAbsence->duree_max > 0 && $dureeAbsence > $typeAbsence->duree_max) {
+           return redirect()->back()->withErrors(['dateFin' => 'La durée de l\'absence dépasse la durée maximale autorisée pour ce type d\'absence.'])->withInput();
+       }
 
-        $absence->delete();
+       if ($typeAbsence->justificatif_requis && !$request->hasFile('justificatif')) {
+           return redirect()->back()->withErrors(['justificatif' => 'Un justificatif est requis pour ce type d\'absence.'])->withInput();
+       }
 
-        return redirect(route('absences.index'))->with('success', 'Absence supprimée avec succès');
-    }
+       // Création de l'absence
+       $absence = new Absence();
+       $absence->UserId = $user->id; // Associer l'absence à l'utilisateur connecté
+       $absence->motif = $request->input('motif');
+       $absence->dateDebut = $request->input('dateDebut');
+       $absence->dateFin = $request->input('dateFin');
+       $absence->status = 'en attente'; // Définir le statut par défaut
+       $absence->commentaire = $request->input('commentaire');
+       $absence->type_absence_id = $typeAbsence->id;
 
-    public function validateRequest($id)
-    {
-        $absence = Absence::findOrFail($id);
-        $absence->status = 'approuvé';
-        $absence->approved_by = auth()->user()->id; // Ajouter l'ID de l'utilisateur qui approuve
-        $absence->save();
+       // Associer l'absence au premier manager de l'utilisateur connecté
+       if ($user->managers->isNotEmpty()) {
+           $absence->approved_by = $user->managers->first()->id;
+       }
 
-        // Envoyer une notification par email à l'utilisateur
-        $absence->user->notify(new AbsenceStatusNotification($absence, 'approuvé'));
+       $absence->save();
 
-        return redirect()->route('absences.index')->with('success', 'La demande d\'absence a été validée.');
-    }
+       return redirect()->route('absences.index')->with('success', 'Absence créée avec succès');
+   }
 
-    public function rejectRequest($id)
-    {
-        $absence = Absence::findOrFail($id);
-        $absence->status = 'refusé'; // Assurez-vous que 'refusé' est bien dans les valeurs acceptées
-        $absence->approved_by = auth()->user()->id; // Ajouter l'ID de l'utilisateur qui rejette
-        $absence->save();
+   // Afficher une absence spécifique
+   public function show(Absence $absence)
+   {
+       return view('absence.show', compact('absence'));
+   }
 
-        // Envoyer une notification par email à l'utilisateur
-        $absence->user->notify(new AbsenceStatusNotification($absence, 'refusé'));
+   // Afficher le formulaire d'édition
+   public function edit(Absence $absence)
+   {
+       $users = User::all(); // Récupère tous les utilisateurs
+       $typeAbsences = TypeAbsences::all(); // Récupère tous les types d'absences
+       $connectedUser = auth()->user(); // Récupère l'utilisateur connecté
+       return view('absence.edit', compact('absence', 'users', 'typeAbsences', 'connectedUser'));
+   }
 
-        return redirect()->route('absences.index')->with('success', 'La demande d\'absence a été rejetée.');
-    }
+   // Mettre à jour une absence
+   public function update(Request $request, Absence $absence)
+   {
+       // Validation des données
+       $validator = Validator::make($request->all(), [
+           'UserId' => 'required|exists:users,id',
+           'type_absence_id' => 'required|exists:type_absences,id', // Validation pour le type d'absence
+           'motif' => 'required|string|max:255',
+           'dateDebut' => 'required|date',
+           'dateFin' => 'required|date|after_or_equal:dateDebut',
+           'commentaire' => 'nullable|string|max:500', // Validation pour le commentaire
+       ]);
 
-    public function absencesEnAttente()
+       if ($validator->fails()) {
+           return redirect()->back()->withErrors($validator)->withInput();
+       }
+
+       // Vérifier si l'utilisateur a le droit de modifier cette absence
+       $user = auth()->user();
+       if ($user->profil !== 'administrateur' && $user->id !== $absence->UserId) {
+           return redirect()->route('absences.index')->with('error', 'Vous n\'avez pas l\'autorisation de modifier cette absence');
+       }
+
+       // Mise à jour de l'absence
+       $absence->UserId = $request->input('UserId');
+       $absence->motif = $request->input('motif');
+       $absence->dateDebut = Carbon::parse($request->input('dateDebut'));
+       $absence->dateFin = Carbon::parse($request->input('dateFin'));
+       $absence->commentaire = $request->input('commentaire');
+       $absence->type_absence_id = $request->input('type_absence_id');
+
+       // Sauvegarder les modifications
+       $absence->save();
+
+       // Redirection avec message de succès
+       return redirect()->route('absences.index')->with('success', 'Absence mise à jour avec succès');
+   }
+
+   // Supprimer une absence
+   public function destroy(Absence $absence)
+   {
+       if (!$absence) {
+           return redirect(route('absences.index'))->with('error', 'Absence non trouvée');
+       }
+
+       $absence->delete();
+
+       return redirect(route('absences.index'))->with('success', 'Absence supprimée avec succès');
+   }
+
+   public function validateRequest($id)
+   {
+       $absence = Absence::findOrFail($id);
+       $absence->status = 'approuvé';
+       $absence->approved_by = auth()->user()->id; // Ajouter l'ID de l'utilisateur qui approuve
+       $absence->save();
+
+       // Envoyer une notification par email à l'utilisateur
+       $absence->user->notify(new AbsenceStatusNotification($absence, 'approuvé'));
+
+       return redirect()->route('absences.index')->with('success', 'La demande d\'absence a été validée.');
+   }
+
+   public function rejectRequest($id)
+   {
+       $absence = Absence::findOrFail($id);
+       $absence->status = 'refusé'; // Assurez-vous que 'refusé' est bien dans les valeurs acceptées
+       $absence->approved_by = auth()->user()->id; // Ajouter l'ID de l'utilisateur qui rejette
+       $absence->save();
+
+       // Envoyer une notification par email à l'utilisateur
+       $absence->user->notify(new AbsenceStatusNotification($absence, 'refusé'));
+
+       return redirect()->route('absences.index')->with('success', 'La demande d\'absence a été rejetée.');
+   }
+
+   public function absencesList()
+   {
+       $userId = auth()->user()->id;
+       $absences = Absence::where('UserId', $userId)->with('typeAbsence')->get();
+
+       return view('absences.liste', compact('absences'));
+   }
+
+
+   private function calculateDays($dateDebut, $dateFin)
 {
-    // Récupérer les absences en attente de validation depuis plus de 72 heures
-    $absences = Absence::where('status', 'en attente')
-                        ->where('created_at', '<', Carbon::now()->subHours(72))
-                        ->with('user')
-                        ->paginate(10);
-
-    return view('absence.attente', compact('absences'));
+    return (new \DateTime($dateFin))->diff(new \DateTime($dateDebut))->days + 1;
 }
 
 }

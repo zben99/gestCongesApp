@@ -6,11 +6,11 @@
   <!-- Toastr -->
   <link rel="stylesheet" href="{{ asset('/plugins/toastr/toastr.min.css') }}">
   <link rel="stylesheet" href="{{ asset('/plugins/toastr/persostyle.css') }}">
-  <!-- Custom CSS for status badges -->
+  <!-- CSS personnalisé pour les badges de statut -->
 @endsection
 
 @section('content')
-  <!-- Main content -->
+  <!-- Contenu principal -->
   <section class="content">
     <div class="container-fluid">
       <div class="row">
@@ -23,7 +23,7 @@
             <div class="card-body">
               <!-- Formulaire de recherche -->
               <form method="GET" action="{{ route('absences.index') }}" class="mb-3">
-              @csrf
+                @csrf
                 <div class="row">
                   <div class="col-md-3">
                     <div class="form-group">
@@ -31,27 +31,28 @@
                     </div>
                   </div>
                   <div class="col-md-2">
-                    <button type="submit" class="btn btn-custom-blue btn-block"  >Rechercher</button>
+                    <button type="submit" class="btn btn-custom-blue btn-block">Rechercher</button>
                   </div>
                 </div>
               </form>
-              
+
               <div class="card-header mb-3">
                 <a href="{{ route('absences.create') }}">
                   <button type="button" class="btn btn-custom-blue btn-block">Ajouter une absence</button>
                 </a>
               </div>
-              
+
               <table id="example2" class="table table-bordered table-hover">
                 <thead>
                   <tr>
                     <th>N°</th>
                     <th>Matricule</th>
                     <th>Nom complet</th>
+                    <th>Type d'absence</th>
                     <th>Motif</th>
                     <th>Date de début</th>
                     <th>Date de fin</th>
-                    <th>Status</th>
+                    <th>Statut</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -61,14 +62,15 @@
                       <td>{{ $loop->index + 1 }}</td>
                       <td>{{ $absence->user ? $absence->user->matricule : '' }}</td>
                       <td>{{ $absence->user ? $absence->user->prenom . ' ' . $absence->user->nom : '' }}</td>
+                      <td>{{ $absence->typeAbsence ? $absence->typeAbsence->nom : '' }}</td>
                       <td>{{ $absence->motif }}</td>
                       <td>{{ $absence->dateDebut }}</td>
                       <td>{{ $absence->dateFin }}</td>
                       <td>
                         <span class="
-                          @if ($absence->status === 'en attente') status-pending 
-                          @elseif ($absence->status === 'approuvé') status-approved 
-                          @elseif ($absence->status === 'refusé') status-rejected 
+                          @if ($absence->status === 'en attente') status-pending
+                          @elseif ($absence->status === 'approuvé') status-approved
+                          @elseif ($absence->status === 'refusé') status-rejected
                           @endif
                         ">
                           {{ ucfirst($absence->status) }}
@@ -79,7 +81,7 @@
                           <a href="{{ route('absences.edit', $absence->id) }}" title="Modifier l'absence" class="btn btn-warning btn-sm">
                             <i class="fas fa-edit"></i>
                           </a>
-                          
+
                           <form id="delete-form-{{ $absence->id }}" method="POST" action="{{ route('absences.destroy', $absence->id) }}" style="display: inline;">
                             @csrf
                             @method("DELETE")
@@ -175,7 +177,7 @@
                 </tbody>
               </table>
               <div class="d-flex justify-content-center mt-3">
-              {{ $absences->links('vendor.pagination.custom') }}
+                {{ $absences->links('vendor.pagination.custom') }}
               </div>
             </div>
             <!-- /.card-body -->
@@ -188,18 +190,46 @@
   <!-- /.content -->
 @endsection
 
-@section('js')
-  <!-- SweetAlert2 -->
-  <script src="{{ asset('/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
-  <!-- Toastr -->
-  <script src="{{ asset('/plugins/toastr/toastr.min.js') }}"></script>
-  <script>
-    @if(Session::has('message'))
-      toastr.success("{{ Session::get('message') }}");
-    @endif
+@section('script')
+<!-- SweetAlert2 -->
+<script src="{{ asset('/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
+<!-- Toastr -->
+<script src="{{ asset('/plugins/toastr/toastr.min.js') }}"></script>
 
-    @if(Session::has('error'))
-      toastr.error("{{ Session::get('error') }}");
-    @endif
-  </script>
+@if (session('success'))
+    <script>
+        $(function() {
+            var Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+
+            Toast.fire({
+                icon: 'success',
+                title: '{{ session('success') }}'
+            });
+        });
+    </script>
+@endif
+
+@if (session('error'))
+    <script>
+        $(function() {
+            var Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+
+            Toast.fire({
+                icon: 'error',
+                title: '{{ session('error') }}'
+            });
+        });
+    </script>
+@endif
 @endsection
+

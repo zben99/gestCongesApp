@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('absences', function (Blueprint $table) {
             $table->id();
             $table->foreignId('UserId')->constrained('users');
+            $table->foreignId('type_absence_id')->constrained('type_absences'); // Ajout de la relation avec la table typeabsences
             $table->string('motif');
             $table->date('dateDebut');
             $table->date('dateFin');
@@ -22,6 +23,7 @@ return new class extends Migration
             $table->unsignedBigInteger('approved_by')->nullable();
             $table->timestamps();
         });
+
     }
 
     /**

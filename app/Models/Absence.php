@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\TypeAbsences;
 use Illuminate\Database\Eloquent\Model;
 use App\Http\Controllers\AbsenceControlleur;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Absence extends Model
 {
@@ -12,6 +13,7 @@ class Absence extends Model
 
     protected $fillable = [
         'UserId', // Correction du nom du champ pour correspondre à la convention Laravel
+        'type_absence_id',
         'motif',
         'dateDebut',
         'dateFin',
@@ -23,6 +25,13 @@ class Absence extends Model
         'dateDebut' => 'datetime',
         'dateFin' => 'datetime',
     ];
+
+
+    public function typeAbsence()
+    {
+        return $this->belongsTo(TypeAbsences::class, 'type_absence_id');
+    }
+
 
     // Relation avec le modèle User (l'employé associé à l'absence)
     public function user()

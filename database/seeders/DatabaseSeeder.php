@@ -16,8 +16,9 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         $this->call(TypesCongesSeeder::class);
+        $this->call(TypeAbsencesSeeder::class);
 
-        /*User::factory()->create([
+        User::factory()->create([
             'nom' => 'Super',
             'prenom' => 'Admin',
             'matricule' => '00000',
@@ -26,7 +27,7 @@ class DatabaseSeeder extends Seeder
             'telephone1' => '25000000',
             'profil' => 'administrateurs',
 
-        ]);*/
+        ]);
 
 
     }

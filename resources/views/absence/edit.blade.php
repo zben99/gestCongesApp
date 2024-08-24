@@ -5,8 +5,13 @@
   <link rel="stylesheet" href="{{ asset('/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
   <!-- Select2 CSS -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <!-- Toastr -->
+    <link rel="stylesheet" href="{{ asset('/plugins/toastr/toastr.min.css') }}">
   <link rel="stylesheet" href="{{ asset('/plugins/toastr/persostyle.css') }}">
 @endsection
+
+
+
 
 @section('content')
   <!-- Main content -->
@@ -45,10 +50,10 @@
                 @endif
 
                 <div class="form-group">
-                  <label for="typeabsence_id">{{ __('Type d\'absence') }}</label>
-                  <select class="form-control" name="typeabsence_id" id="typeabsence_id" required>
+                  <label for="type_absence_id">{{ __('Type d\'absence') }}</label>
+                  <select class="form-control" name="type_absence_id" id="type_absence_id" required>
                     @foreach($typeAbsences as $typeAbsence)
-                      <option value="{{ $typeAbsence->id }}" {{ isset($absence) && $absence->typeabsence_id == $typeAbsence->id ? 'selected' : '' }}>
+                      <option value="{{ $typeAbsence->id }}" {{ isset($absence) && $absence->type_absence_id == $typeAbsence->id ? 'selected' : '' }}>
                         {{ $typeAbsence->nom }}
                       </option>
                     @endforeach
@@ -64,24 +69,32 @@
                     </div>
                   @enderror
                 </div>
-                <div class="form-group">
-                  <label for="dateDebut">{{ __('Date de début') }}</label>
-                  <input type="date" class="form-control @error('dateDebut') is-invalid @enderror" name="dateDebut" id="dateDebut" value="{{ isset($absence) ? $absence->dateDebut : old('dateDebut') }}" required>
-                  @error('dateDebut')
-                    <div class="invalid-feedback">
-                      {{ $message }}
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="dateDebut">{{ __('Date de début') }}</label>
+                            <input type="date" class="form-control @error('dateDebut') is-invalid @enderror" name="dateDebut" id="dateDebut" value="{{ isset($absence) ? $absence->dateDebut : old('dateDebut') }}" required>
+                            @error('dateDebut')
+                              <div class="invalid-feedback">
+                                {{ $message }}
+                              </div>
+                            @enderror
+                          </div>
                     </div>
-                  @enderror
-                </div>
-                <div class="form-group">
-                  <label for="dateFin">{{ __('Date de fin') }}</label>
-                  <input type="date" class="form-control @error('dateFin') is-invalid @enderror" name="dateFin" id="dateFin" value="{{ isset($absence) ? $absence->dateFin : old('dateFin') }}" required>
-                  @error('dateFin')
-                    <div class="invalid-feedback">
-                      {{ $message }}
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="dateFin">{{ __('Date de fin') }}</label>
+                            <input type="date" class="form-control @error('dateFin') is-invalid @enderror" name="dateFin" id="dateFin" value="{{ isset($absence) ? $absence->dateFin : old('dateFin') }}" required>
+                            @error('dateFin')
+                              <div class="invalid-feedback">
+                                {{ $message }}
+                              </div>
+                            @enderror
+                          </div>
                     </div>
-                  @enderror
                 </div>
+
+
                 <div class="form-group">
                   <label for="commentaire">{{ __('Commentaire') }}</label>
                   <textarea class="form-control" name="commentaire" id="commentaire" rows="3" placeholder="Ajoutez un commentaire (optionnel)">{{ isset($absence) ? $absence->commentaire : old('commentaire') }}</textarea>
@@ -116,13 +129,66 @@
   <!-- /.content -->
 @endsection
 
-@section('scripts')
-  <!-- Select2 JS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-  <script>
-    $(document).ready(function() {
-      $('#user_id').select2();
-      $('#typeabsence_id').select2();
-    });
-  </script>
+
+@section('script')
+<!-- SweetAlert2 -->
+<script src="{{ asset('/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
+<!-- Toastr -->
+<script src="{{ asset('/plugins/toastr/toastr.min.js') }}"></script>
+
+@if (session('success'))
+    <script>
+        $(function() {
+            var Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+
+            Toast.fire({
+                icon: 'success',
+                title: '{{ session('success') }}'
+            });
+        });
+    </script>
+@endif
+
+@if ($errors->any())
+    <script>
+        $(function() {
+            var Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 5000
+            });
+
+            @foreach ($errors->all() as $error)
+                Toast.fire({
+                    icon: 'error',
+                    title: '{{ $error }}'
+                });
+            @endforeach
+        });
+    </script>
+@endif
+
+@if (session('error'))
+    <script>
+        $(function() {
+            var Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+
+            Toast.fire({
+                icon: 'error',
+                title: '{{ session('error') }}'
+            });
+        });
+    </script>
+@endif
 @endsection
