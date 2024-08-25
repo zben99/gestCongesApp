@@ -227,6 +227,8 @@ class AbsenceControlleur extends Controller
        $absence->approved_by = auth()->user()->id; // Ajouter l'ID de l'utilisateur qui approuve
        $absence->save();
 
+       $this->verifierEtDeducterJoursAbsence($absence->user);
+
        // Envoyer une notification par email à l'utilisateur
        $absence->user->notify(new AbsenceStatusNotification($absence, 'approuvé'));
 
@@ -248,7 +250,7 @@ class AbsenceControlleur extends Controller
 
    public function absencesList()
    {
-    dd('');
+
        $userId = auth()->user()->id;
        $absences = Absence::where('UserId', $userId)->with('typeAbsence')->get();
 
@@ -260,6 +262,31 @@ class AbsenceControlleur extends Controller
 {
     return (new \DateTime($dateFin))->diff(new \DateTime($dateDebut))->days + 1;
 }
+
+
+
+protected function verifierEtDeducterJoursAbsence($user)
+{
+    $anneeEnCours = date('Y');
+    $joursAbsenceNonLegale=0;
+    $absences = Absence::where('UserId', $user->id) ->whereYear('dateDebut', $anneeEnCours) ->get();
+
+    foreach ($absences as $absence ) {
+        if ($absence->typeAbsence->nom=='Absence non légale') {
+            $joursAbsenceNonLegale += $this->calculateDays($absence->dateDebut, $absence->dateFin);
+        }
+    }
+
+
+    if ($joursAbsenceNonLegale > 10) {
+        $joursExcedentaires = $joursAbsenceNonLegale - 10;
+
+         $user->pris += ($joursExcedentaires -  $user->jours_deductibles);
+         $user->jours_deductibles+=($joursExcedentaires -  $user->jours_deductibles);
+         $user->save();
+    }
+}
+
 
 
 
