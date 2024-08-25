@@ -52,6 +52,7 @@
                     <th>Motif</th>
                     <th>Date de début</th>
                     <th>Date de fin</th>
+                    <th>Justificatif</th> <!-- Nouvelle colonne pour le justificatif -->
                     <th>Statut</th>
                     <th>Actions</th>
                   </tr>
@@ -64,8 +65,20 @@
                       <td>{{ $absence->user ? $absence->user->prenom . ' ' . $absence->user->nom : '' }}</td>
                       <td>{{ $absence->typeAbsence ? $absence->typeAbsence->nom : '' }}</td>
                       <td>{{ $absence->motif }}</td>
-                      <td>{{ $absence->dateDebut }}</td>
-                      <td>{{ $absence->dateFin }}</td>
+                      <td>{{ $absence->dateDebut->format('d/m/Y') }}</td>
+                      <td>{{ $absence->dateFin->format('d/m/Y') }}</td>
+                      <td>
+                        @if ($absence->justificatif)
+
+
+                          <a href="{{ asset('storage/justificatifs/' . $absence->justificatif) }}" target="_blank" class="btn btn-custom-blue btn-icon">
+                            <i class="fas fa-file"></i>
+                          </a>
+
+                        @else
+                          Aucun
+                        @endif
+                      </td>
                       <td>
                         <span class="
                           @if ($absence->status === 'en attente') status-pending
@@ -77,6 +90,7 @@
                         </span>
                       </td>
                       <td>
+
                         @if(auth()->user()->profil !== 'manager' || $absence->status !== 'en attente')
                           <a href="{{ route('absences.edit', $absence->id) }}" title="Modifier l'absence" class="btn btn-warning btn-sm">
                             <i class="fas fa-edit"></i>

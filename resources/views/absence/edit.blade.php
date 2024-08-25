@@ -5,13 +5,10 @@
   <link rel="stylesheet" href="{{ asset('/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
   <!-- Select2 CSS -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-    <!-- Toastr -->
-    <link rel="stylesheet" href="{{ asset('/plugins/toastr/toastr.min.css') }}">
+  <!-- Toastr -->
+  <link rel="stylesheet" href="{{ asset('/plugins/toastr/toastr.min.css') }}">
   <link rel="stylesheet" href="{{ asset('/plugins/toastr/persostyle.css') }}">
 @endsection
-
-
-
 
 @section('content')
   <!-- Main content -->
@@ -24,7 +21,7 @@
               <h3 class="card-title">{{ isset($absence) ? __('Modifier l\'absence') : __('Ajouter une absence') }}</h3>
             </div>
             <!-- form start -->
-            <form action="{{ isset($absence) ? route('absences.update', $absence->id) : route('absences.store') }}" method="POST">
+            <form action="{{ isset($absence) ? route('absences.update', $absence->id) : route('absences.store') }}" method="POST" enctype="multipart/form-data">
               @csrf
               @if(isset($absence))
                 @method('PUT')
@@ -53,11 +50,23 @@
                   <label for="type_absence_id">{{ __('Type d\'absence') }}</label>
                   <select class="form-control" name="type_absence_id" id="type_absence_id" required>
                     @foreach($typeAbsences as $typeAbsence)
-                      <option value="{{ $typeAbsence->id }}" {{ isset($absence) && $absence->type_absence_id == $typeAbsence->id ? 'selected' : '' }}>
+                      <option value="{{ $typeAbsence->id }}"
+                        data-justificatif="{{ $typeAbsence->justificatif_requis ? 'true' : 'false' }}"
+                        {{ isset($absence) && $absence->type_absence_id == $typeAbsence->id ? 'selected' : '' }}>
                         {{ $typeAbsence->nom }}
                       </option>
                     @endforeach
                   </select>
+                </div>
+
+                <div class="form-group" id="justificatif_div" style="display: none;">
+                  <label for="justificatif">{{ __('Justificatif (si requis)') }}</label>
+                  <input type="file" class="form-control @error('justificatif') is-invalid @enderror" name="justificatif" id="justificatif">
+                  @error('justificatif')
+                    <div class="invalid-feedback">
+                      {{ $message }}
+                    </div>
+                  @enderror
                 </div>
 
                 <div class="form-group">
@@ -69,6 +78,7 @@
                     </div>
                   @enderror
                 </div>
+
                 <div class="row">
                     <div class="col">
                         <div class="form-group">
@@ -93,7 +103,6 @@
                           </div>
                     </div>
                 </div>
-
 
                 <div class="form-group">
                   <label for="commentaire">{{ __('Commentaire') }}</label>
@@ -129,12 +138,31 @@
   <!-- /.content -->
 @endsection
 
-
 @section('script')
 <!-- SweetAlert2 -->
 <script src="{{ asset('/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
 <!-- Toastr -->
 <script src="{{ asset('/plugins/toastr/toastr.min.js') }}"></script>
+
+<!-- Gestion de l'affichage du champ justificatif -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const typeAbsenceSelect = document.getElementById('type_absence_id');
+    const justificatifDiv = document.getElementById('justificatif_div');
+
+    function toggleJustificatifField() {
+      const selectedOption = typeAbsenceSelect.options[typeAbsenceSelect.selectedIndex];
+      const justificatifRequis = selectedOption.getAttribute('data-justificatif') === 'true';
+
+      justificatifDiv.style.display = justificatifRequis ? 'block' : 'none';
+    }
+
+    typeAbsenceSelect.addEventListener('change', toggleJustificatifField);
+
+    // Initial check on page load
+    toggleJustificatifField();
+  });
+</script>
 
 @if (session('success'))
     <script>

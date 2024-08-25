@@ -15,43 +15,44 @@ class AbsenceControlleur extends Controller
 {
    // Afficher la liste des absences
    public function index(Request $request)
-   {
-       $query = Absence::query();
-       $user = auth()->user();
+{
+    $query = Absence::query();
+    $user = auth()->user();
 
-       // Récupérer le terme de recherche
-       $search = $request->input('search');
+    // Récupérer le terme de recherche
+    $search = $request->input('search');
 
-       // Condition pour les administrateurs et responsables RH
-       if ($user->profil == 'administrateurs' || $user->profil == 'responsables RH') {
-           $query = Absence::with('user');
-       }
-       // Condition pour les managers
-       else if ($user->profil == 'manager') {
-           // Récupérer les absences des employés supervisés ainsi que celles du manager
-           $query = Absence::where(function($q) use ($user) {
-               $q->where('approved_by', $user->id) // Absences à approuver par le manager
-                 ->orWhere('UserId', $user->id);   // Absences du manager lui-même
-           })->with('user');
-       }
-       // Sinon, montrer seulement ses propres absences
-       else {
-           $query = Absence::where('UserId', $user->id)->with('user');
-       }
+    // Condition pour les administrateurs et responsables RH
+    if (in_array($user->profil, ['administrateurs', 'responsables RH'])) {
+        $query->with('user');
+    }
+    // Condition pour les managers
+    else if ($user->profil == 'manager') {
+        // Récupérer les absences des employés supervisés ainsi que celles du manager
+        $query->where(function($q) use ($user) {
+            $q->where('approved_by', $user->id) // Absences à approuver par le manager
+              ->orWhere('UserId', $user->id);   // Absences du manager lui-même
+        })->with('user');
+    }
+    // Sinon, montrer seulement ses propres absences
+    else {
+        $query->where('UserId', $user->id)->with('user');
+    }
 
-       // Ajouter la condition de recherche si un terme est fourni
-       if ($search) {
-           $query->whereHas('user', function($q) use ($search) {
-               $q->where('matricule', 'LIKE', "%$search%")
-                 ->orWhereRaw("CONCAT(prenom, ' ', nom) LIKE ?", ["%$search%"]);
-           })
-           ->orWhere('motif', 'LIKE', "%$search%");
-       }
+    // Ajouter la condition de recherche si un terme est fourni
+    if ($search) {
+        $query->whereHas('user', function($q) use ($search) {
+            $q->where('matricule', 'LIKE', "%$search%")
+              ->orWhereRaw("CONCAT(prenom, ' ', nom) LIKE ?", ["%$search%"]);
+        })
+        ->orWhere('motif', 'LIKE', "%$search%");
+    }
 
-       $absences = $query->paginate(2); // Pagination avec 2 absences par page
+    $absences = $query->paginate(10); // Pagination avec 2 absences par page
 
-       return view('absence.index', compact('absences'));
-   }
+    return view('absence.index', compact('absences'));
+}
+
 
    // Afficher le formulaire de création
    public function create()
@@ -67,28 +68,24 @@ class AbsenceControlleur extends Controller
    {
        // Validation des données
        $validator = Validator::make($request->all(), [
-           'type_absence_id' => 'required|exists:type_absences,id', // Validation pour le type d'absence
+           'UserId' => 'required|exists:users,id',
+           'type_absence_id' => 'required|exists:type_absences,id',
            'motif' => 'required|string|max:255',
            'dateDebut' => 'required|date',
            'dateFin' => 'required|date|after_or_equal:dateDebut',
+           'justificatif' => 'nullable|file|mimes:pdf,jpeg,png,jpg|max:2048', // Validation du fichier justificatif
        ]);
 
-         // Si la validation échoue
-         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
+       // Si la validation échoue
+       if ($validator->fails()) {
+           return redirect()->back()->withErrors($validator)->withInput();
+       }
 
+       $user = User::findOrFail($request->input('UserId'));
+       $typeAbsence = TypeAbsences::findOrFail($request->input('type_absence_id'));
+       $dureeAbsence = $this->calculateDays($request->input('dateDebut'), $request->input('dateFin'));
 
-
-       // Récupérer l'utilisateur connecté
-       $user = auth()->user();
-
-       // Récupérer le type d'absence
-       $typeAbsence = TypeAbsences::find($request->input('type_absence_id'));
-
-       // Validation spécifique selon le type d'absence
-       $dureeAbsence = $this->calculateDays( $request->input('dateDebut'), $request->input('dateFin'));
-
+       // Vérifications supplémentaires
        if ($typeAbsence->duree_max > 0 && $dureeAbsence > $typeAbsence->duree_max) {
            return redirect()->back()->withErrors(['dateFin' => 'La durée de l\'absence dépasse la durée maximale autorisée pour ce type d\'absence.'])->withInput();
        }
@@ -97,17 +94,23 @@ class AbsenceControlleur extends Controller
            return redirect()->back()->withErrors(['justificatif' => 'Un justificatif est requis pour ce type d\'absence.'])->withInput();
        }
 
+       // Gestion du fichier justificatif
+       $justificatifPath = null;
+       if ($request->hasFile('justificatif')) {
+           $justificatifPath = $request->file('justificatif')->store('justificatifs', 'public');
+       }
+
        // Création de l'absence
        $absence = new Absence();
-       $absence->UserId = $user->id; // Associer l'absence à l'utilisateur connecté
+       $absence->UserId = $user->id;
        $absence->motif = $request->input('motif');
        $absence->dateDebut = $request->input('dateDebut');
        $absence->dateFin = $request->input('dateFin');
-       $absence->status = 'en attente'; // Définir le statut par défaut
+       $absence->status = 'en attente';
        $absence->commentaire = $request->input('commentaire');
        $absence->type_absence_id = $typeAbsence->id;
+       $absence->justificatif = $justificatifPath; // Stocker le chemin du justificatif
 
-       // Associer l'absence au premier manager de l'utilisateur connecté
        if ($user->managers->isNotEmpty()) {
            $absence->approved_by = $user->managers->first()->id;
        }
@@ -116,6 +119,7 @@ class AbsenceControlleur extends Controller
 
        return redirect()->route('absences.index')->with('success', 'Absence créée avec succès');
    }
+
 
    // Afficher une absence spécifique
    public function show(Absence $absence)
@@ -143,6 +147,7 @@ class AbsenceControlleur extends Controller
            'dateDebut' => 'required|date',
            'dateFin' => 'required|date|after_or_equal:dateDebut',
            'commentaire' => 'nullable|string|max:500', // Validation pour le commentaire
+           'justificatif' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048', // Validation pour le justificatif
        ]);
 
        if ($validator->fails()) {
@@ -155,6 +160,14 @@ class AbsenceControlleur extends Controller
            return redirect()->route('absences.index')->with('error', 'Vous n\'avez pas l\'autorisation de modifier cette absence');
        }
 
+       // Récupérer le type d'absence
+       $typeAbsence = TypeAbsences::find($request->input('type_absence_id'));
+
+       // Vérifier la nécessité du justificatif
+       if ($typeAbsence->justificatif_requis && !$request->hasFile('justificatif')) {
+           return redirect()->back()->withErrors(['justificatif' => 'Un justificatif est requis pour ce type d\'absence.'])->withInput();
+       }
+
        // Mise à jour de l'absence
        $absence->UserId = $request->input('UserId');
        $absence->motif = $request->input('motif');
@@ -163,6 +176,18 @@ class AbsenceControlleur extends Controller
        $absence->commentaire = $request->input('commentaire');
        $absence->type_absence_id = $request->input('type_absence_id');
 
+       // Gestion du fichier justificatif
+       if ($request->hasFile('justificatif')) {
+           // Suppression de l'ancien justificatif s'il existe
+           if ($absence->justificatif) {
+               Storage::delete($absence->justificatif);
+           }
+
+           // Enregistrement du nouveau justificatif
+           $path = $request->file('justificatif')->store('justificatifs', 'public');
+           $absence->justificatif = $path;
+       }
+
        // Sauvegarder les modifications
        $absence->save();
 
@@ -170,17 +195,30 @@ class AbsenceControlleur extends Controller
        return redirect()->route('absences.index')->with('success', 'Absence mise à jour avec succès');
    }
 
+
    // Supprimer une absence
    public function destroy(Absence $absence)
    {
+       // Vérifiez si l'absence existe
        if (!$absence) {
-           return redirect(route('absences.index'))->with('error', 'Absence non trouvée');
+           return redirect()->route('absences.index')->with('error', 'Absence non trouvée');
        }
 
+       // Supprimez le fichier justificatif s'il existe
+       if ($absence->justificatif) {
+           $justificatifPath = storage_path('app/public/justificatifs/' . $absence->justificatif);
+
+           if (file_exists($justificatifPath)) {
+               unlink($justificatifPath);
+           }
+       }
+
+       // Supprimez l'enregistrement de l'absence
        $absence->delete();
 
-       return redirect(route('absences.index'))->with('success', 'Absence supprimée avec succès');
+       return redirect()->route('absences.index')->with('success', 'Absence supprimée avec succès');
    }
+
 
    public function validateRequest($id)
    {
@@ -210,6 +248,7 @@ class AbsenceControlleur extends Controller
 
    public function absencesList()
    {
+    dd('');
        $userId = auth()->user()->id;
        $absences = Absence::where('UserId', $userId)->with('typeAbsence')->get();
 
@@ -222,4 +261,22 @@ class AbsenceControlleur extends Controller
     return (new \DateTime($dateFin))->diff(new \DateTime($dateDebut))->days + 1;
 }
 
+
+
+public function absencesEnAttente()
+{
+    // Récupérer les absences en attente de validation depuis plus de 72 heures
+    $absences = Absence::where('status', 'en attente')
+                        ->where('created_at', '<', Carbon::now()->subHours(72))
+                        ->with('user')
+                        ->paginate(10);
+
+    return view('absence.attente', compact('absences'));
 }
+
+
+
+}
+
+
+
