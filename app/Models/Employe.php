@@ -28,6 +28,7 @@ class Employe extends Model
     {
         return $this->belongsTo(Departement::class, 'departementId');
     }
+    
 
     public function poste()
     {

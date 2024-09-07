@@ -14,6 +14,7 @@ use App\Http\Controllers\CongesController;
 use App\Http\Controllers\EmployeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AbsenceControlleur;
+use App\Http\Controllers\RapportCongesController;
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TypeCongesController;
@@ -21,6 +22,10 @@ use App\Http\Controllers\DepartementController;
 use App\Http\Controllers\UserManagerController;
 use App\Http\Controllers\TypeAbsencesController;
 use App\Notifications\AbsenceStatusNotification;
+use App\Http\Controllers\RapportAbsenceController;
+
+use App\Exports\CongesExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 
 
@@ -39,7 +44,7 @@ Route::get('/', function () {
         // Statistiques en temps réel
     $totalConges = Conges::count();
     $congesApprouves = Conges::where('status', 'approuvé')->count();
-    $congesEnAttente = Conges::where('status', 'en attente')->count();
+    $congesEnAttente = Conges::whereIn('status', ['en attente', 'en attente RH'])->count();
     $congerejete = Conges::where('status', 'refusé')->count();
     $congesEnAttenteDepuisTroisJours = Conges::where('status', 'en attente')
                                              ->where('created_at', '<=', now()->subDays(3))
@@ -67,9 +72,20 @@ Route::get('/', function () {
 
 Route::middleware('auth')->group(function () {
 
+    Route::get('/rapports/export', function () {
+        return Excel::download(new CongesExport, 'conges.xlsx');
+    })->name('rapports.export');
 
+    // Route pour l'exportation des congés du mois prochain
+    Route::get('/conges/mois-prochain/export', [RapportCongesController::class, 'export'])->name('rapports.export1');
+
+        
+    Route::get('admins/import', [AdminController::class, 'showImportForm'])->name('admins.import.form');
+    Route::post('admins/import', [AdminController::class, 'import'])->name('admins.import');
+
+    
+    
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-
     // Route pour la mise à jour du profil
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
@@ -77,6 +93,20 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('password.update');
 
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/rapports', [RapportCongesController::class, 'index'])->name('rapports.index');
+    Route::get('/rapports/en-cours', [RapportCongesController::class, 'enCours'])->name('rapports.enCours');
+    Route::get('/rapports/mois-prochain', [RapportCongesController::class, 'moisProchain'])->name('rapports.moisProchain');
+    Route::get('/rapports/en-attente', [RapportCongesController::class, 'enAttente'])->name('rapports.enAttente');
+    Route::get('/rapports/departements', [RapportCongesController::class, 'departements'])->name('rapports.departements');
+
+  
+
+    Route::get('/rapportsAbsences', [RapportAbsenceController::class, 'index'])->name('rapportsAbsences.index');
+    Route::get('/rapportsAbsences/enCours', [RapportAbsenceController::class, 'enCours'])->name('rapportsAbsences.enCours');
+    Route::get('/rapportsAbsences/enAttente', [RapportAbsenceController::class, 'enAttente'])->name('rapportsAbsences.enAttente');
+    Route::get('/rapportsAbsences/departements', [RapportAbsenceController::class, 'departements'])->name('rapportsAbsences.departements');
+    Route::get('/rapportsAbsences/moisProchain', [RapportAbsenceController::class, 'moisProchain'])->name('rapportsAbsences.moisProchain');
 
 
     // La route-ressource => Les routes "post.*"
@@ -148,9 +178,6 @@ Route::middleware('auth')->group(function () {
         'update' => 'typeConges.update',
         'destroy' => 'typeConges.destroy',
     ]);
-
-
-
     Route::resource('type/absences', TypeAbsencesController::class)->names([
         'index' => 'typeAbsences.index',
         'create' => 'typeAbsences.create',

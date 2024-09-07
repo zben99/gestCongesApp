@@ -41,7 +41,7 @@
                   <button type="button" class="btn btn-custom-blue btn-block">Ajouter une absence</button>
                 </a>
               </div>
-
+              <div style="overflow-x: auto; overflow-y: auto; max-height: 400px;">
               <table id="example2" class="table table-bordered table-hover">
                 <thead>
                   <tr>
@@ -49,10 +49,6 @@
                     <th>Matricule</th>
                     <th>Nom complet</th>
                     <th>Type d'absence</th>
-                    <th>Motif</th>
-                    <th>Date de début</th>
-                    <th>Date de fin</th>
-                    <th>Justificatif</th> <!-- Nouvelle colonne pour le justificatif -->
                     <th>Statut</th>
                     <th>Actions</th>
                   </tr>
@@ -64,21 +60,6 @@
                       <td>{{ $absence->user ? $absence->user->matricule : '' }}</td>
                       <td>{{ $absence->user ? $absence->user->prenom . ' ' . $absence->user->nom : '' }}</td>
                       <td>{{ $absence->typeAbsence ? $absence->typeAbsence->nom : '' }}</td>
-                      <td>{{ $absence->motif }}</td>
-                      <td>{{ $absence->dateDebut->format('d/m/Y') }}</td>
-                      <td>{{ $absence->dateFin->format('d/m/Y') }}</td>
-                      <td>
-                        @if ($absence->justificatif)
-
-
-                          <a href="{{ asset('storage/justificatifs/' . $absence->justificatif) }}" target="_blank" class="btn btn-custom-blue btn-icon">
-                            <i class="fas fa-file"></i>
-                          </a>
-
-                        @else
-                          Aucun
-                        @endif
-                      </td>
                       <td>
                         <span class="
                           @if ($absence->status === 'en attente') status-pending
@@ -90,6 +71,10 @@
                         </span>
                       </td>
                       <td>
+                        <!-- Bouton "Afficher" -->
+                        <a href="{{ route('absences.show', $absence->id) }}" class="btn btn-info btn-sm" title="Afficher les détails">
+                          <i class="fas fa-eye"></i>
+                        </a>
 
                         @if(auth()->user()->profil !== 'manager' || $absence->status !== 'en attente')
                           <a href="{{ route('absences.edit', $absence->id) }}" title="Modifier l'absence" class="btn btn-warning btn-sm">
@@ -177,6 +162,7 @@
                             <i class="fas fa-check"></i>
                           </button>
                         </form>
+
                         <form id="reject-form-{{ $absence->id }}" method="POST" action="{{ route('absences.rejectRequest', $absence->id) }}" style="display: inline;">
                           @csrf
                           @method('PUT')
@@ -190,6 +176,8 @@
                   @endforeach
                 </tbody>
               </table>
+              </div>
+              <!-- Pagination -->
               <div class="d-flex justify-content-center mt-3">
                 {{ $absences->links('vendor.pagination.custom') }}
               </div>
@@ -246,4 +234,3 @@
     </script>
 @endif
 @endsection
-

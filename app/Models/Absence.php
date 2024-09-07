@@ -44,4 +44,7 @@ class Absence extends Model
     {
         return $this->belongsTo(User::class, 'approved_by');
     }
+
+        // Dans le modèle Absence
+
 }

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('conges', function (Blueprint $table) {
             $table->id();
             $table->foreignId('UserId')->constrained('users');
-            $table->foreignId('type_conge_id')->constrained('types_conges');
+            $table->foreignId('type_conge_id')->constrained('type_conges');
             $table->date('dateDebut');
             $table->date('dateFin');
             $table->text('commentaire')->nullable();

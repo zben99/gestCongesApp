@@ -9,6 +9,10 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\UsersImport;
+
+
 
 class AdminController extends Controller
 {
@@ -240,5 +244,27 @@ class AdminController extends Controller
 
         return redirect(route('admins.index'))->with('success', 'Utilisateur supprimé avec succès');
     }
+
+         /* Show the form for importing users.
+     */
+    public function showImportForm()
+    {
+        return view('administrateurs.import');
+    }
+
+    /**
+     * Handle the import request.
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx',
+        ]);
+
+        Excel::import(new UsersImport, $request->file('file'));
+
+        return redirect()->route('admins.index')->with('success', 'Utilisateurs importés avec succès');
+    }
+
 
 }

@@ -48,7 +48,7 @@ class AbsenceControlleur extends Controller
         ->orWhere('motif', 'LIKE', "%$search%");
     }
 
-    $absences = $query->paginate(10); // Pagination avec 2 absences par page
+    $absences = $query->paginate(3); // Pagination avec 2 absences par page
 
     return view('absence.index', compact('absences'));
 }
@@ -300,8 +300,6 @@ public function absencesEnAttente()
 
     return view('absence.attente', compact('absences'));
 }
-
-
 
 }
 

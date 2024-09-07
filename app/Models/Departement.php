@@ -14,4 +14,10 @@ class Departement extends Model
     {
         return $this->hasMany(User::class, 'departementId');
     }
+
+    public function employes()
+{
+    return $this->hasMany(User::class, 'departementId');
+}
+
 }

@@ -75,7 +75,7 @@
                 </div>
                 <footer class="app-auth-footer mt-4">
                     <div class="container text-center py-3">
-                        <small class="copyright">Conçu par <a class="app-link" href="#">ONEA</a></small>
+                        <small class="copyright">Conçu par <a class="app-link" href="#">Mentley & Partners</a></small>
                     </div>
                 </footer>
             </div>

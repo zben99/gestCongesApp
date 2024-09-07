@@ -18,4 +18,6 @@ class TypeAbsences extends Model
         'jours_deductibles_apres',
     ];
 
+
+
 }

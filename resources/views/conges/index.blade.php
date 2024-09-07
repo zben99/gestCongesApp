@@ -41,10 +41,10 @@
                 </thead>
 
                 <tbody>
-                    @foreach ($conges as $conge)
+                    @forelse ($conges as $conge)
                     <tr>
                         <td>{{ $conge->employe->nom }} {{ $conge->employe->prenom }}</td>
-                        <td>{{ $conge->typeConge->nom }}</td> <!-- Remplace 'typeConges' par 'typeConge->nom' -->
+                        <td>{{ $conge->typeConge->nom }}</td>
                         <td>{{ $conge->dateDebut }}</td>
                         <td>{{ $conge->dateFin }} </td>
                         <td>
@@ -113,9 +113,19 @@
                             </div>
                         </td>
                     </tr>
-                @endforeach
+                    @empty
+                    <tr>
+                        <td colspan="6" class="text-center">Aucun congé trouvé</td>
+                    </tr>
+                    @endforelse
                 </tbody>
               </table>
+
+              <!-- Pagination -->
+              <div class="d-flex justify-content-center mt-3">
+                {{ $conges->links('vendor.pagination.custom') }}
+              </div>
+
             </div>
             <!-- /.card-body -->
           </div>

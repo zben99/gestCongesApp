@@ -9,4 +9,30 @@
           padding-bottom: 10px; /* Espacement en bas du titre */
           margin-bottom: 20px; /* Espacement en bas */
       }
+
+
+     /* dashboard.css */
+.app-card {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.app-card-body {
+    text-align: center;
+}
+
+.app-card-stat {
+    background-color: #f8f9fa;
+}
+
+.app-card-title {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.card {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
   

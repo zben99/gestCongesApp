@@ -13,32 +13,28 @@ class CongesController extends Controller
     public function index()
     {
         $user = auth()->user();
-
-
-
+    
         if ($user->profil == 'manager') {
-
-            $conges = Conges::whereIn('UserId', $user->employees->pluck('id')->push($user->id))->get();
-
+            // Récupérer les congés pour les employés sous le manager et pour lui-même, avec pagination
+            $conges = Conges::whereIn('UserId', $user->employees->pluck('id')->push($user->id))
+                            ->paginate(10); // Pagination avec 10 éléments par page
+    
             return view('conges.index', compact('conges'));
-
         }
-
-
+    
         if ($user->profil == 'responsables RH') {
-
-            $conges = Conges::all();
-
+            // Récupérer tous les congés avec pagination
+            $conges = Conges::paginate(10); // Pagination avec 10 éléments par page
+    
             return view('conges.index', compact('conges'));
-
         }
-
-
-        //dd($user->id);
-        $conges = Conges::where('UserId', $user->id)->get();
+    
+        // Pour les autres utilisateurs, récupérer les congés de l'utilisateur authentifié avec pagination
+        $conges = Conges::where('UserId', $user->id)->paginate(5); // Pagination avec 10 éléments par page
+    
         return view('conges.index', compact('conges'));
-
     }
+    
 
     public function create()
     {

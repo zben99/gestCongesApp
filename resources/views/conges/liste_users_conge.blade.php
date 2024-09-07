@@ -41,6 +41,7 @@
                                         <th>N°</th>
                                         <th>Matricule</th>
                                         <th>Nom complet</th>
+                                        <th>Contact</th>
                                         <th>Congés restants</th>
                                     </tr>
                                 </thead>
@@ -63,6 +64,7 @@
                                                 <td>{{ $loop->index + 1 }}</td>
                                                 <td>{{ $user->matricule }}</td>
                                                 <td>{{ $user->nom }} {{ $user->prenom }}</td>
+                                                <td>{{ $user->telephone1 }}</td>
                                                 <td>{{ $user->congeRestant }}</td>
                                             </tr>
                                         @endif

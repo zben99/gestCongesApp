@@ -3,7 +3,7 @@
     <div class="sidepanel-inner d-flex flex-column">
         <a href="#" id="sidepanel-close" class="sidepanel-close d-xl-none">&times;</a>
         <div class="app-branding">
-            <a class="app-logo" href="/"><img class="logo-icon me-2" src="{{ asset('images/logo-ONEA.jpg') }}" alt="logo"><span class="logo-text">LeaveManager</span></a>
+            <a class="app-logo" href="/"><img class="logo-icon me-2" src="{{ asset('images/logo-ONEA.jpg') }}" alt="logo"><span class="logo-text">CongeTrack</span></a>
         </div><!--//app-branding-->
 
         <nav id="app-nav-main" class="app-nav app-nav-main flex-grow-1">
@@ -70,11 +70,33 @@
                                 <span class="nav-icon">
                                     <i class="fas fa-user-times"></i>
                                 </span>
-                                <span class="nav-link-text">Les Absences</span>
+                                <span class="nav-link-text">Gestion des Absences</span>
                             </a>
                         </li>
                     @endif
 
+                    <li class="nav-item has-submenu">
+                        @if(auth()->user()->profil == 'administrateurs' || auth()->user()->profil == 'responsables RH')
+                            <a class="nav-link submenu-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-reports" aria-expanded="false" aria-controls="submenu-reports">
+                                <span class="nav-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </span>
+                                <span class="nav-link-text">Rapports</span>
+                                <span class="submenu-arrow">
+                                    <i class="fas fa-chevron-down"></i>
+                                </span><!--//submenu-arrow-->
+                            </a><!--//nav-link-->
+                            <div id="submenu-reports" class="collapse submenu submenu-reports" data-bs-parent="#menu-accordion">
+                                <ul class="submenu-list list-unstyled">
+                                    <li class="submenu-item"><a class="submenu-link" href="{{ route('rapports.enCours') }}">Congés en cours</a></li>
+                                    <li class="submenu-item"><a class="submenu-link" href="{{route('rapports.moisProchain')}}">Prevision Congés</a></li>
+                                    <li class="submenu-item"><a class="submenu-link" href="{{route('rapportsAbsences.enCours')}}">Absences en cours</a></li>
+                
+                                </ul>
+                            </div>
+                        @endif
+                    </li><!--//nav-item-->
+        
                     @if(auth()->user()->profil == 'administrateurs' || auth()->user()->profil == 'responsables RH')
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('absences.attente') }}">
@@ -84,6 +106,17 @@
                                 <span class="nav-link-text">Absences plus 3 jours</span>
                             </a>
                         </li>
+                    @endif
+
+                    @if(auth()->user()->profil == 'administrateurs' || auth()->user()->profil == 'responsables RH')
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('admins.import.form') }}">
+                                    <span class="nav-icon">
+                                        <i class="fas fa-list-alt"></i>
+                                    </span>
+                                    <span class="nav-link-text">Import </span>
+                                </a>
+                            </li>
                     @endif
 
                 </ul>

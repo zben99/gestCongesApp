@@ -22,9 +22,6 @@
                                 <th>Nom</th>
                                 <th>Description</th>
                                 <th>Durée max</th>
-                                <th>Justificatif requis</th>
-                                <th>Déductible des congés</th>
-                                <th>Jours déductibles après</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -34,16 +31,11 @@
                                     <td>{{ $typeAbsence->nom }}</td>
                                     <td>{{ $typeAbsence->description }}</td>
                                     <td>{{ $typeAbsence->duree_max }} jours</td>
-                                    <td>{{ $typeAbsence->justificatif_requis ? 'Oui' : 'Non' }}</td>
-                                    <td>{{ $typeAbsence->deductible_conges ? 'Oui' : 'Non' }}</td>
                                     <td>
-                                        @if($typeAbsence->deductible_conges)
-                                            {{ $typeAbsence->jours_deductibles_apres }} jours
-                                        @else
-                                            N/A
-                                        @endif
-                                    </td>
-                                    <td>
+                                        <!-- Bouton View -->
+                                        <a href="{{ route('typeAbsences.show', $typeAbsence->id) }}" class="btn btn-info btn-sm">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
                                         <a href="{{ route('typeAbsences.edit', $typeAbsence->id) }}" class="btn btn-warning btn-sm">
                                             <i class="fas fa-edit"></i>
                                         </a>

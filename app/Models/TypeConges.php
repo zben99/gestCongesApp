@@ -15,4 +15,9 @@ class TypeConges extends Model
         'duree_max',
         'justificatif_requis',
     ];
+
+    public function typeConge()
+    {
+        return $this->belongsTo(TypeConges::class, 'type_conge_id');
+    }
 }
