@@ -22,7 +22,23 @@
             </div>
             <!-- /.card-header -->
             <div class="card-body">
-              <div class="card-header mb-3">
+              <!-- Recherche -->
+              <div class="mb-2">
+                <form action="{{ route('conges.index') }}" method="GET" class="form-inline">
+                  <div class="form-group mb-2">
+                    <select name="status" class="form-control mr-2">
+                      <option value="">{{ __('Statut') }}</option>
+                      <option value="en attente" {{ request('status') === 'en attente' ? 'selected' : '' }}>En attente Manager</option>
+                      <option value="en attente RH" {{ request('status') === 'en attente RH' ? 'selected' : '' }}>En attente RH</option>
+                      <option value="approuvé" {{ request('status') === 'approuvé' ? 'selected' : '' }}>Approuvé</option>
+                      <option value="refusé" {{ request('status') === 'refusé' ? 'selected' : '' }}>Refusé</option>
+                    </select>
+                  </div>
+                  <button type="submit" class="btn btn-custom-blue">Rechercher</button>
+                </form>
+              </div>
+
+              <div class="card-header mb-2">
                 <a href="{{ route('conges.create') }}" class="btn btn-custom-blue btn-icon">
                     <i class="fas fa-plus"></i> <span>Demande Congé</span>
                 </a>
@@ -50,6 +66,7 @@
                         <td>
                         <span class="
                           @if ($conge->status === 'en attente') status-pending
+                          @elseif ($conge->status === 'en attente RH') status-pending
                           @elseif ($conge->status === 'approuvé') status-approved
                           @elseif ($conge->status === 'refusé') status-rejected
                           @endif
@@ -58,29 +75,28 @@
                         </span>
                       </td>
                         <td>
-                            @if(auth()->user()->profil === 'manager' && $conge->status === 'en attente')
-                            <a href="{{ route('conges.approveByManager', $conge) }}" class="btn btn-custom-blue btn-icon">
-                                <i class="fas fa-check"></i> <span>Approuver</span>
-                            </a>
-                        @elseif(auth()->user()->profil === 'responsables RH' && $conge->status === 'en attente RH')
-                            <a href="{{ route('conges.approveByRh', $conge->id) }}" class="btn btn-custom-blue btn-icon">
-                                <i class="fas fa-check"></i> <span>Approuver</span>
-                            </a>
-                        @endif
+                          @if(auth()->user()->profil === 'manager' && $conge->status === 'en attente')
+                              <a href="{{ route('conges.approveByManager', $conge) }}" class="btn btn-icon">
+                                  <i class="fas fa-check status-approved"></i> <span>Approuver</span> <!-- Icone verte pour approuver -->
+                              </a>
+                          @elseif(auth()->user()->profil === 'responsables RH' && $conge->status === 'en attente RH')
+                              <a href="{{ route('conges.approveByRh', $conge->id) }}" class="btn btn-icon">
+                                  <i class="fas fa-check status-approved"></i> <span>Approuver</span> <!-- Icone verte pour approuver -->
+                              </a>
+                          @endif
 
-                        @if((auth()->user()->profil === 'manager' && $conge->status === 'en attente') || auth()->user()->profil === 'responsables RH')
-                            <a href="{{ route('conges.reject', $conge->id) }}" class="btn btn-custom-blue btn-icon">
-                                <i class="fas fa-times"></i> <span>Refuser</span>
-                            </a>
-                        @endif
-
-                            <a href="{{ route('conges.show', $conge->id) }}" class="btn btn-custom-blue btn-icon">
-                                <i class="fas fa-eye"></i>
-                            </a>
+                          @if((auth()->user()->profil === 'manager' && $conge->status === 'en attente') || auth()->user()->profil === 'responsables RH')
+                              <a href="{{ route('conges.reject', $conge->id) }}" class="btn btn-icon">
+                                  <i class="fas fa-times status-rejected"></i> <span>Refuser</span> <!-- Icone rouge pour refuser -->
+                              </a>
+                          @endif
+                          <a href="{{ route('conges.show', $conge->id) }}" class="btn btn-icon">
+                            <i class="fas fa-eye icon-view"></i> <!-- Icone bleue pour visualiser -->
+                          </a>
 
                             @if($conge->status === 'en attente')
                                 <a href="{{ route('conges.edit', $conge->id) }}" class="btn btn-warning btn-sm">
-                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-edit "></i>
                                 </a>
                                 <form id="delete-form-{{$conge->id}}" method="POST" action="{{ route('conges.destroy', $conge->id) }}" style="display: inline;">
                                     @csrf
@@ -123,7 +139,7 @@
 
               <!-- Pagination -->
               <div class="d-flex justify-content-center mt-3">
-                {{ $conges->links('vendor.pagination.custom') }}
+                {{ $conges->appends(request()->input())->links('vendor.pagination.custom') }}
               </div>
 
             </div>

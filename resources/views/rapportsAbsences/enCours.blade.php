@@ -1,17 +1,27 @@
 @extends('layouts.template')
 
+@section('css')
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="{{ asset('/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
+  <!-- Toastr -->
+  <link rel="stylesheet" href="{{ asset('/plugins/toastr/toastr.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/plugins/toastr/persostyle.css') }}">
+  <!-- CSS personnalisé pour le rapport -->
+@endsection
+
+
 @section('content')
   <section class="content">
     <div class="container-fluid">
       <div class="card">
-        <div class="card-header">
+        <div class="btn btn-custom-blue btn-block">
           <h3 class="card-title">Employés Actuellement en Absence</h3>
         </div>
         <div class="card-body">
           <form action="{{ route('rapportsAbsences.enCours') }}" method="GET">
             <div class="row">
               <div class="col-md-6">
-                <label for="department_id">Filtrer par département :</label>
+                <label for="department_id"><strong>Filtrer par département</strong> :</label>
                 <select name="department_id" id="department_id" class="form-control">
                   <option value="">Tous les départements</option>
                   @foreach($departements as $departement)
@@ -22,7 +32,7 @@
                 </select>
               </div>
               <div class="col-md-3 mt-4">
-                <button type="submit" class="btn btn-primary">Filtrer</button>
+                <button type="submit" class="btn btn-custom-blue btn-block">Filtrer</button>
               </div>
             </div>
           </form>
@@ -31,7 +41,7 @@
 
           <h4>Nombre d'employés en absence : {{ $nombreAbsencesEnCours }}</h4>
 
-          <table class="table table-bordered table-striped">
+          <table class="table table-bordered table-over">
             <thead class="thead-dark">
               <tr>
                 <th>Matricule</th>

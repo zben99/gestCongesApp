@@ -1,11 +1,22 @@
 
 @extends('layouts.template')
 
+@section('css')
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="{{ asset('/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
+  <!-- Toastr -->
+  <link rel="stylesheet" href="{{ asset('/plugins/toastr/toastr.min.css') }}">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ asset('/plugins/toastr/persostyle.css') }}">
+@endsection
+
+
 @section('content')
 <section class="content">
     <div class="container-fluid">
         <div class="card">
-            <div class="card-header">
+            <div class="btn btn-custom-blue btn-block">
                 <h3 class="card-title">Détails du Type d'Absence</h3>
             </div>
             <div class="card-body">
@@ -17,7 +28,7 @@
                     <li class="list-group-item"><strong>Déductible des Congés : </strong>{{ $typeAbsence->deductible_conges ? 'Oui' : 'Non' }}</li>
                     <li class="list-group-item"><strong>Jours Déductibles Après : </strong>{{ $typeAbsence->jours_deductibles_apres ?? 'N/A' }} jours</li>
                 </ul>
-                <a href="{{ route('typeAbsences.index') }}" class="btn btn-primary mt-3">Retour à la liste</a>
+                <a href="{{ route('typeAbsences.index') }}" class="btn btn-custom-blue btn-block mt-2">Retour à la liste</a>
             </div>
         </div>
     </div>

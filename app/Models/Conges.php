@@ -18,7 +18,7 @@ class Conges extends Model
     ];
     public function department()
     {
-        return $this->belongsTo(Departement::class);
+        return $this->belongsTo(Departement::class,'departementId');
     }
     
     public function user()

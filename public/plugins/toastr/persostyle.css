@@ -6,6 +6,27 @@
 .status-approved::before { content: '✔️'; margin-right: 5px; }
 .status-rejected::before { content: '❌'; margin-right: 5px; }
 
+/* Icône pour modifier */
+.icon-edit {
+    color: #007bff; /* Bleu pour l'édition */
+}
+
+.icon-edit::before {
+    content: '✏️'; /* Icône de crayon pour modification */
+    margin-right: 5px;
+}
+
+/* Icône pour supprimer */
+.icon-delete {
+    color: #dc3545; /* Rouge pour suppression */
+}
+
+.icon-delete::before {
+    content: '🗑️'; /* Icône de poubelle pour suppression */
+    margin-right: 5px;
+}
+
+
 .btn-custom-blue {
 background-color: #007bff; /* Bleu primaire */
 color: #ffffff; /* Texte blanc */
@@ -40,3 +61,28 @@ border-color: #0056b3; /* Bordure plus foncée au survol */
 #app-sidepanel .submenu-arrow:hover i {
     color: #007bff; /* Couleur bleue */
 }
+
+.icon-view {
+    color: blue; /* Remplacez par la couleur de votre choix */
+}
+
+.bg-dark-custom {
+    background-color: #000000; /* Noir */
+    color: #ffffff; /* Blanc pour le texte */
+}
+
+.user-info {
+    padding: 8px 15px;
+    background-color: #007bff; /* Couleur de fond verte */
+    color: white; /* Texte en blanc */
+    border-radius: 5px; /* Bords arrondis */
+    border: 2px solid #007bff; /* Bordure de la même couleur que le fond */
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+.user-info:hover {
+    background-color: #007bff; /* Fond légèrement plus foncé au survol */
+}
+
+

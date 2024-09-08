@@ -43,7 +43,6 @@ class RapportCongesController extends Controller
              $q->where('departementId', $departmentId); // Assurez-vous que le champ de la clé étrangère est correct
          });
      }
- 
      // Exécuter la requête pour récupérer les congés en cours
      $congesEnCours = $query->get();
  
@@ -135,9 +134,5 @@ public function export(Request $request)
 
     return Excel::download(new CongesProchain($congesMoisProchain), 'conges_mois_prochain.xlsx');
 }
-
-
-
-
     
 }

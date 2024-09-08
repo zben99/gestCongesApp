@@ -6,6 +6,8 @@
   <!-- Toastr -->
   <link rel="stylesheet" href="{{ asset('/plugins/toastr/toastr.min.css') }}">
   <link rel="stylesheet" href="{{ asset('/plugins/toastr/persostyle.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
   <!-- CSS personnalisé pour le rapport -->
 @endsection
 
@@ -44,7 +46,10 @@
           <!-- Résumé et exportation -->
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4>Nombre de personnes partant en congé : {{ $nombreConges }}</h4>
-            <a href="{{ route('rapports.export', ['department_id' => $departmentId]) }}" class="btn btn-success">Exporter en Excel</a>
+            <a href="{{ route('rapports.export1', ['department_id' => $departmentId]) }}" class="btn btn-custom-blue">
+            <i class="fas fa-file-excel"></i> Exporter
+        </a>
+
 
           </div>
 

@@ -19,6 +19,7 @@
                     <table class="table table-bordered table-hover">
                         <thead>
                             <tr>
+                                <th>ID</th>
                                 <th>Nom</th>
                                 <th>Description</th>
                                 <th>Actions</th>
@@ -27,6 +28,7 @@
                         <tbody>
                             @foreach ($departements as $departement)
                                 <tr>
+                                    <td>{{ $departement->id }}</td>
                                     <td>{{ $departement->name_departement }}</td>
                                     <td>{{ $departement->description }}</td>
                                     <td>

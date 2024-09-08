@@ -44,7 +44,9 @@
           <!-- Résumé et exportation -->
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4>Nombre d'employés en congé : {{ $nombreCongesEnCours }}</h4>
-            <a href="{{ route('rapports.export') }}" class="btn btn-custom-blue btn-block">Exporter en Excel</a>
+            <a href="{{ route('rapports.export') }}" class="btn btn-custom-blue btn-block">
+              <i class="fas fa-file-excel"></i> Exporter
+            </a>
           </div>
 
           <!-- Tableau des congés -->

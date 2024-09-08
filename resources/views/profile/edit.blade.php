@@ -118,7 +118,7 @@
 
                             <div class="form-group ">
 
-                                    <button type="submit" class="btn btn-custom-blue btn-block">Enregistrer</button>
+                                    <button type="submit" class="btn btn-custom-blue btn-block mt-2">Enregistrer</button>
 
                             </div>
 
@@ -193,7 +193,7 @@
 
                             <div class="form-group ">
 
-                                    <button type="submit" class="btn btn-custom-blue btn-block">Enregistrer</button>
+                                    <button type="submit" class="btn btn-custom-blue btn-block mt-2">Enregistrer</button>
 
                             </div>
 

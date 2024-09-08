@@ -10,27 +10,25 @@ use Illuminate\Support\Facades\Mail;
 
 class CongesController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
+        $query = Conges::query();
     
+        // Ajout des filtres de recherche
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+    
+        // Gestion des profils
         if ($user->profil == 'manager') {
-            // Récupérer les congés pour les employés sous le manager et pour lui-même, avec pagination
-            $conges = Conges::whereIn('UserId', $user->employees->pluck('id')->push($user->id))
-                            ->paginate(10); // Pagination avec 10 éléments par page
-    
-            return view('conges.index', compact('conges'));
+            $conges = $query->whereIn('UserId', $user->employees->pluck('id')->push($user->id))
+                            ->paginate(7);
+        } elseif ($user->profil == 'responsables RH') {
+            $conges = $query->paginate(7);
+        } else {
+            $conges = $query->where('UserId', $user->id)->paginate(5);
         }
-    
-        if ($user->profil == 'responsables RH') {
-            // Récupérer tous les congés avec pagination
-            $conges = Conges::paginate(10); // Pagination avec 10 éléments par page
-    
-            return view('conges.index', compact('conges'));
-        }
-    
-        // Pour les autres utilisateurs, récupérer les congés de l'utilisateur authentifié avec pagination
-        $conges = Conges::where('UserId', $user->id)->paginate(5); // Pagination avec 10 éléments par page
     
         return view('conges.index', compact('conges'));
     }
