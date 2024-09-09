@@ -107,7 +107,7 @@
                             </a>
                         </li>
                     @endif
-
+<!--
                     @if(auth()->user()->profil == 'administrateurs' || auth()->user()->profil == 'responsables RH')
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('admins.import.form') }}">
@@ -118,7 +118,7 @@
                                 </a>
                             </li>
                     @endif
-
+-->
                 </ul>
 
                 <div class="app-sidepanel-footer">

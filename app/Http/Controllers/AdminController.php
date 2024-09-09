@@ -234,7 +234,6 @@ class AdminController extends Controller
     public function destroy( $admin)
     {
 
-
         $user = User::findOrFail($admin);
         if (!$user) {
             return redirect(route('admins.index'))->with('error', 'Utilisateur non trouvé');
@@ -247,24 +246,5 @@ class AdminController extends Controller
 
          /* Show the form for importing users.
      */
-    public function showImportForm()
-    {
-        return view('administrateurs.import');
-    }
-
-    /**
-     * Handle the import request.
-     */
-    public function import(Request $request)
-    {
-        $request->validate([
-            'file' => 'required|file|mimes:xlsx',
-        ]);
-
-        Excel::import(new UsersImport, $request->file('file'));
-
-        return redirect()->route('admins.index')->with('success', 'Utilisateurs importés avec succès');
-    }
-
 
 }

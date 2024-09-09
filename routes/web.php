@@ -15,6 +15,7 @@ use App\Http\Controllers\EmployeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AbsenceControlleur;
 use App\Http\Controllers\RapportCongesController;
+use App\Http\Controllers\UserImportController;
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TypeCongesController;
@@ -104,8 +105,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/conges/mois-prochain/export', [RapportCongesController::class, 'export'])->name('rapports.export1');
 
         
-    Route::get('admins/import', [AdminController::class, 'showImportForm'])->name('admins.import.form');
-    Route::post('admins/import', [AdminController::class, 'import'])->name('admins.import');
+    Route::get('admins/import', [UserImportController::class, 'showImportForm'])->name('admins.import.form');
+    Route::post('admins/import', [UserImportController::class, 'import'])->name('admins.import');
 
     
     

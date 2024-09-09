@@ -1,5 +1,5 @@
-
 @extends('layouts.template')
+
 
 @section('css')
   <!-- SweetAlert2 -->
@@ -20,8 +20,29 @@
                     <div class="btn btn-custom-blue btn-block">
                         <h3 class="card-title">Importer des utilisateurs</h3>
                     </div>
-                    <!-- /.card-header -->
                     <div class="card-body">
+                        <!-- Affichage des erreurs -->
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        <!-- Affichage des messages de succès ou d'erreur -->
+                        @if (session('success'))
+                            <div class="alert alert-success">
+                                {{ session('success') }}
+                            </div>
+                        @elseif (session('error'))
+                            <div class="alert alert-danger">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+
                         <form action="{{ route('admins.import') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="form-group">
@@ -31,9 +52,7 @@
                             <button type="submit" class="btn btn-custom-blue btn-block mt-2">Importer</button>
                         </form>
                     </div>
-                    <!-- /.card-body -->
                 </div>
-                <!-- /.card -->
             </div>
         </div>
     </div>

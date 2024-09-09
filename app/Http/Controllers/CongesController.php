@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CongeApprovalMail;
 use Barryvdh\DomPDF\Facade\Pdf; // Assurez-vous d'avoir installé barryvdh/laravel-dompdf
+use Illuminate\Support\Facades\Auth;
+
 
 
 
@@ -88,11 +90,6 @@ class CongesController extends Controller
             return redirect()->route('conges.index')->with('error', 'Une erreur est survenue lors de la soumission de la demande.');
         }
     }
-
-
-
-
-
 
     public function edit(Conges $conge)
     {
