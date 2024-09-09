@@ -26,6 +26,8 @@ use App\Http\Controllers\RapportAbsenceController;
 
 use App\Exports\CongesExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Services\CongeAlertService;
+
 
 
 
@@ -71,6 +73,28 @@ Route::get('/', function () {
 
 
 Route::middleware('auth')->group(function () {
+
+    // routes/web.php
+
+
+    Route::get('/test-conge-alerts', function (CongeAlertService $congeAlertService) {
+        $congeAlertService->sendAlerts();
+    
+        return 'Les emails d\'alerte ont été envoyés pour les utilisateurs concernés.';
+    });
+    
+    
+
+
+    Route::get('/test-email', function () {
+        $user = User::find(1); // Remplacez par l'ID de l'utilisateur à tester
+        $absence = Absence::find(1); // Remplacez par l'ID d'une absence existante
+
+        // Envoyer une notification d'approbation
+        $user->notify(new AbsenceStatusNotification($absence, 'approuvé'));
+
+        return 'Email de test envoyé !';
+    });
 
     Route::get('/rapports/export', function () {
         return Excel::download(new CongesExport, 'conges.xlsx');
@@ -158,15 +182,7 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/conges/{conge}', [CongesController::class, 'destroy'])->name('conges.destroy');
 
-    Route::get('/test-email', function () {
-        $user = User::find(1); // Remplacez par l'ID de l'utilisateur à tester
-        $absence = Absence::find(1); // Remplacez par l'ID d'une absence existante
 
-        // Envoyer une notification d'approbation
-        $user->notify(new AbsenceStatusNotification($absence, 'approuvé'));
-
-        return 'Email de test envoyé !';
-    });
 
 
     Route::resource('type/conges', TypeCongesController::class)->names([

@@ -15,6 +15,7 @@ class Conges extends Model
         'status',
         'approved_by_manager', // ID du manager qui approuve
         'approved_by_rh', // ID du responsable RH qui approuve
+        'pdf_path', //stock pdf
     ];
     public function department()
     {
@@ -23,8 +24,9 @@ class Conges extends Model
     
     public function user()
 {
-    return $this->belongsTo(User::class);
+    return $this->belongsTo(User::class, 'UserId');
 }
+
 
     public function employe()
     {

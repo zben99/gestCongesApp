@@ -7,6 +7,11 @@ use App\Models\Conges;
 use App\Models\TypeConges;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\CongeApprovalMail;
+use Barryvdh\DomPDF\Facade\Pdf; // Assurez-vous d'avoir installé barryvdh/laravel-dompdf
+
+
+
 
 class CongesController extends Controller
 {
@@ -164,60 +169,84 @@ public function approveByManager($conge)
 }
 public function approveByRh($id)
 {
-    $conge = Conges::findOrFail($id);
+    // Récupérer la demande de congé avec la relation 'user' et 'typeConge'
+    $conge = Conges::with('user', 'typeConge')->findOrFail($id);
     $user = auth()->user();
 
+    // Vérifier si l'utilisateur est un responsables RH
     if ($user->profil !== 'responsables RH') {
         return redirect()->back()->with('error', 'Accès non autorisé.');
     }
 
+    // Vérifier si le statut est en attente de validation RH
     if ($conge->status === 'en attente RH') {
-        $conge->status = 'approuvé';
-        $conge->approved_by_rh = $user->id;
-        if ($conge->typeConge->nom=='Congé annuel') {
+        // Calculer le nombre de jours pour le congé annuel
+        if ($conge->typeConge->nom == 'Congé annuel') {
             $days = $this->calculateDays($conge->dateDebut, $conge->dateFin);
-            $conge->employe->pris += $days;
-            $conge->employe->save();
+            $conge->user->pris += $days;  // Mettre à jour le nombre de jours pris
+            $conge->user->save();
         }
 
+        // Générer le fichier PDF
+        $pdf = Pdf::loadView('pdf.conge', ['conge' => $conge]);
 
+        // Vérifier si le dossier existe, sinon le créer
+        $directory = storage_path('app/public/conges');
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        // Définir le chemin du fichier PDF
+        $pdfPath = storage_path('app/public/conges/conge_' . $conge->id . '.pdf');
+        $pdf->save($pdfPath);
+
+        // Mettre à jour le statut et le chemin du PDF
+        $conge->status = 'approuvé';
+        $conge->approved_by_rh = $user->id;
+        $conge->pdf_path = 'conges/conge_' . $conge->id . '.pdf';
         $conge->save();
 
+        // Envoyer l'email avec le PDF en pièce jointe
+        Mail::to($conge->user->email)->send(new CongeApprovalMail($conge, $pdfPath));
+
+        return redirect()->route('conges.index')->with('success', 'Demande approuvée, email envoyé et jours de congé mis à jour.');
     } elseif ($conge->status === 'en attente') {
+        // En cas de refus, mettre à jour le statut
         $conge->status = 'refusé';
         $conge->save();
-    } else {
-        return redirect()->back()->with('error', 'Le statut de la demande est invalide.');
+        return redirect()->back()->with('success', 'Demande refusée.');
     }
 
-    return redirect()->route('conges.index')->with('success', 'Demande traitée par le responsable RH.');
+    return redirect()->back()->with('error', 'Le statut de la demande est invalide.');
 }
 
-private function calculateDays($dateDebut, $dateFin)
-{
-    return (new \DateTime($dateFin))->diff(new \DateTime($dateDebut))->days + 1;
-}
-
-
-
-
-public function reject($id)
-{
-    $conge = Conges::findOrFail($id);
-    $user = auth()->user();
-
-    if ($user->profil !== 'manager' && $user->profil !== 'responsables RH') {
-        return redirect()->back()->with('error', 'Accès non autorisé.');
+    private function calculateDays($dateDebut, $dateFin)
+    {
+        return (new \DateTime($dateFin))->diff(new \DateTime($dateDebut))->days + 1;
     }
 
-    if ($conge->status === 'en attente' || $conge->status === 'en attente RH') {
-        $conge->status = 'refusé';
-        $conge->save();
+
+    public function reject($id)
+    {
+        $conge = Conges::findOrFail($id);
+        $user = auth()->user();
+    
+        if ($user->profil !== 'manager' && $user->profil !== 'responsables RH') {
+            return redirect()->back()->with('error', 'Accès non autorisé.');
+        }
+    
+        if ($conge->status === 'en attente' || $conge->status === 'en attente RH') {
+            $conge->status = 'refusé';
+            $conge->save();
+    
+            // Envoyer la notification à l'employé
+            $employe = $conge->employe;  // Assurez-vous que $conge->employe retourne bien l'utilisateur lié
+            $employe->notify(new \App\Notifications\CongeRejected($conge));
+        }
+    
+        return redirect()->route('conges.index')->with('success', 'Demande refusée.');
     }
-
-    return redirect()->route('conges.index')->with('success', 'Demande refusée.');
-}
-
+    
 
 public function destroy(Conges $conge)
     {
