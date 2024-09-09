@@ -113,7 +113,7 @@ class AdminController extends Controller
         $user->departementId = $request->input('departementId');
         $user->posteId = $request->input('posteId');
         $user->arrival_date = $request->input('arrivalDate');
-        $user->initialization_date = $request->input('initialization_date');
+        $user->initialization_date = $request->input('initializationDate');
         $user->initial = $request->input('initial', 0);
         $user->save();
 

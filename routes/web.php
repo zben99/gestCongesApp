@@ -34,48 +34,50 @@ use App\Services\CongeAlertService;
 
 
 
-Route::get('/', function () {
-    $nombreUsers = User::count();
-    $totalDemandesAbsence = Absence::count();
-    $totalAbsencesValides = Absence::where('status', 'approuvé')->count();
-    $totalAbsencesEnAttente = Absence::where('status', 'en attente')->count();
-    $totalAbsencesrejete = Absence::where('status', 'refusé')->count();
-    $totalAbsencesEnAttenteDepuis3Jours = Absence::where('status', 'en attente')
-                                                 ->where('created_at', '<', now()->subDays(3))
-                                                 ->count();
-
-        // Statistiques en temps réel
-    $totalConges = Conges::count();
-    $congesApprouves = Conges::where('status', 'approuvé')->count();
-    $congesEnAttente = Conges::whereIn('status', ['en attente', 'en attente RH'])->count();
-    $congerejete = Conges::where('status', 'refusé')->count();
-    $congesEnAttenteDepuisTroisJours = Conges::where('status', 'en attente')
-                                             ->where('created_at', '<=', now()->subDays(3))
-                                             ->count();
-
-
-    return view('dashboard', compact(
-            'nombreUsers',
-            'totalDemandesAbsence',
-            'totalAbsencesValides',
-            'totalAbsencesEnAttente',
-            'totalAbsencesEnAttenteDepuis3Jours',
-            'totalAbsencesrejete',
-            'totalConges',
-            'congerejete',
-            'congesApprouves',
-            'congesEnAttente',
-            'congesEnAttenteDepuisTroisJours'
-        ));
-
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 
 
 
 Route::middleware('auth')->group(function () {
 
     // routes/web.php
+
+    Route::get('/', function () {
+        $nombreUsers = User::count();
+        $totalDemandesAbsence = Absence::count();
+        $totalAbsencesValides = Absence::where('status', 'approuvé')->count();
+        $totalAbsencesEnAttente = Absence::where('status', 'en attente')->count();
+        $totalAbsencesrejete = Absence::where('status', 'refusé')->count();
+        $totalAbsencesEnAttenteDepuis3Jours = Absence::where('status', 'en attente')
+                                                     ->where('created_at', '<', now()->subDays(3))
+                                                     ->count();
+    
+            // Statistiques en temps réel
+        $totalConges = Conges::count();
+        $congesApprouves = Conges::where('status', 'approuvé')->count();
+        $congesEnAttente = Conges::whereIn('status', ['en attente', 'en attente RH'])->count();
+        $congerejete = Conges::where('status', 'refusé')->count();
+        $congesEnAttenteDepuisTroisJours = Conges::where('status', 'en attente')
+                                                 ->where('created_at', '<=', now()->subDays(3))
+                                                 ->count();
+    
+    
+        return view('dashboard', compact(
+                'nombreUsers',
+                'totalDemandesAbsence',
+                'totalAbsencesValides',
+                'totalAbsencesEnAttente',
+                'totalAbsencesEnAttenteDepuis3Jours',
+                'totalAbsencesrejete',
+                'totalConges',
+                'congerejete',
+                'congesApprouves',
+                'congesEnAttente',
+                'congesEnAttenteDepuisTroisJours'
+            ));
+    
+    })->middleware(['auth', 'verified'])->name('dashboard');
+    
+    
 
 
     Route::get('/test-conge-alerts', function (CongeAlertService $congeAlertService) {
@@ -85,8 +87,6 @@ Route::middleware('auth')->group(function () {
     });
     
     
-
-
     Route::get('/test-email', function () {
         $user = User::find(1); // Remplacez par l'ID de l'utilisateur à tester
         $absence = Absence::find(1); // Remplacez par l'ID d'une absence existante
@@ -219,7 +219,6 @@ Route::middleware('auth')->group(function () {
     // Route pour supprimer un département
     Route::delete('/departements/{departement}', [DepartementController::class, 'destroy'])->name('departements.destroy');
 
-
     // Route pour afficher la liste des postes
     Route::get('/postes', [PosteController::class, 'index'])->name('postes.index');
     // Route pour afficher le formulaire de création d'un nouveau poste
@@ -235,6 +234,5 @@ Route::middleware('auth')->group(function () {
 
 
 });
-
 
 require __DIR__.'/auth.php';

@@ -12,8 +12,8 @@ class Employe extends Model
     use Notifiable;
 
     protected $fillable = [
-        'nom', 'prenom', 'matricule', 'email', 'telephone1', 'telephone2', 'dateNaissance',
-        'password', 'profil', 'departementId', 'posteId', 'dateArrive', 'initial', 'pris', 'reste'
+        'nom', 'prenom', 'matricule', 'email', 'telephone1', 'telephone2', 'birthDate',
+        'password', 'profil', 'departementId', 'posteId', 'arrivalDate','initializationDate', 'initial', 'pris', 'reste'
     ];
 
     protected $hidden = [
