@@ -74,61 +74,47 @@
                           {{ ucfirst($conge->status) }}
                         </span>
                       </td>
-                        <td>
+                      <td>
                           @if(auth()->user()->profil === 'manager' && $conge->status === 'en attente')
                               <a href="{{ route('conges.approveByManager', $conge) }}" class="btn btn-icon">
-                                  <i class="fas fa-check status-approved"></i> <span>Approuver</span> <!-- Icone verte pour approuver -->
+                                  <i class="fas fa-check status-approved"></i> <span>Approuver</span>
                               </a>
                           @elseif(auth()->user()->profil === 'responsables RH' && $conge->status === 'en attente RH')
-                              <a href="{{ route('conges.approveByRh', $conge->id) }}" class="btn btn-icon">
-                                  <i class="fas fa-check status-approved"></i> <span>Approuver</span> <!-- Icone verte pour approuver -->
+                              <a href="{{ route('conges.approveByRh', $conge) }}" class="btn btn-icon">
+                                  <i class="fas fa-check status-approved"></i> <span>Approuver</span>
                               </a>
                           @endif
 
-                          @if((auth()->user()->profil === 'manager' && $conge->status === 'en attente') || auth()->user()->profil === 'responsables RH')
+                          @if(
+                              (auth()->user()->profil === 'manager' && $conge->status === 'en attente') || 
+                              (auth()->user()->profil === 'responsables RH' && $conge->status === 'en attente RH')
+                          )
                               <a href="{{ route('conges.reject', $conge->id) }}" class="btn btn-icon">
-                                  <i class="fas fa-times status-rejected"></i> <span>Refuser</span> <!-- Icone rouge pour refuser -->
+                                  <i class="fas fa-times status-rejected"></i> <span>Refuser</span>
                               </a>
                           @endif
+
                           <a href="{{ route('conges.show', $conge->id) }}" class="btn btn-icon">
-                            <i class="fas fa-eye icon-view"></i> <!-- Icone bleue pour visualiser -->
+                              <i class="fas fa-eye icon-view"></i>
                           </a>
 
-                            @if($conge->status === 'en attente')
-                                <a href="{{ route('conges.edit', $conge->id) }}" class="btn btn-warning btn-sm">
-                                    <i class="fas fa-edit "></i>
-                                </a>
-                                <form id="delete-form-{{$conge->id}}" method="POST" action="{{ route('conges.destroy', $conge->id) }}" style="display: inline;">
-                                    @csrf
-                                    @method("DELETE")
+                          @if(
+                              (auth()->user()->id === $conge->UserId && $conge->status === 'en attente') || 
+                              auth()->user()->profil === 'administrateurs'
+                          )
+                              <a href="{{ route('conges.edit', $conge->id) }}" class="btn btn-warning btn-sm">
+                                  <i class="fas fa-edit"></i>
+                              </a>
+                              <form id="delete-form-{{ $conge->id }}" method="POST" action="{{ route('conges.destroy', $conge->id) }}" style="display: inline;">
+                                  @csrf
+                                  @method("DELETE")
 
-                                    <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal-{{ $conge->id }}">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
-                            @endif
-                            <!-- Modal -->
-                            <div class="modal fade" id="deleteModal-{{ $conge->id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                <div class="modal-content bg-danger">
-                                    <div class="modal-header">
-                                    <h5 class="modal-title" id="deleteModalLabel">Confirmation de suppression</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        Êtes-vous sûr de vouloir supprimer cette demande de congé ?
-                                    </div>
-                                    <div class="modal-footer">
-                                    <button type="button" class="btn btn-outline-light" data-dismiss="modal">Annuler</button>
-                                    <button type="button" class="btn btn-outline-light" onclick="document.getElementById('delete-form-{{ $conge->id }}').submit();">Confirmer</button>
-                                    </div>
-                                </div>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
+                                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal-{{ $conge->id }}">
+                                      <i class="fas fa-trash"></i>
+                                  </button>
+                              </form>
+                          @endif
+                      </td>
                     @empty
                     <tr>
                         <td colspan="6" class="text-center">Aucun congé trouvé</td>
@@ -195,3 +181,4 @@
     </script>
 @endif
 @endsection
+

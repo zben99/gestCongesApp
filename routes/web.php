@@ -159,6 +159,8 @@ Route::middleware('auth')->group(function () {
     // Supprimer une absence
     Route::delete('/absences/{absence}', [AbsenceControlleur::class, 'destroy'])->name('absences.destroy');
 
+    // web.php
+
     Route::get('/user-manager', [UserManagerController::class, 'index'])->name('user-manager.index');
     Route::get('/user-manager/assign/{employee}', [UserManagerController::class, 'showAssignForm'])->name('user-manager.assign-form');
     Route::post('/user-manager/assign', [UserManagerController::class, 'assign'])->name('user-manager.assign');

@@ -48,4 +48,17 @@ class Conges extends Model
     {
         return $this->belongsToMany(User::class, 'approved_by_rh');
     }
+
+    // Conges.php
+
+    public function approvedByManager()
+    {
+        return $this->belongsTo(User::class, 'approved_by_manager');
+    }
+
+    public function approvedByRH()
+    {
+        return $this->belongsTo(User::class, 'approved_by_rh');
+    }
+
 }

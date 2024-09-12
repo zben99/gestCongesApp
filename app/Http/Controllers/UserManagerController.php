@@ -10,14 +10,13 @@ class UserManagerController extends Controller
     // Afficher la liste des employés
     public function index(Request $request)
     {
-        $query = User::query();
-
         $search = $request->input('search');
-        
-        // Commencez par la requête de base pour obtenir les employés
-        $employeesQuery = User::where('profil', 'employés');
-        
-        // Appliquez les filtres de recherche si un terme de recherche est fourni
+    
+        // Construire la requête pour récupérer les employés
+        $employeesQuery = User::where('profil', 'employés') // Corriger le profil si nécessaire
+            ->with('rh'); // Charger la relation pour le responsable RH
+    
+        // Appliquer le filtre de recherche si nécessaire
         if ($search) {
             $employeesQuery->where(function($query) use ($search) {
                 $query->where('matricule', 'like', "%{$search}%")
@@ -25,65 +24,112 @@ class UserManagerController extends Controller
                       ->orWhere('prenom', 'like', "%{$search}%");
             });
         }
-        
-        // Obtenez les résultats filtrés
-        $employees = $employeesQuery->get();
-        
-        // Retournez la vue avec les employés filtrés
+    
+        // Optionnel : utiliser la pagination pour gérer un grand nombre d'employés
+        $employees = $employeesQuery->paginate(10); // 10 employés par page
+    
         return view('user_manager.index', compact('employees'));
     }
-
-    // Afficher le formulaire pour assigner un manager
+    
+    // Afficher le formulaire pour assigner un manager et un responsable RH
     public function showAssignForm(User $employee)
     {
         $managers = User::where('profil', 'manager')->get();
+        $rhs = User::where('profil', 'responsables RH')->get();
 
-        return view('user_manager.assign', compact('employee', 'managers'));
+        return view('user_manager.assign', compact('employee', 'managers', 'rhs'));
     }
 
-    // Assigner un manager à un employé
+    // Assigner un manager et un responsable RH à un employé
     public function assign(Request $request)
     {
         $request->validate([
             'employee_id' => 'required|exists:users,id',
-            'manager_id' => 'required|exists:users,id',
+            'manager_id' => 'nullable|exists:users,id',
+            'rh_id' => 'nullable|exists:users,id',
         ]);
 
         $employee = User::find($request->input('employee_id'));
-        $manager = User::find($request->input('manager_id'));
+        $managerId = $request->input('manager_id');
+        $rhId = $request->input('rh_id');
 
-        // Assigner le manager à l'employé
-        $employee->managers()->syncWithoutDetaching([$manager->id]);
+        // Assigner le manager s'il est spécifié
+        if ($managerId) {
+            \DB::table('user_manager')->updateOrInsert(
+                ['user_id' => $employee->id, 'manager_id' => $managerId],
+                ['updated_at' => now()]
+            );
+        }
 
-        return redirect()->route('user-manager.index')->with('success', 'Manager assigné avec succès.');
+        // Assigner le responsable RH s'il est spécifié
+        if ($rhId) {
+            \DB::table('user_manager')
+                ->updateOrInsert(
+                    ['user_id' => $employee->id],
+                    ['rh_id' => $rhId, 'updated_at' => now()]
+                );
+        }
 
+        return redirect()->route('user-manager.index')->with('success', 'Manager et Responsable RH assignés avec succès.');
     }
 
-    // Afficher le formulaire pour changer le manager
+    // Afficher le formulaire pour changer le manager et le responsable RH
     public function showChangeForm(User $employee)
     {
-        $currentManager = $employee->managers()->first(); // Récupère le manager actuel de l'employé
+        $currentManager = \DB::table('user_manager')
+            ->where('user_id', $employee->id)
+            ->value('manager_id');
+        
         $managers = User::where('profil', 'manager')->get();
-        return view('user_manager.change', compact('employee', 'managers', 'currentManager'));
+        $currentRh = \DB::table('user_manager')
+            ->where('user_id', $employee->id)
+            ->value('rh_id');
+        $rhs = User::where('profil', 'responsables RH')->get();
+
+        return view('user_manager.change', compact('employee', 'managers', 'rhs', 'currentManager', 'currentRh'));
     }
 
-    // Changer le manager de l'employé
+    // Changer le manager et le responsable RH de l'employé
     public function change(Request $request)
     {
         $request->validate([
             'employee_id' => 'required|exists:users,id',
-            'manager_id' => 'required|exists:users,id',
+            'manager_id' => 'nullable|exists:users,id',
+            'rh_id' => 'nullable|exists:users,id',
         ]);
-        
-        $employee = User::find($request->input('employee_id'));
-        $newManager = User::find($request->input('manager_id'));
-        
-        // Détacher tous les managers existants
-        $employee->managers()->detach();
 
-        // Assigner le nouveau manager
-        $employee->managers()->syncWithoutDetaching([$newManager->id]);
+        $employeeId = $request->input('employee_id');
+        $newManagerId = $request->input('manager_id');
+        $newRhId = $request->input('rh_id');
 
-        return redirect()->route('user-manager.index')->with('success', 'Manager changé avec succès.');
+        // Changer le manager si un nouveau est spécifié
+        if ($newManagerId) {
+            \DB::table('user_manager')->updateOrInsert(
+                ['user_id' => $employeeId, 'manager_id' => $newManagerId],
+                ['updated_at' => now()]
+            );
+        } else {
+            // Supprimer l'association manager si le champ est vide
+            \DB::table('user_manager')
+                ->where('user_id', $employeeId)
+                ->whereNotNull('manager_id')
+                ->delete();
+        }
+
+        // Changer le responsable RH si un nouveau est spécifié
+        if ($newRhId) {
+            \DB::table('user_manager')
+                ->updateOrInsert(
+                    ['user_id' => $employeeId],
+                    ['rh_id' => $newRhId, 'updated_at' => now()]
+                );
+        } else {
+            // Supprimer l'association responsable RH si le champ est vide
+            \DB::table('user_manager')
+                ->where('user_id', $employeeId)
+                ->update(['rh_id' => null, 'updated_at' => now()]);
+        }
+
+        return redirect()->route('user-manager.index')->with('success', 'Manager et Responsable RH changés avec succès.');
     }
 }

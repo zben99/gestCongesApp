@@ -14,15 +14,22 @@ return new class extends Migration
         Schema::create('user_manager', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id'); // L'employé
-            $table->unsignedBigInteger('manager_id'); // Le manager
+            $table->unsignedBigInteger('manager_id')->nullable(); // Le manager
+            $table->unsignedBigInteger('rh_id')->nullable(); // Le responsable RH
             $table->timestamps();
 
-            // Définir les clés étrangères et les relations
+            // Foreign keys
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('manager_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('manager_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('rh_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
     public function down()
     {
         Schema::dropIfExists('user_manager');

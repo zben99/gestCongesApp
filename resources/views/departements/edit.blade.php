@@ -60,8 +60,8 @@
                                 @enderror
                             </div>
 
-                            <button type="submit" class="btn btn-custom-blue btn-block">Enregistrer</button>
-                            <a href="{{ route('departements.index') }}" class="btn btn-danger">Retour</a>
+                            <button type="submit" class="btn btn-custom-blue btn-block mt-2">Enregistrer</button>
+                            <a href="{{ route('departements.index') }}" class="btn btn-danger mt-2">Retour</a>
                         </div>
                     </div>
                 </form>
