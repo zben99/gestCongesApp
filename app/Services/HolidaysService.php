@@ -6,15 +6,13 @@ use Carbon\Carbon;
 
 class HolidaysService
 {
-
     protected $manualHolidays = [
-        // Format : 'YYYY' => ['Nom du jour férié' => 'YYYY-MM-DD']
         '2024' => [
             'jour 1 année' => '2024-01-01',
             'Fête du Travail' => '2024-05-01',
             'Soulevement populaire' => '2024-01-01',
             'Fête de la femme' => '2024-03-08',
-            'Lundi de pâquet' => '2024-04-01',
+            'Lundi de pâques' => '2024-04-01',
             'Ramadan' => '2024-04-10',
             'Ascension' => '2024-05-09',
             'Journée des Coutumes et Traditions' => '2024-05-15',
@@ -26,15 +24,14 @@ class HolidaysService
             'Commémoration de l’indépendance' => '2024-12-11',
             'Noël' => '2024-12-25',
             'insurection populaire jour 1' => '2024-10-30',
-            'insurection populaire jour 2' => '2024-10-31',   
+            'insurection populaire jour 2' => '2024-10-31',
         ],
-
         '2025' => [
             'jour 1 année' => '2025-01-01',
             'Fête du Travail' => '2025-05-01',
             'Soulevement populaire' => '2025-01-01',
             'Fête de la femme' => '2025-03-08',
-            'Lundi de pâquet' => '2025-04-01',
+            'Lundi de pâques' => '2025-04-01',
             'Ramadan' => '2025-04-10',
             'Ascension' => '2025-05-09',
             'Journée des Coutumes et Traditions' => '2025-05-15',
@@ -46,9 +43,28 @@ class HolidaysService
             'Commémoration de l’indépendance' => '2025-12-11',
             'Noël' => '2025-12-25',
             'insurection populaire jour 1' => '2025-10-30',
-            'insurection populaire jour 2' => '2025-10-31',   
+            'insurection populaire jour 2' => '2025-10-31',
         ],
-        // Ajoutez les jours fériés pour les années suivantes ici
+
+        '2026' => [
+            'jour 1 année' => '2026-01-01',
+            'Fête du Travail' => '2026-05-01',
+            'Soulevement populaire' => '2026-01-01',
+            'Fête de la femme' => '2026-03-08',
+            'Lundi de pâques' => '2026-04-01',
+            'Ramadan' => '2026-04-10',
+            'Ascension' => '2026-05-09',
+            'Journée des Coutumes et Traditions' => '2026-05-15',
+            'Eid-Al-Kabîr (Tabaski)' => '2026-06-16',
+            'Burkina Independence Day' => '2026-08-05',
+            'Assomption' => '2026-08-15',
+            'Maouloud' => '2026-09-16',
+            'Toussaint' => '2026-11-01',
+            'Commémoration de l’indépendance' => '2026-12-11',
+            'Noël' => '2026-12-25',
+            'insurection populaire jour 1' => '2026-10-30',
+            'insurection populaire jour 2' => '2026-10-31',
+        ],
     ];
 
     /**
@@ -69,19 +85,19 @@ class HolidaysService
     }
 
     /**
-     * Vérifie si une date est un weekend ou un jour férié.
+     * Vérifie si une date est un jour non ouvrable (dimanche ou jour férié).
      *
      * @param Carbon $date
      * @return bool
      */
     public function isNonWorkingDay(Carbon $date)
     {
-        // Vérification du weekend
-        if ($date->isWeekend()) {
+        // Vérification du dimanche
+        if ($date->isSunday()) {
             return true;
         }
 
-        // Vérification des jours fériés manuels
+        // Vérification des jours fériés
         $holidays = $this->getHolidays($date->year);
         foreach ($holidays as $holiday) {
             if ($holiday->isSameDay($date)) {
@@ -93,7 +109,7 @@ class HolidaysService
     }
 
     /**
-     * Compte les jours ouvrables entre deux dates.
+     * Compte les jours ouvrables entre deux dates (lundi à samedi, jours fériés exclus).
      *
      * @param Carbon $startDate
      * @param Carbon $endDate
@@ -103,6 +119,7 @@ class HolidaysService
     {
         $totalDays = 0;
         while ($startDate->lte($endDate)) {
+            // Si ce n'est ni un dimanche ni un jour férié
             if (!$this->isNonWorkingDay($startDate)) {
                 $totalDays++;
             }
