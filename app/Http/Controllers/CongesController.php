@@ -8,46 +8,45 @@ use App\Models\TypeConges;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CongeApprovalMail;
-use Barryvdh\DomPDF\Facade\Pdf; // Assurez-vous d'avoir installé barryvdh/laravel-dompdf
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
-
+use App\Services\HolidaysService;
+use Carbon\Carbon;
 
 class CongesController extends Controller
 {
+    protected $holidaysService;
+
+    public function __construct(HolidaysService $holidaysService)
+    {
+        $this->holidaysService = $holidaysService;
+    }
+
     public function index(Request $request)
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $query = Conges::query();
-    
-        // Ajout des filtres de recherche pour le statut
+
+        // Filtres de recherche
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
-    
+
         // Gestion des profils
-        if ($user->profil == 'administrateurs') {
-            // Si l'utilisateur est administrateur, il peut voir toutes les demandes
+        if ($user->profil === 'administrateurs') {
             $conges = $query->paginate(7);
-        } elseif ($user->profil == 'manager') {
-            // Si le profil est manager, récupérer les congés des employés sous sa supervision ainsi que les siens
-            $conges = $query->whereIn('UserId', $user->employees->pluck('id')->push($user->id))
-                            ->paginate(7);
-        } elseif ($user->profil == 'responsables RH') {
-            // Récupérer les employés supervisés par ce responsable RH
+        } elseif ($user->profil === 'manager') {
+            $conges = $query->whereIn('UserId', $user->employees->pluck('id')->push($user->id))->paginate(7);
+        } elseif ($user->profil === 'responsables RH') {
             $employeeIds = $user->rhEmployees->pluck('id');
-    
-            // Récupérer les congés des employés sous la supervision RH ainsi que les siens
-            $conges = $query->whereIn('UserId', $employeeIds->push($user->id))
-                            ->paginate(7);
+            $conges = $query->whereIn('UserId', $employeeIds->push($user->id))->paginate(7);
         } else {
-            // Sinon, afficher uniquement les congés de l'utilisateur connecté
             $conges = $query->where('UserId', $user->id)->paginate(7);
         }
-    
+
         return view('conges.index', compact('conges'));
     }
-    
-     
+
     public function create()
     {
         $users = User::all();
@@ -55,44 +54,51 @@ class CongesController extends Controller
         return view('conges.edit', compact('users', 'typeConges'));
     }
 
-
     public function store(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'userId' => 'required|exists:users,id',
             'type_conge_id' => 'required|exists:type_conges,id',
             'dateDebut' => 'required|date',
             'dateFin' => 'required|date|after_or_equal:dateDebut',
-            'commentaire' => 'nullable',
+            'commentaire' => 'nullable|string',
         ]);
 
-        $user = User::findOrFail($request->userId);
-        $typeConge = TypeConges::findOrFail($request->type_conge_id);
+        $user = User::findOrFail($validatedData['userId']);
+        $typeConge = TypeConges::findOrFail($validatedData['type_conge_id']);
 
-        // Calcul du nombre de jours demandés
-        $days1 = (new \DateTime($request->dateFin))->diff(new \DateTime($request->dateDebut))->days + 1;
+        // Dates de début et de fin
+        $startDate = Carbon::parse($validatedData['dateDebut']);
+        $endDate = Carbon::parse($validatedData['dateFin']);
+
+        // Calcul des jours ouvrables demandés (exclusion des weekends et jours fériés)
+        $daysRequested = $this->holidaysService->countWorkingDays($startDate, $endDate);
 
         // Vérification de la durée maximale pour le type de congé
-        if ($days1 > $typeConge->duree_max) {
+        if ($daysRequested > $typeConge->duree_max) {
             return redirect()->route('conges.index')->with('error', 'La durée demandée dépasse la durée maximale autorisée pour ce type de congé.');
         }
 
         // Calcul des jours de congé disponibles
-        $days = (new \DateTime(now()))->diff(new \DateTime($user->initialization_date))->days + 1;
+        $days = Carbon::now()->diffInDays($user->initialization_date) + 1;
         $nbreConge = ($days * 2.5) / 30;
         $congeRestant = floor($nbreConge + $user->initial - $user->pris);
 
         // Vérification si le nombre de jours demandés dépasse les congés restants
-        if ($days1 > $congeRestant) {
+        if ($daysRequested > $congeRestant) {
             return redirect()->route('conges.index')->with('error', 'Impossible de créer une demande avec ce nombre de jours.');
         }
 
         try {
-
             // Création de la demande de congé
-            $conge = new Conges($request->all());
-            $conge->status = 'en attente';
-            $conge->save();
+            $conge = Conges::create([
+                'userId' => $validatedData['userId'],
+                'type_conge_id' => $validatedData['type_conge_id'],
+                'dateDebut' => $validatedData['dateDebut'],
+                'dateFin' => $validatedData['dateFin'],
+                'commentaire' => $validatedData['commentaire'],
+                'status' => 'en attente',
+            ]);
 
             return redirect()->route('conges.index')->with('success', 'Demande de congé soumise avec succès.');
         } catch (\Exception $e) {
@@ -100,32 +106,30 @@ class CongesController extends Controller
         }
     }
 
-
     public function edit(Conges $conge)
     {
         $users = User::all();
         $typeConges = TypeConges::all();
-        return view('conges.edit', compact('conge','users','typeConges'));
+        return view('conges.edit', compact('conge', 'users', 'typeConges'));
     }
-
 
     public function update(Request $request, Conges $conge)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'type_conge_id' => 'required|exists:type_conges,id',
             'dateDebut' => 'required|date',
             'dateFin' => 'required|date|after_or_equal:dateDebut',
-            'commentaire' => 'nullable',
+            'commentaire' => 'nullable|string',
         ]);
 
         $user = User::findOrFail($conge->UserId);
-        $typeConge = TypeConges::findOrFail($request->type_conge_id);
+        $typeConge = TypeConges::findOrFail($validatedData['type_conge_id']);
 
         // Calcul du nombre de jours demandés
-        $days1 = $this->calculateDays($request->dateDebut, $request->dateFin);
+        $daysRequested = $this->calculateDays($validatedData['dateDebut'], $validatedData['dateFin']);
 
         // Vérification de la durée maximale pour le type de congé
-        if ($days1 > $typeConge->duree_max) {
+        if ($daysRequested > $typeConge->duree_max) {
             return redirect()->route('conges.index')->with('error', 'La durée demandée dépasse la durée maximale autorisée pour ce type de congé.');
         }
 
@@ -135,134 +139,105 @@ class CongesController extends Controller
         $congeRestant = floor($nbreConge + $user->initial - $user->pris);
 
         // Vérification si le nombre de jours demandés dépasse les congés restants
-        if ($days1 > $congeRestant) {
+        if ($daysRequested > $congeRestant) {
             return redirect()->route('conges.index')->with('error', 'Impossible de modifier la demande avec ce nombre de jours.');
         }
 
         // Mise à jour des informations du congé
-        $conge->type_conge_id = $request->type_conge_id;
-        $conge->dateDebut = $request->dateDebut;
-        $conge->dateFin = $request->dateFin;
-        $conge->commentaire = $request->commentaire;
-        $conge->save();
+        $conge->update($validatedData);
 
         return redirect()->route('conges.index')->with('success', 'Demande de congé modifiée avec succès.');
     }
 
-
-    public function show($conge)
-{
-    $conge = Conges::findOrFail($conge);
-    return view('conges.show', compact('conge'));
-}
-
-
-    public function approveByManager($conge)
+    public function show(Conges $conge)
     {
-        $conge = Conges::findOrFail($conge);
-        $user = auth()->user();
+        return view('conges.show', compact('conge'));
+    }
+
+    public function approveByManager(Conges $conge)
+    {
+        $user = Auth::user();
 
         if ($user->profil !== 'manager') {
             return redirect()->back()->with('error', 'Accès non autorisé.');
         }
 
-
-            $conge->status = 'en attente RH';
-            $conge->approved_by_manager = $user->id;
-            $conge->save();
-
+        $conge->update([
+            'status' => 'en attente RH',
+            'approved_by_manager' => $user->id,
+        ]);
 
         return redirect()->route('conges.index')->with('success', 'Demande approuvée par le manager.');
     }
 
-    
-    public function approveByRh($id)
+    public function approveByRh(Conges $conge)
     {
-        // Récupérer la demande de congé avec la relation 'user' et 'typeConge'
-        $conge = Conges::with('user', 'typeConge')->findOrFail($id);
-        $user = auth()->user();
+        $user = Auth::user();
 
-        // Vérifier si l'utilisateur est un responsables RH
         if ($user->profil !== 'responsables RH') {
             return redirect()->back()->with('error', 'Accès non autorisé.');
         }
 
-        // Vérifier si le statut est en attente de validation RH
         if ($conge->status === 'en attente RH') {
-            // Calculer le nombre de jours pour le congé annuel
-            if ($conge->typeConge->nom == 'Congé annuel') {
+            if ($conge->typeConge->nom === 'Congé annuel') {
                 $days = $this->calculateDays($conge->dateDebut, $conge->dateFin);
-                $conge->user->pris += $days;  // Mettre à jour le nombre de jours pris
-                $conge->user->save();
+                $conge->user->increment('pris', $days);
             }
 
-            // Générer le fichier PDF
             $pdf = Pdf::loadView('pdf.conge', ['conge' => $conge]);
+            $pdfPath = storage_path('app/public/conges/conge_' . $conge->id . '.pdf');
 
-            // Vérifier si le dossier existe, sinon le créer
-            $directory = storage_path('app/public/conges');
-            if (!is_dir($directory)) {
-                mkdir($directory, 0755, true);
+            if (!is_dir(dirname($pdfPath))) {
+                mkdir(dirname($pdfPath), 0755, true);
             }
 
-            // Définir le chemin du fichier PDF
-            $pdfPath = storage_path('app/public/conges/conge_' . $conge->id . '.pdf');
             $pdf->save($pdfPath);
 
-            // Mettre à jour le statut et le chemin du PDF
-            $conge->status = 'approuvé';
-            $conge->approved_by_rh = $user->id;
-            $conge->pdf_path = 'conges/conge_' . $conge->id . '.pdf';
-            $conge->save();
+            $conge->update([
+                'status' => 'approuvé',
+                'approved_by_rh' => $user->id,
+                'pdf_path' => 'conges/conge_' . $conge->id . '.pdf',
+            ]);
 
-            // Envoyer l'email avec le PDF en pièce jointe
             Mail::to($conge->user->email)->send(new CongeApprovalMail($conge, $pdfPath));
 
             return redirect()->route('conges.index')->with('success', 'Demande approuvée, email envoyé et jours de congé mis à jour.');
         } elseif ($conge->status === 'en attente') {
-            // En cas de refus, mettre à jour le statut
-            $conge->status = 'refusé';
-            $conge->save();
+            $conge->update(['status' => 'refusé']);
             return redirect()->back()->with('success', 'Demande refusée.');
         }
 
         return redirect()->back()->with('error', 'Le statut de la demande est invalide.');
     }
 
-
-    private function calculateDays($dateDebut, $dateFin)
+    public function reject(Conges $conge)
     {
-        return (new \DateTime($dateFin))->diff(new \DateTime($dateDebut))->days + 1;
-    }
+        $user = Auth::user();
 
-
-    public function reject($id)
-    {
-        $conge = Conges::findOrFail($id);
-        $user = auth()->user();
-    
-        if ($user->profil !== 'manager' && $user->profil !== 'responsables RH') {
+        if (!in_array($user->profil, ['manager', 'responsables RH'])) {
             return redirect()->back()->with('error', 'Accès non autorisé.');
         }
-    
-        if ($conge->status === 'en attente' || $conge->status === 'en attente RH') {
-            $conge->status = 'refusé';
-            $conge->save();
-    
-            // Envoyer la notification à l'employé
-            $employe = $conge->employe;  // Assurez-vous que $conge->employe retourne bien l'utilisateur lié
-            $employe->notify(new \App\Notifications\CongeRejected($conge));
+
+        if ($user->profil === 'manager') {
+            $conge->update(['status' => 'refusé par manager']);
+        } elseif ($user->profil === 'responsables RH') {
+            $conge->update(['status' => 'refusé par RH']);
         }
-    
+
         return redirect()->route('conges.index')->with('success', 'Demande refusée.');
     }
-    
 
     public function destroy(Conges $conge)
     {
         $conge->delete();
-
-        return redirect()->route('conges.index')->with('success', 'Congé supprimé avec succès.');
+        return redirect()->route('conges.index')->with('success', 'Demande de congé supprimée avec succès.');
     }
 
+    protected function calculateDays($startDate, $endDate)
+    {
+        $start = Carbon::parse($startDate);
+        $end = Carbon::parse($endDate);
+
+        return $this->holidaysService->countWorkingDays($start, $end);
+    }
 }
