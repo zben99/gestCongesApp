@@ -54,7 +54,7 @@
                   <div class="form-group">
                     <label>Justificatif :</label>
                     @if ($absence->justificatif)
-                      <a href="{{ asset('storage/justificatifs/' . $absence->justificatif) }}" target="_blank" class="btn btn-custom-blue btn-icon">
+                      <a href="{{ asset('storage/' . $absence->justificatif) }}" target="_blank" class="btn btn-custom-blue btn-icon">
                         <i class="fas fa-file"></i> Voir le justificatif
                       </a>
                     @else

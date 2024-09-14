@@ -73,7 +73,6 @@
                             </a>
                         </li>
                     @endif
-
                     <li class="nav-item has-submenu">
                         @if(auth()->user()->profil == 'administrateurs' || auth()->user()->profil == 'responsables RH')
                             <a class="nav-link submenu-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#submenu-reports" aria-expanded="false" aria-controls="submenu-reports">

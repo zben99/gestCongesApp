@@ -30,14 +30,21 @@
                 @if(!isset($absence)) <!-- Affichage uniquement lors de l'ajout -->
                 <div class="form-group">
                   <label for="user_id">{{ __('Employé') }}</label>
-                  <select class="form-control" name="UserId" id="user_id">
-                    @foreach($users as $user)
-                      <option value="{{ $user->id }}">
-                        {{ $user->nom }} {{ $user->prenom }}
-                      </option>
-                    @endforeach
-                  </select>
-                </div>
+
+                  @if(auth()->user()->profil === 'manager')
+                      <select class="form-control" name="UserId" id="user_id">
+                          @foreach(auth()->user()->employees as $employee)
+                              <option value="{{ $employee->id }}">
+                                  {{ $employee->nom }} {{ $employee->prenom }}
+                              </option>
+                          @endforeach
+                      </select>
+                  @else
+                      <input type="hidden" name="UserId" value="{{ auth()->user()->id }}">
+                      <input type="text" class="form-control" value="{{ auth()->user()->nom }} {{ auth()->user()->prenom }}" disabled>
+                  @endif
+              </div>
+
                 @else <!-- Affichage en mode édition -->
                 <div class="form-group">
                   <label for="user_id">{{ __('Employé') }}</label>
