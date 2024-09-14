@@ -19,8 +19,12 @@ class CongesExport implements FromCollection, WithHeadings
             ->get()
             ->map(function ($conge) {
                 return [
+                    $conge->employe->matricule,
                     $conge->employe->nom.' '. $conge->employe->prenom,
                     $conge->employe->departement->name_departement,
+                    $conge->employe->email,
+                    $conge->employe->telephone1,
+                    $conge->typeConge->nom,
                     $conge->dateDebut,
                     $conge->dateFin,
                     
@@ -31,12 +35,14 @@ class CongesExport implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
+            'Matricule',
             'Nom',
             'Département',
+            'Email',
+            'Téléphone',
+            'Type de Congé',
             'Date de début',
             'Date de fin',
         ];
-    }
-
-    
+    }    
 }

@@ -10,6 +10,9 @@
         </div>
         <div class="card-body">
           <div class="row">
+          <div class="col-md-4">
+              <a href="{{ route('rapports.tousConges') }}" class="btn btn-primary btn-block">Tous les Congés</a>
+            </div>
             <div class="col-md-4">
               <a href="{{ route('rapports.enCours') }}" class="btn btn-primary btn-block">Congés Actuels</a>
             </div>

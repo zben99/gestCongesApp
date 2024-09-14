@@ -86,6 +86,7 @@
                             </a><!--//nav-link-->
                             <div id="submenu-reports" class="collapse submenu submenu-reports" data-bs-parent="#menu-accordion">
                                 <ul class="submenu-list list-unstyled">
+                                <li class="submenu-item"><a class="submenu-link" href="{{ route('rapports.tousConges') }}"> Tous les Congés</a></li>
                                     <li class="submenu-item"><a class="submenu-link" href="{{ route('rapports.enCours') }}">Congés en cours</a></li>
                                     <li class="submenu-item"><a class="submenu-link" href="{{route('rapports.moisProchain')}}">Prevision Congés</a></li>
                                     <li class="submenu-item"><a class="submenu-link" href="{{route('rapportsAbsences.enCours')}}">Absences en cours</a></li>

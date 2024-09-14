@@ -121,6 +121,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/rapports', [RapportCongesController::class, 'index'])->name('rapports.index');
+   
+    Route::get('/rapports/export', [RapportCongesController::class, 'exporttous'])->name('rapports.export');
+    Route::get('rapports/tous-conges', [RapportCongesController::class, 'tousConges'])->name('rapports.tousConges');
     Route::get('/rapports/en-cours', [RapportCongesController::class, 'enCours'])->name('rapports.enCours');
     Route::get('/rapports/mois-prochain', [RapportCongesController::class, 'moisProchain'])->name('rapports.moisProchain');
     Route::get('/rapports/en-attente', [RapportCongesController::class, 'enAttente'])->name('rapports.enAttente');

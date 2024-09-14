@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use App\Models\Departement;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\CongesProchain;
+use App\Exports\CongesExporttous;
 
 
 class RapportCongesController extends Controller
@@ -134,5 +135,50 @@ public function export(Request $request)
 
     return Excel::download(new CongesProchain($congesMoisProchain), 'conges_mois_prochain.xlsx');
 }
-    
+
+public function tousConges(Request $request)
+{
+    $departements = Departement::all();
+
+    // Récupérer l'année filtrée
+    $year = $request->input('year');
+    $departmentId = $request->input('department_id');
+
+    // Récupérer les années disponibles dans les données des congés
+    $years = Conges::selectRaw('YEAR(dateDebut) as year')
+                    ->distinct()
+                    ->orderBy('year', 'desc')
+                    ->pluck('year');
+
+    // Début de la requête pour tous les congés
+    $query = Conges::with('employe.departement');
+
+    // Si une année est sélectionnée, filtrer par année
+    if ($year) {
+        $query->whereYear('dateDebut', $year);
+    }
+
+    // Si un département est sélectionné, ajouter le filtre
+    if ($departmentId) {
+        $query->whereHas('employe', function ($q) use ($departmentId) {
+            $q->where('departementId', $departmentId);
+        });
+    }
+
+    // Récupérer les congés
+    $congesTous = $query->get();
+    $nombreCongesTotal = $congesTous->count();
+
+    return view('rapports.tousConges', compact('congesTous', 'departements', 'departmentId', 'years', 'year', 'nombreCongesTotal'));
+}
+
+   
+public function exporttous(Request $request)
+{
+    $departmentId = $request->input('department_id');
+    $year = $request->input('year');
+
+    return Excel::download(new CongesExporttous($departmentId, $year), 'tousconges.xlsx');
+}
+
 }
