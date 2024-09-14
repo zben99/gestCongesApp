@@ -62,7 +62,6 @@ class AdminController extends Controller
     public function liste_conges()
     {
         $users = User::all();
-
         return view('conges.liste_users_conge', compact('users'));
     }
 

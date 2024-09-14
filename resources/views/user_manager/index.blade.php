@@ -8,22 +8,22 @@
 @section('content')
 <div class="container">
     <div class="card">
-        <div class="card-header">
+        <div class="btn btn-custom-blue btn-block">
             <h2 class="card-title">Liste des Employés</h2>
         </div>
         <div class="card-body">
             <!-- Formulaire de recherche -->
             <form action="{{ route('user-manager.index') }}" method="GET" class="mb-4">
                 <div class="input-group">
-                    <input type="text" name="search" class="form-control" placeholder="Rechercher par matricule, nom ou prénom" value="{{ request('search') }}">
+                <input type="text" name="search" class="form-control search-field" placeholder="Rechercher par matricule, nom ou prénom" value="{{ request('search') }}">
                     <div class="input-group-append">
-                        <button type="submit" class="btn btn-primary">Rechercher</button>
+                        <button type="submit" class="btn btn-custom-blue btn-block" >Rechercher</button>
                     </div>
                 </div>
             </form>
 
             <!-- Tableau des employés -->
-            <table class="table table-striped">
+            <table class="table table-bordered table-over">
                 <thead>
                     <tr>
                         <th>ID</th>

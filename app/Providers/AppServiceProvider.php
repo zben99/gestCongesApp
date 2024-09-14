@@ -7,7 +7,6 @@ use Illuminate\Support\ServiceProvider;
 use App\Services\CongeAlertService;
 use App\Services\HolidaysService;
 
-
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -33,5 +32,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Schema::defaultStringLength(191);
+        
     }
+    
+
+
+
 }

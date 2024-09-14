@@ -45,6 +45,15 @@
                   @endforeach
                 </select>
               </div>
+              <div class="col-md-4">
+                <label for="status"><strong>Filtrer par statut</strong> :</label>
+                <select name="status" id="status" class="form-control">
+                    <option value="">Tous les statuts</option>
+                    <option value="approuvé" {{ request('status') == 'approuvé' ? 'selected' : '' }}>Effectuer</option>
+                    <option value="refusé" {{ request('status') == 'refusé' ? 'selected' : '' }}>Rejeté</option>
+                    <!-- Ajoutez d'autres statuts ici si nécessaire -->
+                </select>
+            </div>          
 
               <div class="col-md-4 mt-4">
                 <button type="submit" class="btn btn-custom-blue btn-block">Filtrer</button>
@@ -54,14 +63,13 @@
 
           <hr>
 
-          <!-- Résumé et exportation   -->
+          <!-- Résumé et exportation -->
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4>Nombre total de congés : {{ $nombreCongesTotal }}</h4>
-            <a href="{{ route('rapports.export', ['department_id' => $departmentId, 'year' => request('year')]) }}" class="btn btn-custom-blue btn-block">
+            <a href="{{ route('rapports.export', ['department_id' => $departmentId, 'year' => request('year'), 'status' => request('status')]) }}" class="btn btn-custom-blue btn-block">
                 <i class="fas fa-file-excel"></i> Exporter
             </a>
           </div>
-          
 
           <!-- Tableau des congés -->
           <table class="table table-bordered table-over">
@@ -88,6 +96,10 @@
               @endforeach
             </tbody>
           </table>
+           <!-- Afficher les liens de pagination -->
+        <div class="d-flex justify-content-center mt-4">
+            {{ $congesTous->links('vendor.pagination.custom') }}
+        </div>
         </div>
         <!-- /.card-body -->
       </div>

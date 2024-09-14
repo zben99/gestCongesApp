@@ -15,7 +15,7 @@ class CongesExport implements FromCollection, WithHeadings
 
         return Conges::where('dateDebut', '<=', $dateNow)
             ->where('dateFin', '>=', $dateNow)
-            ->with('employe.departement')
+            ->with('employes.departement')
             ->get()
             ->map(function ($conge) {
                 return [
