@@ -36,7 +36,7 @@
                                 <li class="submenu-item"><a class="submenu-link" href="{{ route('typeConges.index') }}">Type de congés</a></li>
                                 <li class="submenu-item"><a class="submenu-link" href="{{ route('typeAbsences.index') }}">Type d'absences</a></li>
                                 <li class="submenu-item"><a class="submenu-link" href="{{ route('user-manager.index') }}">Workflow</a></li>
-                            
+
                         </ul>
                     </div>
                 @endif
@@ -89,12 +89,12 @@
                                     <li class="submenu-item"><a class="submenu-link" href="{{ route('rapports.enCours') }}">Congés en cours</a></li>
                                     <li class="submenu-item"><a class="submenu-link" href="{{route('rapports.moisProchain')}}">Prevision Congés</a></li>
                                     <li class="submenu-item"><a class="submenu-link" href="{{route('rapportsAbsences.enCours')}}">Absences en cours</a></li>
-                
+
                                 </ul>
                             </div>
                         @endif
                     </li><!--//nav-item-->
-        
+
                     @if(auth()->user()->profil == 'administrateurs' || auth()->user()->profil == 'responsables RH')
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('absences.attente') }}">
@@ -150,6 +150,7 @@
                                 <h2> {{$congeRestant}} jours</h2>
                             </span>
                         </center>
+
                     </nav><!--//app-nav-footer-->
                 </div><!--//app-sidepanel-footer-->
             </ul>

@@ -4,30 +4,31 @@
 use App\Models\User;
 use App\Models\Conges;
 use App\Models\Absence;
-use Illuminate\Support\Facades\Route;
+use App\Exports\CongesExport;
 
+use App\Services\CongeAlertService;
+use Maatwebsite\Excel\Facades\Excel;
+
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\AdminController;
-
 use App\Http\Controllers\PosteController;
 use App\Http\Controllers\CongesController;
+use App\Http\Controllers\RappelController;
 use App\Http\Controllers\EmployeController;
+
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AbsenceControlleur;
-use App\Http\Controllers\RapportCongesController;
-use App\Http\Controllers\UserImportController;
-
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TypeCongesController;
+use App\Http\Controllers\UserImportController;
 use App\Http\Controllers\DepartementController;
 use App\Http\Controllers\UserManagerController;
+
 use App\Http\Controllers\TypeAbsencesController;
 use App\Notifications\AbsenceStatusNotification;
+use App\Http\Controllers\RapportCongesController;
 use App\Http\Controllers\RapportAbsenceController;
-
-use App\Exports\CongesExport;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Services\CongeAlertService;
 
 
 
@@ -50,7 +51,7 @@ Route::middleware('auth')->group(function () {
         $totalAbsencesEnAttenteDepuis3Jours = Absence::where('status', 'en attente')
                                                      ->where('created_at', '<', now()->subDays(3))
                                                      ->count();
-    
+
             // Statistiques en temps réel
         $totalConges = Conges::count();
         $congesApprouves = Conges::where('status', 'approuvé')->count();
@@ -59,8 +60,8 @@ Route::middleware('auth')->group(function () {
         $congesEnAttenteDepuisTroisJours = Conges::where('status', 'en attente')
                                                  ->where('created_at', '<=', now()->subDays(3))
                                                  ->count();
-    
-    
+
+
         return view('dashboard', compact(
                 'nombreUsers',
                 'totalDemandesAbsence',
@@ -74,19 +75,19 @@ Route::middleware('auth')->group(function () {
                 'congesEnAttente',
                 'congesEnAttenteDepuisTroisJours'
             ));
-    
+
     })->middleware(['auth', 'verified'])->name('dashboard');
-    
-    
+
+
 
 
     Route::get('/test-conge-alerts', function (CongeAlertService $congeAlertService) {
         $congeAlertService->sendAlerts();
-    
+
         return 'Les emails d\'alerte ont été envoyés pour les utilisateurs concernés.';
     });
-    
-    
+
+
     Route::get('/test-email', function () {
         $user = User::find(1); // Remplacez par l'ID de l'utilisateur à tester
         $absence = Absence::find(1); // Remplacez par l'ID d'une absence existante
@@ -104,12 +105,12 @@ Route::middleware('auth')->group(function () {
     // Route pour l'exportation des congés du mois prochain
     Route::get('/conges/mois-prochain/export', [RapportCongesController::class, 'export'])->name('rapports.export1');
 
-        
+
     Route::get('admins/import', [UserImportController::class, 'showImportForm'])->name('admins.import.form');
     Route::post('admins/import', [UserImportController::class, 'import'])->name('admins.import');
 
-    
-    
+
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     // Route pour la mise à jour du profil
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -125,7 +126,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/rapports/en-attente', [RapportCongesController::class, 'enAttente'])->name('rapports.enAttente');
     Route::get('/rapports/departements', [RapportCongesController::class, 'departements'])->name('rapports.departements');
 
-  
+
 
     Route::get('/rapportsAbsences', [RapportAbsenceController::class, 'index'])->name('rapportsAbsences.index');
     Route::get('/rapportsAbsences/enCours', [RapportAbsenceController::class, 'enCours'])->name('rapportsAbsences.enCours');
@@ -233,6 +234,18 @@ Route::middleware('auth')->group(function () {
     Route::put('/postes/{poste}', [PosteController::class, 'update'])->name('postes.update');
     // Route pour supprimer un poste
     Route::delete('/postes/{poste}', [PosteController::class, 'destroy'])->name('postes.destroy');
+
+
+
+    //routes pour les rappels
+
+    Route::get('/conges/{conge}/rappels', [RappelController::class, 'indexRappels'])->name('rappels.index');
+    Route::get('/conges/{conge}/rappels/create', [RappelController::class, 'createRappel'])->name('rappels.create');
+    Route::post('/conges/{conge}/rappels', [RappelController::class, 'creerRappel'])->name('rappels.store');
+    Route::get('/rappels/{rappel}/edit', [RappelController::class, 'editRappel'])->name('rappels.edit');
+    Route::put('/rappels/{rappel}', [RappelController::class, 'mettreAJourRappel'])->name('rappels.update');
+    Route::delete('/rappels/{rappel}', [RappelController::class, 'supprimerRappel'])->name('rappels.destroy');
+
 
 
 });

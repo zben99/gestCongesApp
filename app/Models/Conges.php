@@ -21,7 +21,7 @@ class Conges extends Model
     {
         return $this->belongsTo(Departement::class,'departementId');
     }
-    
+
     public function user()
 {
     return $this->belongsTo(User::class, 'UserId');
@@ -60,5 +60,11 @@ class Conges extends Model
     {
         return $this->belongsTo(User::class, 'approved_by_rh');
     }
+
+    public function rappels()
+    {
+        return $this->hasMany(Rappel::class);
+    }
+
 
 }

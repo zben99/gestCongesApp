@@ -75,46 +75,53 @@
                         </span>
                       </td>
                       <td>
-                          @if(auth()->user()->profil === 'manager' && $conge->status === 'en attente')
-                              <a href="{{ route('conges.approveByManager', $conge) }}" class="btn btn-icon">
-                                  <i class="fas fa-check status-approved"></i> <span>Approuver</span>
-                              </a>
-                          @elseif(auth()->user()->profil === 'responsables RH' && $conge->status === 'en attente RH')
-                              <a href="{{ route('conges.approveByRh', $conge) }}" class="btn btn-icon">
-                                  <i class="fas fa-check status-approved"></i> <span>Approuver</span>
-                              </a>
-                          @endif
+                        @if(auth()->user()->profil === 'manager' && $conge->status === 'en attente')
+                            <a href="{{ route('conges.approveByManager', $conge) }}" class="btn btn-icon">
+                                <i class="fas fa-check status-approved"></i> <span>Approuver</span>
+                            </a>
+                        @elseif(auth()->user()->profil === 'responsables RH' && $conge->status === 'en attente RH')
+                            <a href="{{ route('conges.approveByRh', $conge) }}" class="btn btn-icon">
+                                <i class="fas fa-check status-approved"></i> <span>Approuver</span>
+                            </a>
+                        @endif
 
-                          @if(
-                              (auth()->user()->profil === 'manager' && $conge->status === 'en attente') || 
-                              (auth()->user()->profil === 'responsables RH' && $conge->status === 'en attente RH')
-                          )
-                              <a href="{{ route('conges.reject', $conge->id) }}" class="btn btn-icon">
-                                  <i class="fas fa-times status-rejected"></i> <span>Refuser</span>
-                              </a>
-                          @endif
+                        @if(
+                            (auth()->user()->profil === 'manager' && $conge->status === 'en attente') ||
+                            (auth()->user()->profil === 'responsables RH' && $conge->status === 'en attente RH')
+                        )
+                            <a href="{{ route('conges.reject', $conge->id) }}" class="btn btn-icon">
+                                <i class="fas fa-times status-rejected"></i> <span>Refuser</span>
+                            </a>
+                        @endif
 
-                          <a href="{{ route('conges.show', $conge->id) }}" class="btn btn-icon">
-                              <i class="fas fa-eye icon-view"></i>
-                          </a>
+                        <a href="{{ route('conges.show', $conge->id) }}" class="btn btn-icon">
+                            <i class="fas fa-eye icon-view"></i>
+                        </a>
 
-                          @if(
-                              (auth()->user()->id === $conge->UserId && $conge->status === 'en attente') || 
-                              auth()->user()->profil === 'administrateurs'
-                          )
-                              <a href="{{ route('conges.edit', $conge->id) }}" class="btn btn-warning btn-sm">
-                                  <i class="fas fa-edit"></i>
-                              </a>
-                              <form id="delete-form-{{ $conge->id }}" method="POST" action="{{ route('conges.destroy', $conge->id) }}" style="display: inline;">
-                                  @csrf
-                                  @method("DELETE")
+                        @if(
+                            (auth()->user()->id === $conge->UserId && $conge->status === 'en attente') ||
+                            auth()->user()->profil === 'administrateurs'
+                        )
+                            <a href="{{ route('conges.edit', $conge->id) }}" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <form id="delete-form-{{ $conge->id }}" method="POST" action="{{ route('conges.destroy', $conge->id) }}" style="display: inline;">
+                                @csrf
+                                @method("DELETE")
 
-                                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal-{{ $conge->id }}">
-                                      <i class="fas fa-trash"></i>
-                                  </button>
-                              </form>
-                          @endif
-                      </td>
+                                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal-{{ $conge->id }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        @endif
+
+                        @if(auth()->user()->profil === 'responsables RH' && $conge->status === 'approuvé')
+                            <a href="{{ route('rappels.index', $conge->id) }}" class="btn btn-info btn-sm">
+                                <i class="fas fa-bell"></i> Rappel
+                            </a>
+                        @endif
+                    </td>
+
                     @empty
                     <tr>
                         <td colspan="6" class="text-center">Aucun congé trouvé</td>
