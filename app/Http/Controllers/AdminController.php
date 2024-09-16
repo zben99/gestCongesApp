@@ -199,7 +199,6 @@ class AdminController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-
         // Mise à jour de l'utilisateur
         $user->nom = $request->input('nom');
         $user->prenom = $request->input('prenom');

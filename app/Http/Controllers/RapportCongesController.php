@@ -196,6 +196,4 @@ public function exporttous(Request $request)
     return Excel::download(new CongesExporttous($departmentId, $year, $status), $fileName);
 }
 
-
-
 }

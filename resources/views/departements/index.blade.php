@@ -13,7 +13,7 @@
                     <div class="btn btn-custom-blue btn-block">
                         <h3 class="card-title">{{ __('Liste des Départements') }}</h3>
                     </div>
-                    <div class="card-header">
+                    <div class="card-body">
                         <a href="{{ route('departements.create') }}" class="btn btn-custom-blue btn-block">Ajouter un Département</a>
                     </div>
                     <table class="table table-bordered table-hover">
@@ -70,8 +70,9 @@
                     </table>
 
                     <!-- Pagination -->
-                    <div class="card-footer clearfix">
+                    <div class="d-flex justify-content-center mt-3">
                         {{ $departements->links('vendor.pagination.custom') }}
+                    </div>
                     </div>
                 </div> <!-- /.card -->
             </div> <!-- /.col -->

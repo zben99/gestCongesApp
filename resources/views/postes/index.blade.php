@@ -13,7 +13,7 @@
                     <div class="btn btn-custom-blue btn-block">
                         <h3 class="card-title">{{ __('Liste des Postes') }}</h3>
                     </div>
-                    <div class="card-header">
+                    <div class="card-body">
                         <a href="{{ route('postes.create') }}" class="btn btn-custom-blue btn-block mt-2">Ajouter un Poste</a>
                     </div>
                     <table class="table table-bordered table-hover">
