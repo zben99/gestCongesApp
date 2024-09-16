@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,12 +19,12 @@ class DatabaseSeeder extends Seeder
         $this->call(TypesCongesSeeder::class);
         $this->call(TypeAbsencesSeeder::class);
 
-        User::factory()->create([
+        DB::table('users')->insert([
             'nom' => 'Super',
             'prenom' => 'Admin',
             'matricule' => '00000',
             'email' => 'admin@admin.com',
-           // 'password' => '$2y$12$26Ve8sEtk7YfE5hvxKjxgujicF7bQaPWaWS5Njt8tRYSUSkmWCT82', //12345678
+            'password' => '$2y$12$26Ve8sEtk7YfE5hvxKjxgujicF7bQaPWaWS5Njt8tRYSUSkmWCT82', //12345678
             'telephone1' => '25000000',
             'profil' => 'administrateurs',
 
