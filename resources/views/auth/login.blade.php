@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
-	
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,14 +8,14 @@
     <meta name="description" content="Page d'authentification">
     <meta name="author" content="ONEA">
     <link rel="shortcut icon" href="favicon.ico">
-    
+
     <!-- FontAwesome JS -->
     <script defer src="assets/plugins/fontawesome/js/all.min.js"></script>
-    
+
     <!-- App CSS -->
     <link id="theme-style" rel="stylesheet" href="assets/css/portal.css">
 	<link id="theme-style" rel="stylesheet" href="assets/css/portal1.css">
-    
+
     <title>Interface Authentification</title>
 </head>
 
@@ -26,7 +26,7 @@
                 <div class="app-auth-body mx-auto">
                     <div class="app-auth-branding mb-4">
                         <a class="app-logo" href="index.html">
-                            <img class="logo-icon me-2" src="images/logo-ONEA.jpg" alt="logo">
+                            <img class="logo-icon me-2" src="{{asset('images/logo-ONEA.jpg')}}" alt="logo">
                         </a>
                     </div>
                     <h2 class="auth-heading mb-5">Authentification</h2>

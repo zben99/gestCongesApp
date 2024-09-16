@@ -62,7 +62,7 @@ Route::middleware('auth')->group(function () {
                                                  ->count();
 
 
-        return view('dashboard', compact(
+        return view('Dashboard', compact(
                 'nombreUsers',
                 'totalDemandesAbsence',
                 'totalAbsencesValides',
@@ -121,7 +121,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/rapports', [RapportCongesController::class, 'index'])->name('rapports.index');
-   
+
     Route::get('/rapports/export', [RapportCongesController::class, 'exporttous'])->name('rapports.export');
     Route::get('rapports/tous-conges', [RapportCongesController::class, 'tousConges'])->name('rapports.tousConges');
     Route::get('/rapports/en-cours', [RapportCongesController::class, 'enCours'])->name('rapports.enCours');
