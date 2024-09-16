@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Poste;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
 
 class PosteController extends Controller
 {
@@ -23,12 +25,21 @@ class PosteController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name_poste' => 'required|string|max:255',
             'description' => 'nullable|string',
+
         ]);
 
-        Poste::create($request->all());
+         // Si la validation échoue
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $postes = new Poste();
+        $postes->name_poste = $request->input('name_poste');
+        $postes->description = $request->input('description');
+        $postes->save();
 
         return redirect()->route('postes.index')->with('success', 'Poste ajouté avec succès.');
     }

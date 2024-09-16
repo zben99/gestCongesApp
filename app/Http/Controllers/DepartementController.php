@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Departement;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
 
 class DepartementController extends Controller
 {
@@ -22,13 +24,21 @@ class DepartementController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name_departement' => 'required|string|max:255',
             'description' => 'nullable|string',
         ]);
 
-        Departement::create($request->all());
+         // Si la validation échoue
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+         }
+         $departements = new Departement();
+         $departements->name_departement = $request->input('name_departement');
+         $departements->description = $request->input('description');
+         $departements->save();
 
+         // Redirection après succès
         return redirect()->route('departements.index')->with('success', 'Département ajouté avec succès.');
     }
 
