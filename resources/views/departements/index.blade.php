@@ -11,10 +11,10 @@
             <div class="col-12">
                 <div class="card">
                     <div class="btn btn-custom-blue btn-block">
-                        <h3 class="card-title">{{ __('Liste des Départements') }}</h3>
+                        <h3 class="card-title">{{ __('Liste des Directions') }}</h3>
                     </div>
                     <div class="card-body">
-                        <a href="{{ route('departements.create') }}" class="btn btn-custom-blue btn-block">Ajouter un Département</a>
+                        <a href="{{ route('departements.create') }}" class="btn btn-custom-blue btn-block">Création</a>
                     </div>
                     <table class="table table-bordered table-hover">
                         <thead>

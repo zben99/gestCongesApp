@@ -9,7 +9,7 @@
 <div class="container">
     <div class="card">
         <div class="btn btn-custom-blue btn-block">
-            <h2 class="card-title">Liste des Employés</h2>
+            <h2 class="card-title">Administration||Workflow</h2>
         </div>
         <div class="card-body">
             <!-- Formulaire de recherche -->

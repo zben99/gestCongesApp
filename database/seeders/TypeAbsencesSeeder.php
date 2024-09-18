@@ -23,8 +23,8 @@ class TypeAbsencesSeeder extends Seeder
             ],
             [
                 'nom' => 'Absence légale exceptionnelle - Décès',
-                'description' => 'Absence légale exceptionnelle pour décès.',
-                'duree_max' => 3,
+                'description' => 'Absence pour décès(père, mère, conjoint et enfant du travailleur).',
+                'duree_max' => 6,
                 'justificatif_requis' => true,
                 'deductible_conges' => false,
                 'jours_deductibles_apres' => null,
@@ -58,6 +58,15 @@ class TypeAbsencesSeeder extends Seeder
                 'description' => 'Absence non justifiée, saisie par le manager et visible pour la RH.',
                 'duree_max' => 0, // 0 peut représenter aucune limite spécifique
                 'justificatif_requis' => false,
+                'deductible_conges' => false,
+                'jours_deductibles_apres' => null,
+            ],
+
+            [
+                'nom' => 'Absence Mariage enfant travailleur',
+                'description' => 'pour mariage enfant travailleur.',
+                'duree_max' => 2,
+                'justificatif_requis' => true,
                 'deductible_conges' => false,
                 'jours_deductibles_apres' => null,
             ],

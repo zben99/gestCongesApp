@@ -14,7 +14,7 @@
                         <h3 class="card-title">{{ __('Liste des Types d\'absences') }}</h3>
                     </div>
                     <div class="card-header">
-                        <a href="{{ route('typeAbsences.create') }}" class="btn btn-custom-blue btn-block">Ajouter un Type d'absence</a>
+                        <a href="{{ route('typeAbsences.create') }}" class="btn btn-custom-blue btn-block">Création</a>
                     </div>
                     <table class="table table-bordered table-hover">
                         <thead>

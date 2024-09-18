@@ -76,6 +76,7 @@ class UserManagerController extends Controller
     // Afficher le formulaire pour changer le manager et le responsable RH
     public function showChangeForm(User $employee)
     {
+
         $currentManager = \DB::table('user_manager')
             ->where('user_id', $employee->id)
             ->value('manager_id');
@@ -90,30 +91,34 @@ class UserManagerController extends Controller
     }
 
     // Changer le manager et le responsable RH de l'employé
-    public function change(Request $request)
-    {
-        $request->validate([
-            'employee_id' => 'required|exists:users,id',
-            'manager_id' => 'nullable|exists:users,id',
-            'rh_id' => 'nullable|exists:users,id',
-        ]);
+// Changer le manager et le responsable RH de l'employé
+public function change(Request $request)
+{
+    $request->validate([
+        'employee_id' => 'required|exists:users,id',
+        'manager_id' => 'nullable|exists:users,id',
+        'rh_id' => 'nullable|exists:users,id',
+    ]);
 
-        $employeeId = $request->input('employee_id');
-        $newManagerId = $request->input('manager_id');
-        $newRhId = $request->input('rh_id');
+    $employeeId = $request->input('employee_id');
+    $newManagerId = $request->input('manager_id');
+    $newRhId = $request->input('rh_id');
 
+    // Commencer une transaction pour garantir l'intégrité des données
+    \DB::beginTransaction();
+
+    try {
         // Changer le manager si un nouveau est spécifié
         if ($newManagerId) {
             \DB::table('user_manager')->updateOrInsert(
-                ['user_id' => $employeeId, 'manager_id' => $newManagerId],
-                ['updated_at' => now()]
+                ['user_id' => $employeeId],
+                ['manager_id' => $newManagerId, 'updated_at' => now()]
             );
         } else {
             // Supprimer l'association manager si le champ est vide
             \DB::table('user_manager')
                 ->where('user_id', $employeeId)
-                ->whereNotNull('manager_id')
-                ->delete();
+                ->update(['manager_id' => null, 'updated_at' => now()]);
         }
 
         // Changer le responsable RH si un nouveau est spécifié
@@ -130,6 +135,15 @@ class UserManagerController extends Controller
                 ->update(['rh_id' => null, 'updated_at' => now()]);
         }
 
-        return redirect()->route('user-manager.index')->with('success', 'Manager et Responsable RH changés avec succès.');
+        // Valider la transaction si tout se passe bien
+        \DB::commit();
+    } catch (\Exception $e) {
+        // En cas d'erreur, annuler la transaction
+        \DB::rollBack();
+        return redirect()->route('user-manager.index')->with('error', 'Erreur lors du changement du Manager ou du Responsable RH.');
     }
+
+    return redirect()->route('user-manager.index')->with('success', 'Manager et Responsable RH changés avec succès.');
+}
+
 }

@@ -14,7 +14,7 @@
                         <h3 class="card-title">{{ __('Liste des Types de congés') }}</h3>
                     </div>
                     <div class="card-header">
-                        <a href="{{ route('typeConges.create') }}" class="btn btn-custom-blue btn-block">Ajouter un Type de congé</a>
+                        <a href="{{ route('typeConges.create') }}" class="btn btn-custom-blue btn-block">Création</a>
                     </div>
                     <table class="table table-bordered table-hover">
                         <thead>

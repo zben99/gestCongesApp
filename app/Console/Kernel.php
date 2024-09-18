@@ -17,7 +17,7 @@ class Kernel extends ConsoleKernel
         // Appelle le service chaque mois pour envoyer les alertes de congé
         $schedule->call(function () {
             app(\App\Services\CongeAlertService::class)->sendAlerts();
-        })->monthlyOn(08, '23:50'); // Ou choisissez une autre date et heure si nécessaire
+        })->monthlyOn(28, '23:59'); // Ou choisissez une autre date et heure si nécessaire
     }
     
 }

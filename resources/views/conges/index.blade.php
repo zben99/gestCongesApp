@@ -40,7 +40,7 @@
 
               <div class="card-header mb-2">
                 <a href="{{ route('conges.create') }}" class="btn btn-custom-blue btn-icon">
-                    <i class="fas fa-plus"></i> <span>Demande Congé</span>
+                    <i class="fas fa-plus"></i> <span>Demande de Cessation</span>
                 </a>
               </div>
 
