@@ -82,7 +82,7 @@ class CongesController extends Controller
         // Calcul des jours de congé disponibles
         $days = Carbon::now()->diffInDays($user->initialization_date) + 1;
         $nbreConge = ($days * 2.5) / 30;
-        $congeRestant = floor($nbreConge + $user->initial - $user->pris);
+        $congeRestant = floor($nbreConge + $user->initial + $user->joursBonus- $user->pris);
 
         // Vérification si le nombre de jours demandés dépasse les congés restants
         if ($daysRequested > $congeRestant) {
@@ -136,7 +136,7 @@ class CongesController extends Controller
         // Calcul des jours de congé disponibles
         $days = $this->calculateDays($user->initialization_date, now());
         $nbreConge = ($days * 2.5) / 30;
-        $congeRestant = floor($nbreConge + $user->initial - $user->pris);
+        $congeRestant = floor($nbreConge + $user->initial+$user->joursBonus - $user->pris);
 
         // Vérification si le nombre de jours demandés dépasse les congés restants
         if ($daysRequested > $congeRestant) {

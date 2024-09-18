@@ -1,5 +1,13 @@
 @extends('layouts.template')
 
+@section('css')
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="{{ asset('/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
+  <!-- Toastr -->
+  <link rel="stylesheet" href="{{ asset('/plugins/toastr/toastr.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/plugins/toastr/persostyle.css') }}">
+@endsection
+
 @section('content')
 <br>
 <section class="content">
@@ -68,7 +76,25 @@
                             <th>Congés restant</th>
                             <td>{{ $congeRestant }}</td>
                         </tr>
+
+                        <tr>
+                            <th>Jours de congé bonus</th>
+                            <td>{{ $user->joursBonus }}</td>
+                        </tr>
                     </table>
+
+                    <!-- Boutons pour ajouter des jours de congé en bonus -->
+                    <div class="mt-3">
+                        <h4>Ajouter des jours de congé bonus</h4>
+                        <form action="{{ route('ajouter.jours.bonus', $user->id) }}" method="POST">
+                            @csrf
+                            <div class="form-group">
+                                <label for="joursBonus">Nombre de jours à ajouter :</label>
+                                <input type="number" id="joursBonus" name="joursBonus" class="form-control" required>
+                            </div> <br>
+                            <button type="submit" class="btn btn-success">Ajouter</button>
+                        </form>
+                    </div>
 
                     <br>
 
@@ -86,7 +112,6 @@
                         <tbody>
                             @foreach ($user->conges as $conge)
                             <tr class="{{ $conge->status == 'approuvé' ? 'bg-success' : ($conge->status == 'refusé' ? 'bg-danger' : '') }}">
-
                                 <td>{{ $conge->dateDebut }}</td>
                                 <td>{{ $conge->dateFin }} </td>
                                 <td>{{ $conge->typeConges }}</td>
@@ -111,24 +136,22 @@
                             </tr>
                         </thead>
                         <tbody>
-
                             @foreach ($user->absences as $absence)
                             <tr>
-
-                              <td>{{ $absence->dateDebut }}</td>
-                              <td>{{ $absence->dateFin }}</td>
-                              <td>{{ $absence->motif }}</td>
-                              <td>
-                                <span class="
-                                  @if ($absence->status === 'en attente') status-pending
-                                  @elseif ($absence->status === 'approuvé') status-approved
-                                  @elseif ($absence->status === 'refusé') status-rejected
-                                  @endif
-                                ">
-                                  {{ ucfirst($absence->status) }}
-                                </span>
-                              </td>
-                              <td>{{ $absence->commentaire }}</td>
+                                <td>{{ $absence->dateDebut }}</td>
+                                <td>{{ $absence->dateFin }}</td>
+                                <td>{{ $absence->motif }}</td>
+                                <td>
+                                    <span class="
+                                        @if ($absence->status === 'en attente') status-pending
+                                        @elseif ($absence->status === 'approuvé') status-approved
+                                        @elseif ($absence->status === 'refusé') status-rejected
+                                        @endif
+                                    ">
+                                        {{ ucfirst($absence->status) }}
+                                    </span>
+                                </td>
+                                <td>{{ $absence->commentaire }}</td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -145,3 +168,34 @@
     </div>
 </section>
 @endsection
+
+
+@section('script')
+<script src="{{ asset('/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
+<script src="{{ asset('/plugins/toastr/toastr.min.js') }}"></script>
+
+<script>
+$(document).ready(function() {
+    @if (session('success'))
+    Swal.fire({
+        icon: 'success',
+        title: '{{ session('success') }}',
+        showConfirmButton: false,
+
+    });
+    @endif
+
+    @if (session('error'))
+    Swal.fire({
+        icon: 'error',
+        title: '{{ session('error') }}',
+        showConfirmButton: false,
+
+    });
+    @endif
+});
+</script>
+@endsection
+
+
+

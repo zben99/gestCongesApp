@@ -150,7 +150,7 @@ $(document).ready(function() {
         icon: 'success',
         title: '{{ session('success') }}',
         showConfirmButton: false,
-        timer: 3000
+
     });
     @endif
 
@@ -159,7 +159,7 @@ $(document).ready(function() {
         icon: 'error',
         title: '{{ session('error') }}',
         showConfirmButton: false,
-        timer: 3000
+
     });
     @endif
 });

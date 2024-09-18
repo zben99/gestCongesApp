@@ -45,7 +45,7 @@ class AdminController extends Controller
     return view("administrateurs.index", compact("users", "perPage", "search"));
 }
 
-    
+
     /**
      * Show the form for creating a new resource.
      */
@@ -61,7 +61,40 @@ class AdminController extends Controller
 
     public function liste_conges()
     {
+        // Récupérer tous les utilisateurs
         $users = User::all();
+
+        // Appliquer la transformation et le filtrage
+        $users = $users->transform(function($user) {
+            // Calculer le nombre de jours depuis l'arrivée
+            $days1 = (new \DateTime(now()))->diff(new \DateTime($user->arrival_date))->days + 1;
+
+            // Appliquer la condition : ne conserver que les utilisateurs avec plus de 360 jours
+            if ($days1 >= 360) {
+                $days = (new \DateTime(now()))->diff(new \DateTime($user->initialization_date))->days + 1;
+                $nbreConge = ($days * 2.5) / 30;
+
+                // Calculer les congés restants
+                $user->congeRestant = floor(($nbreConge + $user->initial + $user->joursBonus) - $user->pris);
+                $user->days1 = $days1;
+
+                return $user;
+            }
+
+            // Retourne null pour les utilisateurs qui ne remplissent pas la condition
+            return null;
+        })->filter()->sortByDesc('congeRestant'); // Utiliser filter() pour supprimer les entrées nulles
+
+        // Appliquer la pagination manuellement après transformation
+        $perPage = 10; // Nombre d'éléments par page
+        $page = request()->get('page', 1); // Récupérer la page actuelle à partir de la requête
+        $pagedUsers = $users->slice(($page - 1) * $perPage, $perPage)->values(); // Découper la collection
+        $users = new \Illuminate\Pagination\LengthAwarePaginator($pagedUsers, $users->count(), $perPage, $page, [
+            'path' => request()->url(), // Pour conserver les paramètres de l'URL dans la pagination
+            'query' => request()->query(),
+        ]);
+
+    //dd($users);
         return view('conges.liste_users_conge', compact('users'));
     }
 
@@ -137,7 +170,7 @@ class AdminController extends Controller
         $nbreConge=($days*2.5)/30;
 
 
-        $congeRestant= floor($nbreConge+$user->initial - $user->pris);
+        $congeRestant= floor($nbreConge+$user->initial+$user->joursBonus - $user->pris);
 
 
 
@@ -242,7 +275,18 @@ class AdminController extends Controller
         return redirect(route('admins.index'))->with('success', 'Utilisateur supprimé avec succès');
     }
 
-         /* Show the form for importing users.
-     */
+    public function ajouterJoursBonus(Request $request, $admin)
+    {
+        $user = User::findOrFail($admin);
+
+        $joursBonus = $request->input('joursBonus');
+
+        // Logique pour ajouter les jours de congé bonus
+        $user->joursBonus += $joursBonus;
+        $user->save();
+
+        return redirect()->back()->with('success', 'Jours de congé bonus ajoutés avec succès');
+    }
+
 
 }

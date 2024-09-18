@@ -23,18 +23,7 @@
                         @if($users->isEmpty())
                             <p>Aucun</p>
                         @else
-                            @php
-                                // Calculer les congés restants pour chaque utilisateur et trier la collection
-                                $users = $users->map(function($user) {
-                                    $days1 = (new \DateTime(now()))->diff(new \DateTime($user->arrival_date))->days + 1;
-                                    $days = (new \DateTime(now()))->diff(new \DateTime($user->initialization_date))->days + 1;
-                                    $nbreConge = ($days * 2.5) / 30;
-                                    $user->congeRestant = floor(($nbreConge + $user->initial) - $user->pris);
-                                    $user->days1 = $days1;
-                                    return $user;
-                                })->sortByDesc('congeRestant'); // Trier par congés restants
 
-                            @endphp
                             <table id="example2" class="table table-bordered table-hover">
                                 <thead>
                                     <tr>
@@ -59,7 +48,7 @@
                                             }
                                         @endphp
 
-                                        @if ($user->days1 >= 360)
+
                                             <tr class="{{ $rowClass }}">
                                                 <td>{{ $loop->index + 1 }}</td>
                                                 <td>{{ $user->matricule }}</td>
@@ -67,10 +56,16 @@
                                                 <td>{{ $user->telephone1 }}</td>
                                                 <td>{{ $user->congeRestant }}</td>
                                             </tr>
-                                        @endif
+
                                     @endforeach
                                 </tbody>
                             </table>
+
+                            <!-- Pagination -->
+                            <div class="pagination justify-content-center">
+
+                                {{ $users->links('vendor.pagination.custom') }}
+                            </div>
                         @endif
                     </div>
                     <!-- /.card-body -->
@@ -79,9 +74,7 @@
             </div>
         </div>
     </div>
-</section>
-
-
+  </section>
   <!-- /.content -->
 @endsection
 

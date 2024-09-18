@@ -53,18 +53,19 @@ class UserImportController extends Controller
                          'initial' => $ligne['initial'],
                      ]);
                  } catch (\Exception $e) {
-                     // En cas d'erreur, lancer une exception avec la ligne en cause
-                     throw new \Exception("Erreur à la ligne $ligneErreur : " . $e->getMessage());
+                     // En cas d'erreur, lancer une exception avec un message simple pour l'utilisateur
+                     throw new \Exception("Une erreur est survenue à la ligne $ligneErreur. Veuillez vérifier les informations à cette ligne.");
                  }
              });
 
              // Redirection en cas de succès
-             return redirect()->route('admins.index')->with('success', 'Utilisateurs importés avec succès');
+             return redirect()->route('admins.index')->with('success', 'Les utilisateurs ont été importés avec succès.');
          } catch (\Exception $e) {
-             // En cas d'erreur, rediriger avec le message d'erreur et la ligne concernée
-             return redirect()->back()->with('error', $e->getMessage());
+             // En cas d'erreur, rediriger avec un message plus compréhensible
+             return redirect()->back()->with('error', "Erreur lors de l'importation : " . $e->getMessage());
          }
      }
+
 
 
 

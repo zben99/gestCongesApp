@@ -144,6 +144,8 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/admins/{user}', [AdminController::class, 'destroy'])->name('admins.destroy');
 
+    route::post('/admins/ajouter-jours-bonus/{user}', [AdminController::class, 'ajouterJoursBonus'])->name('ajouter.jours.bonus');
+
 
     Route::get('/absences/attente', [AbsenceControlleur::class, 'absencesEnAttente'])->name('absences.attente');
     Route::put('/absences/{id}/reject', [AbsenceControlleur::class, 'rejectRequest'])->name('absences.rejectRequest');
