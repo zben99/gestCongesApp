@@ -20,11 +20,28 @@
             </div>
             <!-- /.card-header -->
             <div class="card-body">
+                <br>
+                <form method="POST" action="{{ route('admins.import') }}" enctype="multipart/form-data" >
+                          <!-- CSRF Token -->
+                          @csrf
+                          <div class="row">
+                              <div class="col">
+                                  <input type="file" class="form-control" id="file" name="file" required>
+                              </div>
+                              <div class="col">
+                                  <button type="submit" class="btn btn-custom-blue ">Importer</button>
+                              </div>
+                          </div>
+
+
+                  </form>
+                  <br>
               <div class="card-header">
                 <a href="{{ route('admins.create') }}">
                   <button type="button" class="btn btn-custom-blue btn-block">Ajouter un utilisateur</button>
                 </a>
               </div>
+
 
               <!-- Formulaire de recherche et sélection du nombre de résultats par page -->
               <div class="d-flex justify-content-between align-items-center mt-3">
@@ -65,16 +82,16 @@
                       <td>{{ $user->profil }}</td>
                       <td>
                         <a href="{{ route('admins.show', $user) }}" title="Afficher les détails" class="btn btn-custom-blue btn-block">
-                          <i class="fas fa-eye"></i> 
+                          <i class="fas fa-eye"></i>
                         </a>
                         <a href="{{ route('admins.edit', $user) }}" title="Modification" class="btn btn-primary">
-                          <i class="fas fa-edit"></i> 
+                          <i class="fas fa-edit"></i>
                         </a>
                         <form id="delete-form-{{ $user->id }}" method="POST" action="{{ route('admins.destroy', $user) }}" style="display: inline;">
                           @csrf
                           @method("DELETE")
                           <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal-{{ $user->id }}">
-                            <i class="fas fa-trash"></i> 
+                            <i class="fas fa-trash"></i>
                           </button>
                         </form>
                         <!-- Modal -->

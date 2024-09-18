@@ -21,14 +21,14 @@ class UsersImport implements ToModel, WithHeadingRow, WithValidation
             'matricule' => 'nullable|unique:users,matricule',
             'email' => 'nullable|email|unique:users,email',
             'password' => 'nullable|min:8',
-            'telephone1' => 'nullable|string|max:191',
-            'telephone2' => 'nullable|string|max:191',
-            'birth_date' => 'nullable|date',
+            'telephone1' => 'nullable',
+            'telephone2' => 'nullable',
+            'birth_date' => 'nullable',
             'profil' => 'nullable|string|max:255',
             'departementId' => 'nullable|integer|exists:departements,id',
             'posteId' => 'nullable|integer|exists:postes,id',
-            'arrival_date' => 'nullable|date',
-            'initialization_date' => 'nullable|date',
+            'arrival_date' => 'nullable',
+            'initialization_date' => 'nullable',
             'initial' => 'nullable|integer|min:0',
         ];
     }
@@ -43,13 +43,13 @@ class UsersImport implements ToModel, WithHeadingRow, WithValidation
             'prenom' => $row['prenom'],
             'matricule' => $row['matricule'],
             'email' => $row['email'],
-            'password' => Hash::make($row['password']), // Hash du mot de passe
+            'password' => Hash::make('password'), // Hash du mot de passe
             'telephone1' => $row['telephone1'],
             'telephone2' => isset($row['telephone2']) ? (string) $row['telephone2'] : null, // Gestion de la valeur nullable
             'birth_date' => $row['birth_date'],
-            'profil' => $row['profil'],
-            'departementId' => $row['departement_id'],
-            'posteId' => $row['poste_id'],
+            'profil' => 'employés',
+           'departementId' => $row['departementId'] ?? null,
+        'posteId' => $row['posteId'] ?? null,
             'arrival_date' => $row['arrival_date'],
             'initialization_date' => $row['initialization_date'],
             'initial' => $row['initial'],

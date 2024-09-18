@@ -11,8 +11,8 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $fillable = [
-        'nom', 'prenom', 'matricule', 'email', 'telephone1', 'telephone2', 'birthDate',
-        'password', 'profil', 'departementId', 'posteId', 'arrivalDate', 'initializationDate', 'initial', 'pris', 'reste'
+        'nom', 'prenom', 'matricule', 'email', 'telephone1', 'telephone2', 'birth_date',
+        'password', 'profil', 'departementId', 'posteId', 'arrival_date', 'initialization_date', 'initial', 'pris', 'reste'
     ];
 
     protected $hidden = [
@@ -56,7 +56,7 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(User::class, 'user_manager', 'user_id', 'rh_id');
     }
-    
+
 
 
 
