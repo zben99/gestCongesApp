@@ -65,11 +65,13 @@ class RapportCongesController extends Controller
         
         // Récupérer l'ID du département sélectionné
         $departmentId = $request->input('department_id');
-    
-        // Début de la requête
-        $query = Conges::whereBetween('dateDebut', [$startOfNextMonth, $endOfNextMonth])
-            ->orWhereBetween('dateFin', [$startOfNextMonth, $endOfNextMonth])
-            ->with('employe.departement'); // Charger la relation employe et departement
+        
+        // Début de la requête pour les congés du mois prochain
+        $query = Conges::where(function($q) use ($startOfNextMonth, $endOfNextMonth) {
+                    $q->whereBetween('dateDebut', [$startOfNextMonth, $endOfNextMonth])
+                      ->orWhereBetween('dateFin', [$startOfNextMonth, $endOfNextMonth]);
+                })
+                ->with('employe.departement'); // Charger la relation employe et departement
     
         // Si un département est sélectionné, ajouter le filtre
         if ($departmentId) {
@@ -78,16 +80,14 @@ class RapportCongesController extends Controller
             });
         }
     
-        // Exécuter la requête pour récupérer les congés
-        $congesMoisProchain = $query->get();
-    
-        // Calculer le nombre total de personnes partant en congé
-        $nombreConges = $congesMoisProchain->count();
+        // Utiliser la pagination au lieu de get(), par exemple 10 résultats par page
+        $congesMoisProchain = $query->paginate(10);
+        $nombreConges = $congesMoisProchain->total(); // Nombre total de congés paginés
     
         return view('rapports.moisProchain', compact('congesMoisProchain', 'departements', 'departmentId', 'nombreConges'));
     }
     
-    
+
     // Rapport des congés en attente de validation
     public function enAttente()
     {
@@ -97,6 +97,7 @@ class RapportCongesController extends Controller
 
         return view('rapports.enAttente', compact('congesEnAttente'));
     }
+
 
     // Rapport des départements avec plus de congés
     public function departements()
@@ -135,6 +136,7 @@ public function export(Request $request)
 
     return Excel::download(new CongesProchain($congesMoisProchain), 'conges_mois_prochain.xlsx');
 }
+
 
 public function tousConges(Request $request)
 {
@@ -179,6 +181,7 @@ public function tousConges(Request $request)
 }
 
 
+//exporter tous les conges
    
 public function exporttous(Request $request)
 {

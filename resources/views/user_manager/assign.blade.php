@@ -9,7 +9,7 @@
 @section('content')
 <div class="container">
     <div class="card">
-        <div class="card-header">
+        <div class="btn btn-custom-blue btn-block">
             <h2 class="card-title">Assigner un Manager et un Responsable RH à {{ $employee->nom }} {{ $employee->prenom }}</h2>
         </div>
         <div class="card-body">

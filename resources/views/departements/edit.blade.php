@@ -24,7 +24,7 @@
                     <div class="btn btn-custom-blue btn-block">
                     <!-- /.card-header -->
                     @if (isset($departement))
-                    <h3 class="card-title">{{ __('Modifier Département') }}</h3>
+                    <h3 class="card-title">{{ __('Modifier Direction') }}</h3>
                     </div>
                     <!-- Le formulaire est géré par la route "posts.update" -->
                     <form method="POST" action="{{ route('departements.update', $departement) }}" enctype="multipart/form-data" >
@@ -32,7 +32,7 @@
                         @method('PUT')
 
                     @else
-                        <h3 class="card-title">{{ __('Ajouter un Département') }} </h3>
+                        <h3 class="card-title">{{ __('Ajouter une Direction') }} </h3>
                     </div>
                     <!-- Le formulaire est géré par la route "posts.store" -->
                     <form method="POST" action="{{ route('departements.store') }}" enctype="multipart/form-data" >
