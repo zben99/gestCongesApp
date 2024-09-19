@@ -15,7 +15,7 @@ class CongeAlertService
 
         foreach ($users as $user) {
             // Calcul des jours de congé restants
-            $congeRestant = $this->calculateCongeRestant($user); 
+            $congeRestant = $this->calculateCongeRestant($user);
 
             // Vérifie et envoie les alertes si les conditions sont remplies
             $this->checkAndSendAlert($user, $congeRestant);
@@ -66,13 +66,13 @@ class CongeAlertService
     {
         // Crée une instance de Mpdf
         $mpdf = new Mpdf();
-        
+
         // Crée le contenu HTML à partir de la vue Blade
         $htmlContent = view('emails.lettredejouissance', ['employee' => $user])->render();
-        
+
         // Génère le PDF avec le contenu HTML
         $mpdf->WriteHTML($htmlContent);
-        
+
         // Retourne le PDF sous forme de chaîne
         return $mpdf->Output('', 'S');
     }
@@ -84,11 +84,11 @@ class CongeAlertService
     {
         // Calcule la différence entre aujourd'hui et la date d'initialisation des congés de l'utilisateur
         $days = (new \DateTime(now()))->diff(new \DateTime($user->initialization_date))->days + 1;
-        
+
         // Calcule les congés acquis en fonction des règles (2.5 jours par mois)
         $nbreConge = ($days * 2.5) / 30;
 
         // Retourne le nombre de congés restants
-        return floor($nbreConge + $user->initial - $user->pris);
+        return floor($nbreConge + $user->initial + $user->joursBonus - $user->pris);
     }
 }

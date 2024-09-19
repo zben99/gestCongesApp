@@ -63,6 +63,7 @@
                         <td>{{ $conge->typeConge->nom }}</td>
                         <td>{{ $conge->dateDebut }}</td>
                         <td>{{ $conge->dateFin }} </td>
+                        <td>{{ $conge->dateFin }} </td>
                         <td>
                         <span class="
                           @if ($conge->status === 'en attente') status-pending

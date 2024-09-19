@@ -8,7 +8,7 @@
 
 @section('content')
 <div class="container mt-5">
-    <h1 class="app-page-title">Dashboard</h1>
+    <h1 class="app-page-title">Tableau de bord</h1>
 
     <div class="row g-4 mb-4">
         <!-- Card Total Demande Congé -->
