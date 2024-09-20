@@ -36,8 +36,8 @@
 
                         <div class="form-group">
                             <label>Lettre de jouissance :</label>
-                            @if ($conge->pdf_path)
-                              <a href="{{ asset('storage/' . $conge->pdf_path) }}" target="_blank" class="btn btn-custom-blue btn-icon">
+                            @if ($conge->jouissance_pdf)
+                              <a href="{{ asset('storage/' . $conge->jouissance_pdf) }}" target="_blank" class="btn btn-custom-blue btn-icon">
                                 <i class="fas fa-file"></i> Voir le fichier
                               </a>
                             @else
