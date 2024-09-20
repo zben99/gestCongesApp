@@ -68,6 +68,10 @@
                 @endforeach
                 </tbody>
             </table>
+                 <!-- Pagination -->
+            <div class="d-flex justify-content-center mt-3">
+            {{ $employees->links('vendor.pagination.custom') }}
+         </div>
         </div>
     </div>
 </div>
