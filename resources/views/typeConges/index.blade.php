@@ -1,6 +1,9 @@
 @extends('layouts.template')
 
 @section('css')
+    <link rel="stylesheet" href="{{ asset('/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
+    <!-- Toastr -->
+    <link rel="stylesheet" href="{{ asset('/plugins/toastr/toastr.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/plugins/toastr/persostyle.css') }}">
 @endsection
 @section('content')
@@ -78,3 +81,31 @@
     </div> <!-- /.container-fluid -->
 </section>
 @endsection
+
+@section('script')
+<script src="{{ asset('/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
+<script src="{{ asset('/plugins/toastr/toastr.min.js') }}"></script>
+
+<script>
+$(document).ready(function() {
+    @if (session('success'))
+    Swal.fire({
+        icon: 'success',
+        title: '{{ session('success') }}',
+        showConfirmButton: false,
+
+    });
+    @endif
+
+    @if (session('error'))
+    Swal.fire({
+        icon: 'error',
+        title: '{{ session('error') }}',
+        showConfirmButton: false,
+
+    });
+    @endif
+});
+</script>
+@endsection
+
