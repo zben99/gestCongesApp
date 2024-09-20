@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Conges;
 use App\Models\TypeConges;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use App\Mail\CongeApprovalMail;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\Auth;
 use App\Services\HolidaysService;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Notifications\CustomCongeRejectNotification;
 
 class CongesController extends Controller
 {
@@ -210,8 +211,14 @@ class CongesController extends Controller
         return redirect()->back()->with('error', 'Le statut de la demande est invalide.');
     }
 
-    public function reject(Conges $conge)
+    public function reject(Request $request,Conges $conge)
     {
+
+        $request->validate([
+            'commentaire' => 'nullable|string|max:255', // Validation du commentaire
+
+        ]);
+
         $user = Auth::user();
 
         if (!in_array($user->profil, ['manager', 'responsables RH'])) {
@@ -223,6 +230,10 @@ class CongesController extends Controller
         } elseif ($user->profil === 'responsables RH') {
             $conge->update(['status' => 'refusé par RH']);
         }
+        $conge->update(['motif_rejet' => $request->commentaire]);
+
+
+        $conge->user->notify(new CustomCongeRejectNotification());
 
         return redirect()->route('conges.index')->with('success', 'Demande refusée.');
     }

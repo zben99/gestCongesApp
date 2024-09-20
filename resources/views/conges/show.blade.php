@@ -30,8 +30,9 @@
                         <p><strong>Type de Congé:</strong> {{ $conge->typeConge->nom }}</p>
                         <p><strong>Date de Début:</strong> {{ $conge->dateDebut }}</p>
                         <p><strong>Date de Fin:</strong> {{ $conge->dateFin }}</p>
-                        <p><strong>Status:</strong> {{ ucfirst($conge->status) }}</p>
                         <p><strong>Commentaire:</strong> {{ $conge->commentaire }}</p>
+                        <p><strong>Status:</strong> {{ ucfirst($conge->status) }}</p>
+                        <p><strong>Motif rejet :</strong> {{ $conge->motif_rejet }}</p>
 
                         <div class="form-group">
                             <label>Lettre de jouissance :</label>

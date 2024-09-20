@@ -63,7 +63,7 @@
                         <td>{{ $conge->typeConge->nom }}</td>
                         <td>{{ $conge->dateDebut }}</td>
                         <td>{{ $conge->dateFin }} </td>
-                        <td>{{ $conge->dateFin }} </td>
+
                         <td>
                         <span class="
                           @if ($conge->status === 'en attente') status-pending
@@ -90,9 +90,10 @@
                             (auth()->user()->profil === 'manager' && $conge->status === 'en attente') ||
                             (auth()->user()->profil === 'responsables RH' && $conge->status === 'en attente RH')
                         )
-                            <a href="{{ route('conges.reject', $conge->id) }}" class="btn btn-icon">
+
+                            <button type="button" class="btn btn-icon" onclick="rejectConge({{ $conge->id }})">
                                 <i class="fas fa-times status-rejected"></i> <span>Refuser</span>
-                            </a>
+                            </button>
                         @endif
 
                         <a href="{{ route('conges.show', $conge->id) }}" class="btn btn-icon">
@@ -188,5 +189,49 @@
         });
     </script>
 @endif
+
+
+
+<script>
+    function rejectConge(congeId) {
+        Swal.fire({
+            title: 'Refuser la demande',
+            input: 'textarea',
+            inputPlaceholder: 'Veuillez entrer un motif du rejet...',
+            showCancelButton: true,
+            confirmButtonText: 'Envoyer',
+            cancelButtonText: 'Annuler',
+            preConfirm: (commentaire) => {
+                if (!commentaire) {
+                    Swal.showValidationMessage('Veuillez entrer un commentaire');
+                }
+                return commentaire;
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Envoyer le commentaire au serveur
+                $.ajax({
+                    url: '{{ url("conges/reject") }}' + '/' + congeId,
+
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        commentaire: result.value
+                    },
+                    success: function(response) {
+                        Swal.fire('Refusé!', response.message, 'success');
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        Swal.fire('Erreur!', xhr.responseJSON.message, 'error');
+                    }
+                });
+            }
+        });
+    }
+    </script>
+
+
+
 @endsection
 

@@ -178,6 +178,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/conges/liste_conges', [AdminController::class, 'liste_conges'])->name('conges.liste_conges');
 
 
+
     Route::get('/conges/create', [CongesController::class, 'create'])->name('conges.create');
     Route::post('/conges', [CongesController::class, 'store'])->name('conges.store');
     Route::get('/conges/{conge}/edit', [CongesController::class, 'edit'])->name('conges.edit');
@@ -187,8 +188,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/conges/{conge}/approve', [CongesController::class, 'approve'])->name('conges.approve');
     Route::get('/conges/{conge}/approve-manager', [CongesController::class, 'approveByManager'])->name('conges.approveByManager');
     Route::get('/conges/{conge}/approve-rh', [CongesController::class, 'approveByRh'])->name('conges.approveByRh');
-    Route::get('/conges/{conge}/reject', [CongesController::class, 'reject'])->name('conges.reject');
 
+   // Route::get('/conges/{conge}/reject', [CongesController::class, 'reject'])->name('conges.reject');
+    route::post('conges/reject/{conge}', [CongesController::class, 'reject'])->name('conges.reject');
     Route::delete('/conges/{conge}', [CongesController::class, 'destroy'])->name('conges.destroy');
 
 

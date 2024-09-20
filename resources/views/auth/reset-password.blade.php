@@ -1,39 +1,89 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('password.store') }}">
-        @csrf
 
-        <!-- Password Reset Token -->
-        <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Page d'authentification">
+    <meta name="author" content="ONEA">
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <!-- FontAwesome JS -->
+    <script defer src=" {{asset('assets/plugins/fontawesome/js/all.min.js')}}"></script>
+
+    <!-- App CSS -->
+    <link id="theme-style" rel="stylesheet" href="{{asset('assets/css/portal.css ')}}">
+	<link id="theme-style" rel="stylesheet" href="{{asset('assets/css/portal1.css')}}">
+
+    <title>Interface Authentification</title>
+</head>
+
+<body class="app app-login p-0">
+    <div class="row g-0 app-auth-wrapper">
+        <div class="col-12 col-md-7 col-lg-6 auth-main-col text-center p-5">
+            <div class="d-flex flex-column align-content-end">
+                <div class="app-auth-body mx-auto">
+                    <div class="app-auth-branding mb-4">
+                        <a class="app-logo" href="/">
+                            <img class="logo-icon me-2" src="{{asset('images/logo-ONEA.jpg')}}" alt="logo">
+                        </a>
+                    </div>
+                    <h2 class="auth-heading mb-5">Réinitialisation du mot de passe</h2>
+                    <div class="auth-form-container text-start">
+                        @if(session('status'))
+                            <div class="alert alert-success">
+                                {{ session('status') }}
+                            </div>
+                        @endif
+                        <form class="auth-form login-form" method="POST" action="{{ route('password.store') }}">
+                            @csrf
+                            <!-- Password Reset Token -->
+                            <input type="hidden" name="token" value="{{ $request->route('token') }}">
+                            <div class="email mb-3">
+                                <label class="form-label" for="signin-email">Email</label>
+                                <input id="signin-email" name="email" type="email" class="form-control" placeholder="Adresse email" required value="{{ old('email') }}">
+                                @error('email')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="email mb-3">
+                                <label class="form-label" for="password">Mot de passe</label>
+                                <input id="password" name="password" type="password" class="form-control" required autocomplete="new-password" >
+                                @error('password')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="email mb-3">
+                                <label class="form-label" for="password_confirmation">Confirmation Mot de passe</label>
+                                <input id="password_confirmation" name="password_confirmation" type="password" class="form-control" required autocomplete="new-password">
+                                @error('password_confirmation')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-app-primary w-100"> Réinitialisation</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <footer class="app-auth-footer mt-4">
+                    <div class="container text-center py-3">
+                        <small class="copyright">Conçu par <a class="app-link" href="#">Mentley & Partners</a></small>
+                    </div>
+                </footer>
+            </div>
         </div>
-
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <div class="col-12 col-md-5 col-lg-6 h-100 auth-background-col">
+            <div class="auth-background-holder"></div>
+            <div class="auth-background-mask"></div>
         </div>
-
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                                type="password"
-                                name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Reset Password') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+    </div>
+</body>
+</html>

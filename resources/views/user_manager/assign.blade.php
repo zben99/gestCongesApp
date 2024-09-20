@@ -25,6 +25,10 @@
                             <option value="{{ $manager->id }}">{{ $manager->nom }} {{ $manager->prenom }}</option>
                         @endforeach
                     </select>
+
+                    @error("manager_id")
+                        <div>{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="form-group">
@@ -35,6 +39,10 @@
                             <option value="{{ $rh->id }}">{{ $rh->nom }} {{ $rh->prenom }}</option>
                         @endforeach
                     </select>
+
+                    @error("rh_id")
+                        <div>{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="card-footer">

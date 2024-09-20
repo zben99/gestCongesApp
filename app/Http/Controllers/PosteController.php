@@ -14,7 +14,7 @@ class PosteController extends Controller
         $query = Poste::query();
         $postes = Poste::all();
         $postes = $query->paginate(5); // Pagination avec 5 absences par page
-      
+
         return view('postes.index', compact('postes'));
     }
 
@@ -63,6 +63,12 @@ class PosteController extends Controller
 
     public function destroy(Poste $poste)
     {
+
+            // Vérifier si le poste est associé à un utilisateur
+            if ($poste->employes()->count() > 0) {
+                return redirect()->route('postes.index')->with('error', 'Le poste ne peut pas être supprimé car il est associé à des utilisateurs.');
+            }
+
         $poste->delete();
 
         return redirect()->route('postes.index')->with('success', 'Poste supprimé avec succès.');

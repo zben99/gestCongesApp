@@ -25,7 +25,7 @@
             <div class="d-flex flex-column align-content-end">
                 <div class="app-auth-body mx-auto">
                     <div class="app-auth-branding mb-4">
-                        <a class="app-logo" href="index.html">
+                        <a class="app-logo" href="/">
                             <img class="logo-icon me-2" src="{{asset('images/logo-ONEA.jpg')}}" alt="logo">
                         </a>
                     </div>
@@ -62,7 +62,12 @@
                                     </div>
                                     <div class="col-6">
                                         <div class="forgot-password text-end">
-                                            <a href="#">Réinitialiser le mot de passe ?</a>
+                                            @if (Route::has('password.request'))
+                                                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
+                                                    {{ __('Mot de passe oublié ?') }}
+                                                </a>
+                                            @endif
+
                                         </div>
                                     </div>
                                 </div>

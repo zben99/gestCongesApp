@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Poste;
+use App\Models\Conges;
+use App\Models\Absence;
 use App\Models\Departement;
+use App\Imports\UsersImport;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Imports\UsersImport;
+use Illuminate\Support\Facades\Validator;
 
 
 
@@ -269,6 +271,17 @@ class AdminController extends Controller
         if (!$user) {
             return redirect(route('admins.index'))->with('error', 'Utilisateur non trouvé');
         }
+
+        // Vérifier si l'utilisateur est référencé dans les tables congés ou absences
+        $hasLeaves = Conges::where('userId', $user->id)->exists();
+        $hasAbsences = Absence::where('UserId', $user->id)->exists();
+
+        // Si l'utilisateur est référencé dans l'une de ces tables, empêcher la suppression
+        if ($hasLeaves || $hasAbsences) {
+            return redirect(route('admins.index'))->with('error', 'Impossible de supprimer cet utilisateur car il est lié à des congés ou des absences.');
+        }
+
+
 
         $user->delete();
 

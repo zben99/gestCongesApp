@@ -11,11 +11,11 @@ class UserManagerController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-    
+
         // Construire la requête pour récupérer les employés
         $employeesQuery = User::where('profil', 'employés') // Corriger le profil si nécessaire
             ->with('rh'); // Charger la relation pour le responsable RH
-    
+
         // Appliquer le filtre de recherche si nécessaire
         if ($search) {
             $employeesQuery->where(function($query) use ($search) {
@@ -24,13 +24,13 @@ class UserManagerController extends Controller
                       ->orWhere('prenom', 'like', "%{$search}%");
             });
         }
-    
+
         // Optionnel : utiliser la pagination pour gérer un grand nombre d'employés
         $employees = $employeesQuery->paginate(10); // 10 employés par page
-    
+
         return view('user_manager.index', compact('employees'));
     }
-    
+
     // Afficher le formulaire pour assigner un manager et un responsable RH
     public function showAssignForm(User $employee)
     {
@@ -45,8 +45,8 @@ class UserManagerController extends Controller
     {
         $request->validate([
             'employee_id' => 'required|exists:users,id',
-            'manager_id' => 'nullable|exists:users,id',
-            'rh_id' => 'nullable|exists:users,id',
+            'manager_id' => 'required|exists:users,id',
+            'rh_id' => 'required|exists:users,id',
         ]);
 
         $employee = User::find($request->input('employee_id'));
@@ -80,7 +80,7 @@ class UserManagerController extends Controller
         $currentManager = \DB::table('user_manager')
             ->where('user_id', $employee->id)
             ->value('manager_id');
-        
+
         $managers = User::where('profil', 'manager')->get();
         $currentRh = \DB::table('user_manager')
             ->where('user_id', $employee->id)

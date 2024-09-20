@@ -61,6 +61,12 @@ class DepartementController extends Controller
 
     public function destroy(Departement $departement)
     {
+
+        // Vérifier si le département est associé à un utilisateur
+        if ($departement->employes()->count() > 0) {
+            return redirect()->route('departements.index')->with('error', 'Le département ne peut pas être supprimé car il est associé à des utilisateurs.');
+        }
+
         $departement->delete();
 
         return redirect()->route('departements.index')->with('success', 'Département supprimé avec succès.');

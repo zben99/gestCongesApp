@@ -36,6 +36,16 @@
 
                   </form>
                   <br>
+
+                     <!-- Ajout du lien pour télécharger le modèle d'import -->
+                     <div class="row">
+                        <div class="col">
+                          <a href="{{ asset('storage/import_model/model_import.xlsx') }}" class="btn btn-info">
+                            Télécharger le modèle d'import
+                          </a>
+                        </div>
+                      </div>
+                      <br>
               <div class="card-header">
                 <a href="{{ route('admins.create') }}">
                   <button type="button" class="btn btn-custom-blue btn-block">Ajouter un utilisateur</button>

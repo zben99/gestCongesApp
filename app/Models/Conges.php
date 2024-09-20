@@ -16,6 +16,7 @@ class Conges extends Model
         'approved_by_manager', // ID du manager qui approuve
         'approved_by_rh', // ID du responsable RH qui approuve
         'pdf_path', //stock pdf
+        'motif_rejet',
     ];
     public function department()
     {
