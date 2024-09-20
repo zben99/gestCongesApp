@@ -68,6 +68,13 @@ class CongesController extends Controller
         $user = User::findOrFail($validatedData['userId']);
         $typeConge = TypeConges::findOrFail($validatedData['type_conge_id']);
 
+
+        $days1 = (new \DateTime(now()))->diff(new \DateTime($user->arrival_date))->days + 1;
+
+        if ($days1 >= 360) {
+            return redirect()->route('conges.index')->with('error', 'Vous n\'êtes pas autorisé à partir, vous n\'avez pas 360 jours.');
+        }
+
         // Dates de début et de fin
         $startDate = Carbon::parse($validatedData['dateDebut']);
         $endDate = Carbon::parse($validatedData['dateFin']);
