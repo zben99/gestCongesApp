@@ -77,14 +77,23 @@ class TypeAbsencesController extends Controller
      */
     public function destroy(TypeAbsences $typeAbsence)
     {
-        // Le modèle `$typeAbsence` est déjà injecté par Laravel via le Route Model Binding
-        // Aucune nécessité de le rechercher à nouveau avec `find`
+        try {
+            // Tente de supprimer le type d'absence
+            $typeAbsence->delete();
     
-        // Assurez-vous que les absences associées seront supprimées si les contraintes de cascade sont configurées
-        $typeAbsence->delete();
+            // Redirection avec un message de succès si la suppression fonctionne
+            return redirect()->route('typeAbsences.index')->with('success', 'Type d\'absence supprimé avec succès.');
+        } catch (\Exception $e) {
+            // Capture l'exception si la suppression échoue (par exemple à cause d'une contrainte d'intégrité)
     
-        return redirect()->route('typeAbsences.index')->with('success', 'Type d\'absence supprimé avec succès.');
+            // Vous pouvez enregistrer le message d'erreur dans les logs si nécessaire
+            \Log::error("Erreur lors de la suppression du type d'absence: " . $e->getMessage());
+    
+            // Redirection avec un message d'erreur
+            return redirect()->route('typeAbsences.index')->with('error', 'Impossible de supprimer ce type d\'absence car il est associé à des absences existantes.');
+        }
     }
+    
 
         /**
      * Affiche les détails d'un type d'absence spécifique.
