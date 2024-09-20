@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Mpdf\Mpdf;
 
 class CongeAlertService
@@ -40,17 +41,28 @@ class CongeAlertService
     private function sendEmailAlert(User $user, $template, $subject)
     {
         try {
-            // Génère le PDF à partir d'une vue Blade
-            $pdfContent = $this->generatePDF($user);
-
-            Mail::send($template, ['employee' => $user], function ($mail) use ($user, $subject, $pdfContent) {
+            // Génère le PDF et récupère le chemin du fichier PDF
+            $pdfFilePath = $this->generatePDF($user);
+    
+            // Chemin complet du fichier PDF
+            $pdfFullPath = storage_path('app/public/' . $pdfFilePath);
+    
+            // Vérifier si le fichier PDF existe
+            if (!file_exists($pdfFullPath)) {
+                \Log::error('Le fichier PDF n\'existe pas pour l\'utilisateur ' . $user->email);
+                return false;
+            }
+    
+            // Envoi de l'email avec le fichier PDF attaché
+            Mail::send($template, ['employee' => $user], function ($mail) use ($user, $subject, $pdfFullPath) {
                 $mail->to($user->email)
                      ->subject($subject)
-                     ->attachData($pdfContent, 'document_conge.pdf', [
+                     ->attach($pdfFullPath, [
+                         'as' => 'document_conge.pdf', // Nom du fichier joint
                          'mime' => 'application/pdf',
                      ]);
             });
-
+    
             return true; // Envoi réussi
         } catch (\Exception $e) {
             // Enregistre l'erreur dans les logs
@@ -58,24 +70,47 @@ class CongeAlertService
             return false; // Envoi échoué
         }
     }
+    
 
+    
     /**
      * Génère un fichier PDF basé sur une vue Blade.
      */
-    private function generatePDF(User $user)
-    {
-        // Crée une instance de Mpdf
-        $mpdf = new Mpdf();
 
-        // Crée le contenu HTML à partir de la vue Blade
-        $htmlContent = view('emails.lettredejouissance', ['employee' => $user])->render();
 
-        // Génère le PDF avec le contenu HTML
-        $mpdf->WriteHTML($htmlContent);
-
-        // Retourne le PDF sous forme de chaîne
-        return $mpdf->Output('', 'S');
-    }
+     private function generatePDF(User $user)
+     {
+         try {
+             // Crée une instance de Mpdf
+             $mpdf = new Mpdf();
+     
+             // Crée le contenu HTML à partir de la vue Blade
+             $htmlContent = view('emails.lettredejouissance', ['employee' => $user])->render();
+     
+             // Génère le PDF avec le contenu HTML
+             $mpdf->WriteHTML($htmlContent);
+     
+             // Spécifie le nom du fichier PDF avec un nom unique
+             $pdfFileName = 'lettredejouissance_' . $user->id . '_' . time() . '.pdf';
+             
+             // Spécifie le chemin de stockage dans 'storage/app/public/pdfs'
+             $pdfFilePath = 'pdfs/' . $pdfFileName;
+     
+             // Sauvegarde le PDF dans le répertoire 'storage/app/public/pdfs' 
+             Storage::put('public/' . $pdfFilePath, $mpdf->Output('', 'S'));
+     
+             // Vérifie si le fichier a bien été créé
+             if (Storage::exists('public/' . $pdfFilePath)) {
+                 return $pdfFilePath;  // Retourne le chemin d'accès au fichier PDF
+             } else {
+                 return response()->json(['error' => 'Erreur lors de la génération du fichier PDF.'], 500);
+             }
+         } catch (\Exception $e) {
+             // Gérer les exceptions et afficher un message d'erreur en cas de problème
+             return response()->json(['error' => 'Erreur : ' . $e->getMessage()], 500);
+         }
+     }
+     
 
     /**
      * Calcule les jours de congé restants pour un utilisateur.

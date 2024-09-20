@@ -25,7 +25,7 @@
 <body>
     <!-- Logo de l'entreprise -->
     <div class="logo">
-        <img src="{{ asset('images/logo-ONEA.jpg') }}" alt="Logo de l'entreprise" height="100">
+        <a class="app-logo" href="/"><img class="logo-icon me-2" src="{{ asset('images/logo-ONEA.jpg') }}" alt="logo"></a>
     </div>
 
     <!-- Texte personnalisé -->
