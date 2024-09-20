@@ -72,45 +72,48 @@ class CongeAlertService
     }
     
 
-    
+
     /**
      * Génère un fichier PDF basé sur une vue Blade.
      */
 
 
-     private function generatePDF(User $user)
-     {
-         try {
-             // Crée une instance de Mpdf
-             $mpdf = new Mpdf();
-     
-             // Crée le contenu HTML à partir de la vue Blade
-             $htmlContent = view('emails.lettredejouissance', ['employee' => $user])->render();
-     
-             // Génère le PDF avec le contenu HTML
-             $mpdf->WriteHTML($htmlContent);
-     
-             // Spécifie le nom du fichier PDF avec un nom unique
-             $pdfFileName = 'lettredejouissance_' . $user->id . '_' . time() . '.pdf';
-             
-             // Spécifie le chemin de stockage dans 'storage/app/public/pdfs'
-             $pdfFilePath = 'pdfs/' . $pdfFileName;
-     
-             // Sauvegarde le PDF dans le répertoire 'storage/app/public/pdfs' 
-             Storage::put('public/' . $pdfFilePath, $mpdf->Output('', 'S'));
-     
-             // Vérifie si le fichier a bien été créé
-             if (Storage::exists('public/' . $pdfFilePath)) {
-                 return $pdfFilePath;  // Retourne le chemin d'accès au fichier PDF
-             } else {
-                 return response()->json(['error' => 'Erreur lors de la génération du fichier PDF.'], 500);
-             }
-         } catch (\Exception $e) {
-             // Gérer les exceptions et afficher un message d'erreur en cas de problème
-             return response()->json(['error' => 'Erreur : ' . $e->getMessage()], 500);
-         }
-     }
-     
+private function generatePDF(User $user)
+{
+    try {
+        // Crée une instance de Mpdf
+        $mpdf = new Mpdf();
+
+        // Crée le contenu HTML à partir de la vue Blade
+        $htmlContent = view('emails.lettredejouissance', ['employee' => $user])->render();
+
+        // Génère le PDF avec le contenu HTML
+        $mpdf->WriteHTML($htmlContent);
+
+        // Spécifie le nom du fichier PDF avec un nom unique
+        $pdfFileName = 'lettredejouissance_' . $user->id . '_' . time() . '.pdf';
+        
+        // Spécifie le chemin de stockage dans 'storage/app/public/pdfs'
+        $pdfFilePath = 'pdfs/' . $pdfFileName;
+
+        // Sauvegarde le PDF dans le répertoire 'storage/app/public/pdfs' 
+        Storage::put('public/' . $pdfFilePath, $mpdf->Output('', 'S'));
+
+        // Vérifie si le fichier a bien été créé
+        if (Storage::exists('public/' . $pdfFilePath)) {
+            // Met à jour le champ 'jouissance_pdf' de l'utilisateur avec le chemin du PDF
+            $user->update(['jouissance_pdf' => $pdfFilePath]);
+
+            return $pdfFilePath;  // Retourne le chemin d'accès au fichier PDF
+        } else {
+            return response()->json(['error' => 'Erreur lors de la génération du fichier PDF.'], 500);
+        }
+    } catch (\Exception $e) {
+        // Gérer les exceptions et afficher un message d'erreur en cas de problème
+        return response()->json(['error' => 'Erreur : ' . $e->getMessage()], 500);
+    }
+}
+
 
     /**
      * Calcule les jours de congé restants pour un utilisateur.
