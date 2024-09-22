@@ -72,7 +72,6 @@ class CongeAlertService
     }
     
 
-
     /**
      * Génère un fichier PDF basé sur une vue Blade.
      */

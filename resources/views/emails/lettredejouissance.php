@@ -10,6 +10,7 @@
             font-family: Arial, sans-serif;
             margin: 40px;
             line-height: 1.6;
+            color: #333;
         }
         .header {
             text-align: left;
@@ -24,6 +25,9 @@
         }
         .content {
             margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
         .signature {
             margin-top: 50px;
@@ -36,21 +40,23 @@
 <body>
 
 
-
-    <!-- Contenu de la fiche -->
     <div class="content">
         <h1><strong>Lettre : Jouissance de Congé</strong></h1>
 
         <p>
-            Par la présente, nous informons l'ensemble du personnel que conformément aux dispositions légales en vigueur et aux politiques internes de l'entreprise, il est impératif de planifier et de prendre les congés annuels dans les délais réglementaires.
+            Cher(e) Employées,
         </p>
 
         <p>
-            Chaque employé est invité à consulter son solde de congé et à soumettre une demande de congé dans les plus brefs délais. Nous rappelons que l'accumulation excessive de jours de congé non pris pourrait être soumise à des limitations, conformément aux textes légaux applicables.
+            Par la présente, nous vous informons que conformément aux dispositions légales en vigueur et aux politiques internes de l'entreprise, il est impératif de planifier et de prendre vos congés annuels dans les délais réglementaires.
         </p>
 
         <p>
-            Les congés doivent être pris en accord avec la hiérarchie et dans les périodes de l'année prévues à cet effet. Toute demande de report ou de dérogation devra être justifiée et approuvée par le Département des Ressources Humaines.
+            Nous vous invitons à consulter votre solde de congé et à soumettre une demande de congé dans les plus brefs délais. Nous rappelons que l'accumulation excessive de jours de congé non pris pourrait être soumise à des limitations, conformément aux textes légaux applicables.
+        </p>
+
+        <p>
+            Les congés doivent être pris en accord avec votre hiérarchie et durant les périodes de l'année prévues à cet effet. Toute demande de report ou de dérogation devra être justifiée et approuvée par le Département des Ressources Humaines.
         </p>
 
         <p>
@@ -62,7 +68,6 @@
         </p>
     </div>
 
-    <!-- Signature -->
     <div class="signature">
         <p><strong>Le Directeur des Ressources Humaines</strong></p>
         <p><strong>ONEA</strong></p>

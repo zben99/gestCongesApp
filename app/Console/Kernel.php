@@ -7,17 +7,29 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
+    /**
+     * The Artisan commands provided by your application.
+     *
+     * @var array
+     */
     protected $commands = [
-        // Ajoutez ici la commande que vous avez créée
-        Commands\SendCongeAlerts::class,
+        // Enregistre la commande pour l'envoi de la lettre de jouissance
+        Commands\sendEmailAlertWithConge::class,
     ];
 
+    /**
+     * Define the application's command schedule.
+     *
+     * @param Schedule $schedule
+     */
     protected function schedule(Schedule $schedule)
     {
-        // Appelle le service chaque mois pour envoyer les alertes de congé
-        $schedule->call(function () {
-            app(\App\Services\CongeAlertService::class)->sendAlerts();
-        })->monthlyOn(28, '23:59'); // Ou choisissez une autre date et heure si nécessaire
+        // Planifie l'exécution de la commande tous les jours à minuit
+        $schedule->command('send:jouissance-letter')->daily();
     }
-    
+
+    /**
+     * Register the commands for the application.
+     */
+
 }
