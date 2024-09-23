@@ -87,4 +87,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(Absence::class, 'userId');
     }
+
+        // Relation pour les managers associés à un responsable RH
+    public function rhManagers()
+    {
+        return $this->hasMany(User::class, 'rh_manager_id'); // rh_manager_id est la colonne qui référence le responsable RH pour les managers
+    }
+    
 }

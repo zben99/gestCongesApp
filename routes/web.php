@@ -167,6 +167,14 @@ Route::middleware('auth')->group(function () {
 
     // web.php
 
+    //Manager route
+    Route::get('/user-managers', [UserManagerController::class, 'voirManagerRh'])->name('user-manager.voirmanagerRh');
+    Route::get('user-manager/assign-manager-rh', [UserManagerController::class, 'showAssignManagerRhForm'])->name('user-manager.assign-manager-rh');
+    Route::post('user-manager/assign-manager-rh', [UserManagerController::class, 'assignManagerToRh']);
+    Route::get('user-manager/change-manager-rh/{manager}', [UserManagerController::class, 'showChangeManagerRhForm'])->name('user-manager.change-manager-rh');
+    Route::post('user-manager/change-manager-rh', [UserManagerController::class, 'changeManagerToRh']);
+
+
     Route::get('/user-manager', [UserManagerController::class, 'index'])->name('user-manager.index');
     Route::get('/user-manager/assign/{employee}', [UserManagerController::class, 'showAssignForm'])->name('user-manager.assign-form');
     Route::post('/user-manager/assign', [UserManagerController::class, 'assign'])->name('user-manager.assign');

@@ -102,15 +102,13 @@
 
                         @if(
                             (auth()->user()->id === $conge->UserId && $conge->status === 'en attente') ||
-                            auth()->user()->profil === 'administrateurs'
-                        )
+                            auth()->user()->profil === 'administrateurs')
                             <a href="{{ route('conges.edit', $conge->id) }}" class="btn btn-warning btn-sm">
                                 <i class="fas fa-edit"></i>
                             </a>
                             <form id="delete-form-{{ $conge->id }}" method="POST" action="{{ route('conges.destroy', $conge->id) }}" style="display: inline;">
                                 @csrf
                                 @method("DELETE")
-
                                 <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal-{{ $conge->id }}">
                                     <i class="fas fa-trash"></i>
                                 </button>

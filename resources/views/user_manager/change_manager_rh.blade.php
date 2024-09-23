@@ -4,42 +4,55 @@
 <link rel="stylesheet" href="{{ asset('/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
 <link rel="stylesheet" href="{{ asset('/plugins/toastr/toastr.min.css') }}">
 <link rel="stylesheet" href="{{ asset('/plugins/select2/css/select2.min.css') }}">
+<link rel="stylesheet" href="{{ asset('/plugins/toastr/persostyle.css') }}">
 @endsection
 
 @section('content')
 <div class="container">
     <div class="card">
         <div class="btn btn-custom-blue btn-block">
-            <h2 class="card-title">Assigner un Manager et un Responsable RH à {{ $employee->nom }} {{ $employee->prenom }}</h2>
+            <h2 class="card-title">Changer le Responsable RH pour le Manager</h2>
         </div>
         <div class="card-body">
-            <form action="{{ route('user-manager.assign') }}" method="POST">
+            <form action="{{ route('user-manager.change-manager-rh', $manager->id) }}" method="POST">
                 @csrf
-                <input type="hidden" name="employee_id" value="{{ $employee->id }}">
+                @method('PUT')
 
+                <!-- Sélection du Manager -->
                 <div class="form-group">
                     <label for="manager_id">Manager :</label>
-                    <select name="manager_id" id="manager_id" class="form-control select2">
+                    <select name="manager_id" id="manager_id" class="form-control select2" required>
                         <option value="">Sélectionner un Manager</option>
-                        @foreach($managers as $manager)
-                            <option value="{{ $manager->id }}">{{ $manager->nom }} {{ $manager->prenom }}</option>
+                        <option value="{{ $manager->id }}" selected>
+                            {{ $manager->nom }} {{ $manager->prenom }}
+                        </option>
+                        @foreach($managers as $mgr)
+                            <option value="{{ $mgr->id }}">
+                                {{ $mgr->nom }} {{ $mgr->prenom }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
 
+                <!-- Sélection du nouveau Responsable RH -->
                 <div class="form-group">
-                    <label for="rh_id">Responsable RH :</label>
+                    <label for="rh_id">Nouveau Responsable RH :</label>
                     <select name="rh_id" id="rh_id" class="form-control select2">
                         <option value="">Sélectionner un Responsable RH</option>
                         @foreach($rhs as $rh)
-                            <option value="{{ $rh->id }}">{{ $rh->nom }} {{ $rh->prenom }}</option>
+                            <option value="{{ $rh->id }}" {{ $currentRh == $rh->id ? 'selected' : '' }}>
+                                {{ $rh->nom }} {{ $rh->prenom }}
+                            </option>
                         @endforeach
                     </select>
+                    @if ($errors->has('rh_id'))
+                        <span class="text-danger">{{ $errors->first('rh_id') }}</span>
+                    @endif
                 </div>
 
                 <div class="card-footer">
-                    <button type="submit" class="btn btn-custom-blue btn-block mt-2">Assigner</button>
-                    <a href="{{ route('user-manager.index') }}" class="btn btn-danger mt-2">Retour</a>
+                    <button type="submit" class="btn btn-custom-blue btn-block mt-2">Changer Responsable RH</button>
+                    <a href="{{ route('user-manager.voirmanagerRh') }}" class="btn btn-danger mt-2">Retour</a>
                 </div>
             </form>
         </div>

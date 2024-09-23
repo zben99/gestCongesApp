@@ -35,7 +35,8 @@
 
                                 <li class="submenu-item"><a class="submenu-link" href="{{ route('typeConges.index') }}">Type de congés</a></li>
                                 <li class="submenu-item"><a class="submenu-link" href="{{ route('typeAbsences.index') }}">Type d'absences</a></li>
-                                <li class="submenu-item"><a class="submenu-link" href="{{ route('user-manager.index') }}">Workflow</a></li>
+                                <li class="submenu-item"><a class="submenu-link" href="{{ route('user-manager.index') }}">Workflow Employe</a></li>
+                                <li class="submenu-item"><a class="submenu-link" href="{{ route('user-manager.voirmanagerRh') }}">Workflow Manager </a></li>
 
                         </ul>
                     </div>

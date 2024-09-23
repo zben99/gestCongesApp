@@ -13,6 +13,8 @@ use App\Services\HolidaysService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Notifications\CustomCongeRejectNotification;
+use Illuminate\Support\Facades\DB;
+
 
 class CongesController extends Controller
 {
@@ -27,28 +29,44 @@ class CongesController extends Controller
     {
         $user = Auth::user();
         $query = Conges::query();
-
-        // Filtres de recherche
+    
+        // Filtre de recherche par statut
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
-
-        // Gestion des profils
+    
+        // Gestion selon le profil
         if ($user->profil === 'administrateurs') {
+            // L'administrateur voit tous les congés
             $conges = $query->paginate(7);
         } elseif ($user->profil === 'manager') {
+            // Les managers voient leurs propres congés ainsi que ceux de leurs employés
             $conges = $query->whereIn('UserId', $user->employees->pluck('id')->push($user->id))->paginate(7);
         } elseif ($user->profil === 'responsables RH') {
-            $employeeIds = $user->rhEmployees->pluck('id');
-            $conges = $query->whereIn('UserId', $employeeIds->push($user->id))->paginate(7);
+            // Récupérer les IDs des managers associés au responsable RH
+            $managerIds = DB::table('user_manager')
+                ->where('rh_manager_id', $user->id)  // Ne récupérer que les managers associés au RH actuel
+                ->pluck('manager_id');
+    
+            // Récupérer les employés associés à ces managers
+            $employeeIds = DB::table('user_manager')
+                ->whereIn('manager_id', $managerIds)
+                ->pluck('user_id');
+    
+            // Récupérer les congés des managers et employés associés
+            $allUserIds = $managerIds->merge($employeeIds)->push($user->id);
+    
+            // Requête pour filtrer uniquement les congés des utilisateurs associés
+            $conges = $query->whereIn('UserId', $allUserIds)->paginate(7);
         } else {
+            // Autres utilisateurs ne voient que leurs propres congés
             $conges = $query->where('UserId', $user->id)->paginate(7);
         }
-
+    
         return view('conges.index', compact('conges'));
     }
-
-    public function create()
+    
+        public function create()
     {
         $users = User::all();
         $typeConges = TypeConges::all();
