@@ -29,12 +29,12 @@ class CongesController extends Controller
     {
         $user = Auth::user();
         $query = Conges::query();
-    
+
         // Filtre de recherche par statut
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
-    
+
         // Gestion selon le profil
         if ($user->profil === 'administrateurs') {
             // L'administrateur voit tous les congés
@@ -47,25 +47,25 @@ class CongesController extends Controller
             $managerIds = DB::table('user_manager')
                 ->where('rh_manager_id', $user->id)  // Ne récupérer que les managers associés au RH actuel
                 ->pluck('manager_id');
-    
+
             // Récupérer les employés associés à ces managers
             $employeeIds = DB::table('user_manager')
                 ->whereIn('manager_id', $managerIds)
                 ->pluck('user_id');
-    
+
             // Récupérer les congés des managers et employés associés
             $allUserIds = $managerIds->merge($employeeIds)->push($user->id);
-    
+
             // Requête pour filtrer uniquement les congés des utilisateurs associés
             $conges = $query->whereIn('UserId', $allUserIds)->paginate(7);
         } else {
             // Autres utilisateurs ne voient que leurs propres congés
             $conges = $query->where('UserId', $user->id)->paginate(7);
         }
-    
+
         return view('conges.index', compact('conges'));
     }
-    
+
         public function create()
     {
         $users = User::all();
@@ -210,22 +210,24 @@ class CongesController extends Controller
                 $conge->user->increment('pris', $days);
             }
 
+            // Génération et sauvegarde du PDF
             $pdf = Pdf::loadView('pdf.conge', ['conge' => $conge]);
-            $pdfPath = storage_path('app/public/conges/conge_' . $conge->id . '.pdf');
+            $pdfPath = 'public/conges/conge_' . $conge->id . '.pdf';
+            Storage::put($pdfPath, $pdf->output());
 
-            if (!is_dir(dirname($pdfPath))) {
-                mkdir(dirname($pdfPath), 0755, true);
-            }
-
-            $pdf->save($pdfPath);
-
+            // Mise à jour du statut et chemin du fichier PDF
             $conge->update([
                 'status' => 'approuvé',
                 'approved_by_rh' => $user->id,
                 'pdf_path' => 'conges/conge_' . $conge->id . '.pdf',
             ]);
 
-            Mail::to($conge->user->email)->send(new CongeApprovalMail($conge, $pdfPath));
+            // Envoi de l'email avec gestion d'erreur
+            try {
+                Mail::to($conge->user->email)->send(new CongeApprovalMail($conge, $pdfPath));
+            } catch (\Exception $e) {
+                return redirect()->route('conges.index')->with('error', 'Demande approuvée mais échec de l\'envoi de l\'email.');
+            }
 
             return redirect()->route('conges.index')->with('success', 'Demande approuvée, email envoyé et jours de congé mis à jour.');
         } elseif ($conge->status === 'en attente') {
@@ -235,6 +237,7 @@ class CongesController extends Controller
 
         return redirect()->back()->with('error', 'Le statut de la demande est invalide.');
     }
+
 
     public function reject(Request $request,Conges $conge)
     {
