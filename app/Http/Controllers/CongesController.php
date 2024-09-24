@@ -10,10 +10,11 @@ use Illuminate\Http\Request;
 use App\Mail\CongeApprovalMail;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Services\HolidaysService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use App\Notifications\CustomCongeRejectNotification;
-use Illuminate\Support\Facades\DB;
 
 
 class CongesController extends Controller
@@ -213,7 +214,11 @@ class CongesController extends Controller
             // Génération et sauvegarde du PDF
             $pdf = Pdf::loadView('pdf.conge', ['conge' => $conge]);
             $pdfPath = 'public/conges/conge_' . $conge->id . '.pdf';
+
             Storage::put($pdfPath, $pdf->output());
+
+            // Optionnel : URL du fichier
+            $pdfUrl = Storage::path($pdfPath);
 
             // Mise à jour du statut et chemin du fichier PDF
             $conge->update([
@@ -224,8 +229,9 @@ class CongesController extends Controller
 
             // Envoi de l'email avec gestion d'erreur
             try {
-                Mail::to($conge->user->email)->send(new CongeApprovalMail($conge, $pdfPath));
+                Mail::to($conge->user->email)->send(new CongeApprovalMail($conge, $pdfUrl));
             } catch (\Exception $e) {
+                dd( $e->getMessage());
                 return redirect()->route('conges.index')->with('error', 'Demande approuvée mais échec de l\'envoi de l\'email.');
             }
 
