@@ -17,40 +17,51 @@ use Illuminate\Support\Facades\Auth;
 
 class AbsenceControlleur extends Controller
 {
-   // Afficher la liste des absences
-   public function index(Request $request)
-   {
-       $user = Auth::user();
-       $query = Absence::query();
+    public function index(Request $request)
+    {
+        $user = Auth::user();
+        $query = Absence::query();
 
-       // Filtres de recherche
-       if ($request->filled('search')) {
-           $search = $request->input('search');
-           $query->whereHas('user', function($q) use ($search) {
-               $q->where('matricule', 'LIKE', "%$search%")
-                 ->orWhereRaw("CONCAT(prenom, ' ', nom) LIKE ?", ["%$search%"]);
-           })
-           ->orWhere('motif', 'LIKE', "%$search%");
-       }
+        // Filtres de recherche
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->whereHas('user', function($q) use ($search) {
+                $q->where('matricule', 'LIKE', "%$search%")
+                  ->orWhereRaw("CONCAT(prenom, ' ', nom) LIKE ?", ["%$search%"]);
+            })
+            ->orWhere('motif', 'LIKE', "%$search%");
+        }
 
-       // Gestion des profils
-       if ($user->profil === 'administrateurs') {
-           $absences = $query->with('user')->paginate(7);
-       } elseif ($user->profil === 'manager') {
-           $absences = $query->where(function($q) use ($user) {
-               $q->where('approved_by', $user->id)
-                 ->orWhere('UserId', $user->id);
-           })->with('user')->paginate(7);
-       } elseif ($user->profil === 'responsables RH') {
-           $employeeIds = $user->rhEmployees->pluck('id');
-           $absences = $query->whereIn('UserId', $employeeIds->push($user->id))->with('user')->paginate(7);
-       } else {
-           $absences = $query->where('UserId', $user->id)->with('user')->paginate(7);
-       }
+        // Gestion des profils
+        if ($user->profil === 'administrateurs') {
+            // L'administrateur voit toutes les absences
+            $absences = $query->with('user')->paginate(10);
+        } elseif ($user->profil === 'manager') {
+            // Les managers voient leurs propres absences ainsi que celles de leurs employés
+            $absences = $query->where(function($q) use ($user) {
+                $q->where('approved_by', $user->id)
+                  ->orWhere('UserId', $user->id);
+            })->with('user')->paginate(10);
+        } elseif ($user->profil === 'responsables RH') {
+            // Récupérer les IDs des managers associés au responsable RH
+            $managerIds = User::where('rh_id', $user->id)->pluck('id');
 
-       return view('absence.index', compact('absences'));
-   }
-   
+            // Récupérer les employés associés à ces managers
+            $employeeIds = User::whereIn('manager_id', $managerIds)->pluck('id');
+
+            // Récupérer les absences des managers et employés associés
+            $allUserIds = $managerIds->merge($employeeIds)->push($user->id);
+
+            // Requête pour filtrer uniquement les absences des utilisateurs associés
+            $absences = $query->whereIn('UserId', $allUserIds)->with('user')->paginate(10);
+        } else {
+            // Autres utilisateurs ne voient que leurs propres absences
+            $absences = $query->where('UserId', $user->id)->with('user')->paginate(10);
+        }
+
+        return view('absence.index', compact('absences'));
+    }
+
 
 
    // Afficher le formulaire de création
@@ -110,8 +121,8 @@ class AbsenceControlleur extends Controller
        $absence->type_absence_id = $typeAbsence->id;
        $absence->justificatif = $justificatifPath; // Stocker le chemin du justificatif
 
-       if ($user->managers->isNotEmpty()) {
-           $absence->approved_by = $user->managers->first()->id;
+       if ($user->manager!=null) {
+           $absence->approved_by = $user->manager->id;
        }
 
        $absence->save();

@@ -18,16 +18,6 @@
                 @csrf
 
                 <div class="form-group">
-                    <label for="manager_id">Manager :</label>
-                    <select name="manager_id" id="manager_id" class="form-control select2" required>
-                        <option value="">Sélectionner un Manager</option>
-                        @foreach($managers as $manager)
-                            <option value="{{ $manager->id }}">{{ $manager->nom }} {{ $manager->prenom }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="form-group">
                     <label for="rh_id">Responsable RH :</label>
                     <select name="rh_id" id="rh_id" class="form-control select2" required>
                         <option value="">Sélectionner un Responsable RH</option>

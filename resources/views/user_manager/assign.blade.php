@@ -27,15 +27,7 @@
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label for="rh_id">Responsable RH :</label>
-                    <select name="rh_id" id="rh_id" class="form-control select2">
-                        <option value="">Sélectionner un Responsable RH</option>
-                        @foreach($rhs as $rh)
-                            <option value="{{ $rh->id }}">{{ $rh->nom }} {{ $rh->prenom }}</option>
-                        @endforeach
-                    </select>
-                </div>
+
 
                 <div class="card-footer">
                     <button type="submit" class="btn btn-custom-blue btn-block mt-2">Assigner</button>

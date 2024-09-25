@@ -45,25 +45,54 @@
                         <td>{{ $employee->prenom }}</td>
                         <td>{{ $employee->profil }}</td>
                         <td>
-                            @if($employee->managers->isNotEmpty())
-                                {{ $employee->managers->first()->nom }} {{ $employee->managers->first()->prenom }}
+                            @if($employee->manager!=null)
+                                {{ $employee->manager->nom }} {{ $employee->manager->prenom }}
                             @else
-                                Aucun manager assigné
+                                @if ($employee->profil=="manager")
+                                    {{ $employee->nom }} {{ $employee->prenom }}
+                                @else
+                                    Aucun manager assigné
+                                @endif
+
                             @endif
+
+
                             </td> <!-- Affichage du manager -->
                             <td>
-                                @if($employee->rh->isNotEmpty())
-                                    {{ $employee->rh->first()->nom }} {{ $employee->rh->first()->prenom }}
-                                @else
+
+                                @if ($employee->profil=="employés")
+                                    @if($employee->manager!=null and $employee->manager->rh!=null)
+                                        {{ $employee->manager->rh->nom }} {{ $employee->manager->rh->prenom }}
+
+                                    @else
+
                                     Aucun Responsable RH assigné
+                                    @endif
+                                @else
+
+                                    @if($employee->rh!=null)
+                                        {{ $employee->rh->nom }} {{ $employee->rh->prenom }}
+                                    @else
+
+                                    Aucun Responsable RH assigné
+
+                                    @endif
+
                                 @endif
+
                             </td>
 
                         <td>
                             <!-- Liens pour assigner ou changer manager et responsable RH -->
-                            <a href="{{ route('user-manager.assign-form', $employee) }}" class="btn btn-info btn-sm">Assigner</a>
-                            <a href="{{ route('user-manager.change-form', $employee) }}" class="btn btn-warning btn-sm">Changer</a>
+                            @if ($employee->profil=="employés")
+                                <button class="btn btn-info btn-sm assign-manager" data-id="{{ $employee->id }}" data-name="{{ $employee->nom }} {{ $employee->prenom }}">Assigner Manager</button>
+                            @endif
+                            @if ($employee->profil=="manager")
+                                <button class="btn btn-warning btn-sm assign-rh" data-id="{{ $employee->id }}" data-name="{{ $employee->nom }} {{ $employee->prenom }}">Assigner RH</button>
+                            @endif
                         </td>
+
+
                     </tr>
                 @endforeach
                 </tbody>
@@ -102,6 +131,105 @@ $(document).ready(function() {
     @endif
 });
 </script>
+
+<script>
+    var managers = {!! json_encode($managersFormatted) !!};
+    var rhs = {!! json_encode($rhsFormatted) !!};
+</script>
+
+<script>
+    $(document).ready(function() {
+        // Gestionnaire d'événements pour le bouton "Assigner Manager"
+        $('.assign-manager').click(function() {
+            var employeeId = $(this).data('id');
+            var employeeName = $(this).data('name');
+
+
+
+            Swal.fire({
+                title: 'Assigner un Manager',
+                text: 'Sélectionnez un manager pour ' + employeeName,
+                input: 'select',
+                inputOptions: managers,
+                showCancelButton: true,
+                confirmButtonText: 'Assigner',
+                cancelButtonText: 'Annuler',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Effectuer une requête AJAX pour assigner le manager
+                    $.ajax({
+                        url: '{{ route('user-manager.assign') }}', // Remplacez par votre route
+                        method: 'POST',
+                        data: {
+                            employee_id: employeeId,
+                            manager_id: result.value,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                title: 'Succès!',
+                                text: response.message,
+                                icon: 'success',
+                                showConfirmButton: false, // Masquer le bouton de confirmation
+                                timer: 1500, // Durée en millisecondes
+                            }).then(() => {
+                                location.reload(); // Recharger la page après la fermeture du popup
+                            });
+                        },
+                        error: function(xhr) {
+                            Swal.fire('Erreur!', xhr.responseJSON.message, 'error');
+                        }
+                    });
+                }
+            });
+        });
+
+        // Gestionnaire d'événements pour le bouton "Assigner RH"
+        $('.assign-rh').click(function() {
+            var employeeId = $(this).data('id');
+            var employeeName = $(this).data('name');
+
+            Swal.fire({
+                title: 'Assigner un Responsable RH',
+                text: 'Sélectionnez un Responsable RH pour ' + employeeName,
+                input: 'select',
+                inputOptions: rhs,
+                showCancelButton: true,
+                confirmButtonText: 'Assigner',
+                cancelButtonText: 'Annuler',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Effectuer une requête AJAX pour assigner le RH
+                    $.ajax({
+                        url: '{{ route('user-manager.assign-manager-rh') }}', // Remplacez par votre route
+                        method: 'POST',
+                        data: {
+                            employee_id: employeeId,
+                            rh_id: result.value,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                title: 'Succès!',
+                                text: response.message,
+                                icon: 'success',
+                                showConfirmButton: false, // Masquer le bouton de confirmation
+                                timer: 1500, // Durée en millisecondes
+                            }).then(() => {
+                                location.reload(); // Recharger la page après la fermeture du popup
+                            });
+
+                        },
+                        error: function(xhr) {
+                            Swal.fire('Erreur!', xhr.responseJSON.message, 'error');
+                        }
+                    });
+                }
+            });
+        });
+    });
+    </script>
+
 @endsection
 
 

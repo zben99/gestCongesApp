@@ -41,36 +41,7 @@ class User extends Authenticatable
         return $this->belongsTo(Poste::class, 'posteId');
     }
 
-    // Relation pour obtenir les managers de cet utilisateur
-    public function managers()
-    {
-        return $this->belongsToMany(User::class, 'user_manager', 'user_id', 'manager_id');
-    }
 
-    public function employees()
-    {
-        return $this->belongsToMany(User::class, 'user_manager', 'manager_id', 'user_id');
-    }
-
-    public function rhEmployees()
-    {
-        return $this->belongsToMany(User::class, 'user_manager', 'rh_id', 'user_id');
-    }
-
-    // Relation pour obtenir le responsable RH assigné à cet utilisateur
-    public function rh()
-    {
-        return $this->belongsToMany(User::class, 'user_manager', 'user_id', 'rh_id');
-    }
-
-
-
-
-    // Relation pour obtenir les employés dont ce responsable RH est assigné
-    public function employeesUnderRh()
-    {
-        return $this->hasMany(User::class, 'rh_id');
-    }
 
 
 
@@ -88,10 +59,41 @@ class User extends Authenticatable
         return $this->hasMany(Absence::class, 'userId');
     }
 
-        // Relation pour les managers associés à un responsable RH
-    public function rhManagers()
+
+
+
+
+        /**
+     * Relation pour récupérer le manager associé à l'utilisateur.
+     */
+    public function manager()
     {
-        return $this->hasMany(User::class, 'rh_manager_id'); // rh_manager_id est la colonne qui référence le responsable RH pour les managers
+        return $this->belongsTo(User::class, 'manager_id');
     }
-    
+
+    /**
+     * Relation pour récupérer le RH associé à l'utilisateur.
+     */
+    public function rh()
+    {
+        return $this->belongsTo(User::class, 'rh_id');
+    }
+
+
+       /**
+     * Relation pour récupérer les employés associés à un manager.
+     */
+    public function employees()
+    {
+        return $this->hasMany(User::class, 'manager_id');
+    }
+
+    /**
+     * Relation pour récupérer les employés associés à un RH.
+     */
+    public function rhEmployees()
+    {
+        return $this->hasMany(User::class, 'rh_id');
+    }
+
 }
