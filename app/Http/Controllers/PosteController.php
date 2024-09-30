@@ -23,25 +23,28 @@ class PosteController extends Controller
         return view('postes.edit');
     }
 
-    public function store(Request $request)
+ public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name_poste' => 'required|string|max:255',
             'description' => 'nullable|string',
-
         ]);
 
-         // Si la validation échoue
+        // Si la validation échoue
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $postes = new Poste();
-        $postes->name_poste = $request->input('name_poste');
-        $postes->description = $request->input('description');
-        $postes->save();
+        try {
+            $poste = new Poste();
+            $poste->name_poste = $request->input('name_poste');
+            $poste->description = $request->input('description');
+            $poste->save();
 
-        return redirect()->route('postes.index')->with('success', 'Poste ajouté avec succès.');
+            return redirect()->route('postes.index')->with('success', 'Poste ajouté avec succès.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Une erreur est survenue lors de l\'ajout du poste.')->withInput();
+        }
     }
 
     public function edit(Poste $poste)
@@ -51,26 +54,37 @@ class PosteController extends Controller
 
     public function update(Request $request, Poste $poste)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name_poste' => 'required|string|max:255',
             'description' => 'nullable|string',
         ]);
 
-        $poste->update($request->all());
+        // Si la validation échoue
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
 
-        return redirect()->route('postes.index')->with('success', 'Poste mis à jour avec succès.');
+        try {
+            $poste->update($request->all());
+            return redirect()->route('postes.index')->with('success', 'Poste mis à jour avec succès.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Une erreur est survenue lors de la mise à jour du poste.')->withInput();
+        }
     }
 
     public function destroy(Poste $poste)
     {
-
+        try {
             // Vérifier si le poste est associé à un utilisateur
             if ($poste->employes()->count() > 0) {
                 return redirect()->route('postes.index')->with('error', 'Le poste ne peut pas être supprimé car il est associé à des utilisateurs.');
             }
 
-        $poste->delete();
-
-        return redirect()->route('postes.index')->with('success', 'Poste supprimé avec succès.');
+            $poste->delete();
+            return redirect()->route('postes.index')->with('success', 'Poste supprimé avec succès.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Une erreur est survenue lors de la suppression du poste.');
+        }
+        
     }
 }

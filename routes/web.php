@@ -129,8 +129,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/rapports/en-attente', [RapportCongesController::class, 'enAttente'])->name('rapports.enAttente');
     Route::get('/rapports/departements', [RapportCongesController::class, 'departements'])->name('rapports.departements');
 
-
-
+    Route::get('/rapportsAbsences/absenceexport', [RapportAbsenceController::class, 'exportAbsences'])->name('rapportsAbsences.exportAbsences');
+    Route::get('/rapportsAbsences/toutesAbsences', [RapportAbsenceController::class, 'toutesAbsences'])->name('rapportsAbsences.toutesAbsences');
     Route::get('/rapportsAbsences', [RapportAbsenceController::class, 'index'])->name('rapportsAbsences.index');
     Route::get('/rapportsAbsences/enCours', [RapportAbsenceController::class, 'enCours'])->name('rapportsAbsences.enCours');
     Route::get('/rapportsAbsences/enAttente', [RapportAbsenceController::class, 'enAttente'])->name('rapportsAbsences.enAttente');
