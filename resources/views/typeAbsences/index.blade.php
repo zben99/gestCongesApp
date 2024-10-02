@@ -83,29 +83,28 @@
 </section>
 @endsection
 
-@section('script')
-<script src="{{ asset('/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
-<script src="{{ asset('/plugins/toastr/toastr.min.js') }}"></script>
+    @section('script')
+    <script src="{{ asset('/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('/plugins/toastr/toastr.min.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: '{{ session('success') }}',
+                showConfirmButton: false,
 
-<script>
-$(document).ready(function() {
-    @if (session('success'))
-    Swal.fire({
-        icon: 'success',
-        title: '{{ session('success') }}',
-        showConfirmButton: false,
+            });
+            @endif
 
-    });
-    @endif
+            @if (session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: '{{ session('error') }}',
+                showConfirmButton: false,
 
-    @if (session('error'))
-    Swal.fire({
-        icon: 'error',
-        title: '{{ session('error') }}',
-        showConfirmButton: false,
-
-    });
-    @endif
-});
-</script>
+            });
+            @endif
+        });
+    </script>
 @endsection

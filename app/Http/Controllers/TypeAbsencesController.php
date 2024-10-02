@@ -28,7 +28,8 @@ class TypeAbsencesController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        // Validation des données d'entrée
+        $validated = $request->validate([
             'nom' => 'required|string|max:255',
             'description' => 'nullable|string',
             'duree_max' => 'required|integer|min:1',
@@ -37,9 +38,13 @@ class TypeAbsencesController extends Controller
             'jours_deductibles_apres' => 'nullable|integer|min:1',
         ]);
 
-        TypeAbsences::create($request->all());
-
-        return redirect()->route('typeAbsences.index')->with('success', 'Type d\'absence créé avec succès.');
+        try {
+            TypeAbsences::create($validated); // Création du type d'absence
+            return redirect()->route('typeAbsences.index')->with('success', 'Type d\'absence créé avec succès.');
+        } catch (\Exception $e) {
+            \Log::error("Erreur lors de la création du type d'absence: " . $e->getMessage()); // Log l'erreur
+            return redirect()->back()->with('error', 'Une erreur est survenue lors de la création du type d\'absence.')->withInput();
+        }
     }
 
 
@@ -75,21 +80,14 @@ class TypeAbsencesController extends Controller
     /**
      * Supprime un type d'absence spécifique de la base de données.
      */
+    
     public function destroy(TypeAbsences $typeAbsence)
     {
         try {
-            // Tente de supprimer le type d'absence
-            $typeAbsence->delete();
-    
-            // Redirection avec un message de succès si la suppression fonctionne
+            $typeAbsence->delete(); // Suppression du type d'absence
             return redirect()->route('typeAbsences.index')->with('success', 'Type d\'absence supprimé avec succès.');
         } catch (\Exception $e) {
-            // Capture l'exception si la suppression échoue (par exemple à cause d'une contrainte d'intégrité)
-    
-            // Vous pouvez enregistrer le message d'erreur dans les logs si nécessaire
-            \Log::error("Erreur lors de la suppression du type d'absence: " . $e->getMessage());
-    
-            // Redirection avec un message d'erreur
+            \Log::error("Erreur lors de la suppression du type d'absence: " . $e->getMessage()); // Log l'erreur
             return redirect()->route('typeAbsences.index')->with('error', 'Impossible de supprimer ce type d\'absence car il est associé à des absences existantes.');
         }
     }
